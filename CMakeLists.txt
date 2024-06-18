@@ -156,13 +156,13 @@ set(
   MODULES_ALL_FILES ${USE_IFs_FILES} ${Interfaces_FILES} ${Modules_FILES}
   ${Modules_LAPACK_FILES} ${Modules_ARPACK_FILES}
 )
-add_library(MODULES ${MODULES_ALL_FILES})
+add_library(MODULES OBJECT ${MODULES_ALL_FILES})
 
 # collect modules
 list(APPEND modules_names ARPACK BANDIT LK1 LK2 LK3 LK4 LK5 LK6 LK9 EMG)
 foreach (modname IN LISTS modules_names)
   file(GLOB_RECURSE TMP_MOD_FILES "${CMAKE_SOURCE_DIR}/${modname}/*.f*")
-  add_library(${modname} ${TMP_MOD_FILES} ${TMP_MOD_FILES_PP})
+  add_library(${modname} OBJECT ${TMP_MOD_FILES} ${TMP_MOD_FILES_PP})
   target_link_libraries(${modname} MODULES)
 endforeach()
 
