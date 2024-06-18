@@ -57,7 +57,7 @@
       USE TIMDAT, ONLY                :  TSEC
       USE SUBR_BEGEND_LEVELS, ONLY    :  CALC_PHI_SQ_BEGEND
       USE CONSTANTS_1, ONLY           :  ZERO, ONE, TWELVE
-      USE PARAMS, ONLY                :  CBMIN3, CBMIN4, CBMIN4T, EPSIL, PCMPTSTM, QUAD4TYP
+      USE PARAMS, ONLY                :  CBMIN3, CBMIN4, CBMIN4T, CBMITC, EPSIL, PCMPTSTM, QUAD4TYP
       USE MODEL_STUF, ONLY            :  BENSUM, EID, EMG_IFE, EMG_RFE, ERR_SUB_NAM, NUM_EMG_FATAL_ERRS, INTL_MID, PHI_SQ,  &
                                          PCOMP_PROPS, PLY_NUM, PSI_HAT, SHRSUM, TPLY, TYPE
       USE CALC_PHI_SQ_USE_IFs
@@ -69,7 +69,7 @@
       INTEGER(LONG), INTENT(OUT)      :: IERROR            ! Local error indicator
       INTEGER(LONG), PARAMETER        :: SUBR_BEGEND = CALC_PHI_SQ_BEGEND
 
-      REAL(DOUBLE)                    :: CBMIN  = ZERO     ! Either CBMIN3 or CBMIN4
+      REAL(DOUBLE)                    :: CBMIN  = ZERO     ! Either CBMIN3 or CBMIN4 or CBMITC
       REAL(DOUBLE)                    :: DEN               ! Denominator term in calculating PHI_SQ
       REAL(DOUBLE)                    :: EPS1              ! A small number to compare to real zero
       REAL(DOUBLE)                    :: PCOMP_TM          ! Membrane thick of PCOMP for equiv PSHELL (see subr SHELL_ABD_MATRICES)
@@ -107,8 +107,10 @@
       IF      (TYPE(1:5) == 'QUAD4') THEN                  ! Regardless of who calls this subr, TYPE will det which CBMIN to use
          IF (QUAD4TYP == 'MIN4T') THEN                     ! quad TYPE's will use either CBMIN4 or CBMIN4T
             CBMIN = CBMIN4T
-         ELSE
+         ELSE IF (QUAD4TYP == 'MIN4') THEN
             CBMIN = CBMIN4
+         ELSE
+            CBMIN = CBMITC
          ENDIF
       ELSE IF (TYPE(1:5) == 'TRIA3') THEN                  ! tria TYPE's will use CBMIN3 (NOTE: MIN4T quads will use CBMIN4T, above)
          CBMIN = CBMIN3
@@ -172,6 +174,9 @@
          WRITE(F04,9002) SUBR_NAME,TSEC
  9002    FORMAT(1X,A,' END  ',F10.3)
       ENDIF
+
+      1212 FORMAT('GOT PHI_SQ=',1ES14.6)
+      WRITE(F06, 1212) PHI_SQ
 
       RETURN
 

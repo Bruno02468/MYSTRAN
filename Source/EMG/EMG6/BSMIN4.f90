@@ -26,7 +26,7 @@
   
       SUBROUTINE BSMIN4 ( PSH, DPSHX, DNXSHX, DNYSHX, IGAUS, JGAUS, MESSAG, WRT_BUG_THIS_TIME, BS )
  
-! Calculate BS shear starin/displacement matrix for MIN4 quad. Called by subr QPLT2
+! Calculate BS shear strain/displacement matrix for MIN4 quad. Called by subr QPLT2
  
       USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
       USE IOUNT1, ONLY                :  BUG, F04, WRT_BUG, WRT_LOG

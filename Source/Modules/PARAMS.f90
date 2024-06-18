@@ -84,6 +84,9 @@
       REAL(DOUBLE)             :: CBMIN4T        =  THREEP6  ! Trans shear factor for MIN4T quad     elems (QUAD4, QUAD4TYP='MIN4T')
 
 ! ----------------------------------------------------------------------------------------------------------------------------------
+      REAL(DOUBLE)             :: CBMITC         =  THREEP6  ! Trans shear factor for MITC quad     elems (QUAD4, QUAD4TYP='MITC+')
+
+! ----------------------------------------------------------------------------------------------------------------------------------
       CHARACTER(  1*BYTE)      :: CHKGRDS        =    'Y'    ! If 'Y' call GET_ELEM_AGRID_BGRID to check all grids on elems exist
 
 ! ----------------------------------------------------------------------------------------------------------------------------------

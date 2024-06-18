@@ -2550,15 +2550,27 @@
                QUAD4TYP = 'MIN4T'
             ELSE IF (CHRPARM == 'MIN4    ') THEN
                QUAD4TYP = 'MIN4 '
-            ELSE
+            ELSE IF (CHRPARM == 'MITCPLUS') THEN
+               QUAD4TYP = 'MITC+'
+               ! warn the user that the MITC+ shell is new and experimental
                WARN_ERR = WARN_ERR + 1
                WRITE(ERR,101) CARD
-               WRITE(ERR,1189) PARNAM,'MIN4T or MIN4',CHRPARM,QUAD4TYP
+               WRITE(ERR,1199)
                IF (SUPWARN == 'N') THEN
                   IF (ECHO == 'NONE  ') THEN
                      WRITE(F06,101) CARD
                   ENDIF
-                  WRITE(F06,1189) PARNAM,'MIN4T or MIN4',CHRPARM,QUAD4TYP
+                  WRITE(F06,1199)
+               ENDIF
+            ELSE
+               WARN_ERR = WARN_ERR + 1
+               WRITE(ERR,101) CARD
+               WRITE(ERR,1189) PARNAM,'MIN4T or MIN4 or MITCPLUS',CHRPARM,QUAD4TYP
+               IF (SUPWARN == 'N') THEN
+                  IF (ECHO == 'NONE  ') THEN
+                     WRITE(F06,101) CARD
+                  ENDIF
+                  WRITE(F06,1189) PARNAM,'MIN4T or MIN4 or MITCPLUS',CHRPARM,QUAD4TYP
                ENDIF
             ENDIF
          ENDIF
@@ -3265,6 +3277,8 @@ do_i:    DO I=1,JCARD_LEN
              '>>>>>>>>>>>>>>>>>')
 
  1198 FORMAT("*WARNING    : THE K6ROT PARAMETER IS AN EXPERIMENTAL FEATURE. WHEN IN DOUBT, SET IT TO ZERO.",/)
+
+ 1199 FORMAT("*WARNING    : THE MITC+ SHELL IS A NEW, EXPERIMENTAL FEATURE.",/)
 ! ##################################################################################################################################
  
       CONTAINS

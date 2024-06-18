@@ -87,6 +87,7 @@
       INTEGER(LONG), PARAMETER          :: QPLT1_BEGEND                 = ELEM_BEGEND + 1
       INTEGER(LONG), PARAMETER          :: QPLT2_BEGEND                 = ELEM_BEGEND + 1
       INTEGER(LONG), PARAMETER          :: QPLT3_BEGEND                 = ELEM_BEGEND + 1
+      INTEGER(LONG), PARAMETER          :: QPLT4_BEGEND                 = ELEM_BEGEND + 1
       INTEGER(LONG), PARAMETER          :: QSHEAR_BEGEND                = ELEM_BEGEND + 1
 
       INTEGER(LONG), PARAMETER          :: HEXA_BEGEND                  = ELEM_BEGEND + 1
@@ -96,13 +97,16 @@
       INTEGER(LONG), PARAMETER          :: BBDKQ_BEGEND                 = ELEM_BEGEND + 3
       INTEGER(LONG), PARAMETER          :: BBMIN3_BEGEND                = ELEM_BEGEND + 3
       INTEGER(LONG), PARAMETER          :: BBMIN4_BEGEND                = ELEM_BEGEND + 3
+      INTEGER(LONG), PARAMETER          :: BBMITC_BEGEND                = ELEM_BEGEND + 3
       INTEGER(LONG), PARAMETER          :: BCHECK_BEGEND                = ELEM_BEGEND + 3
       INTEGER(LONG), PARAMETER          :: B3D_ISOPARAMETRIC_BEGEND     = ELEM_BEGEND + 3
       INTEGER(LONG), PARAMETER          :: BMQMEM_BEGEND                = ELEM_BEGEND + 3
       INTEGER(LONG), PARAMETER          :: BSMIN3_BEGEND                = ELEM_BEGEND + 3
       INTEGER(LONG), PARAMETER          :: BSMIN4_BEGEND                = ELEM_BEGEND + 3
+      INTEGER(LONG), PARAMETER          :: BSMITC_BEGEND                = ELEM_BEGEND + 3
 
       INTEGER(LONG), PARAMETER          :: MIN4SH_BEGEND                = ELEM_BEGEND + 3
+      INTEGER(LONG), PARAMETER          :: MITCSH_BEGEND                = ELEM_BEGEND + 3
       INTEGER(LONG), PARAMETER          :: ORDER_BEGEND                 = ELEM_BEGEND + 3
       INTEGER(LONG), PARAMETER          :: SHP_BEGEND                   = ELEM_BEGEND + 3
 

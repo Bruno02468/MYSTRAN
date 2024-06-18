@@ -248,6 +248,8 @@
                   CALL QPLT2 ( OPT, AREA, XSD, YSD, BIG_BB )
                ELSE IF (QUAD4TYP == 'MIN4T') THEN
                   CALL QPLT3 ( OPT, AREA, XSD, YSD, BIG_BB )
+               ELSE IF (QUAD4TYP == 'MITC+') THEN
+                  CALL QPLT4 ( OPT, AREA, XSD, YSD, BIG_BB )
                ELSE
                   NUM_EMG_FATAL_ERRS = NUM_EMG_FATAL_ERRS + 1
                   FATAL_ERR = FATAL_ERR + 1
