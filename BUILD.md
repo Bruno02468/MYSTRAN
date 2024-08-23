@@ -190,14 +190,8 @@ fine.
 
 Multiple threads are printing to standard output simultaneously. That issue can
 sometimes happen as a result of running `make` instead of `mingw32-make` on
-Windows, but it can affect both. It's annoying, but harmless.
-
-However, if you *really* need compiler output to be readable, ensure `make`
-only runs with one thread by passing the option `-j1`. This will make
-compilation slower, but at least you'll be able to read the output.
-
-And if it's errors you're looking for, you can build fast with `-j[number]`,
-and then `-j1` just to see the error again.
+Windows, but it can affect both. It's annoying, but harmless: pass `-Oline` to
+make (e.g. `make -j13 -Oline`) and output gets fixed.
 
 ---
 
