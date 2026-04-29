@@ -176,26 +176,25 @@ set(enable_doc OFF FORCE)
 if(USE_SUPERLU_MT)
   message(STATUS "Will link against faster SuperLU_MT.")
   set(PLAT "_OPENMP" CACHE STRING "threading flavor _PTHREAD/_OPENMP" FORCE)
-  message(STATUS "Applying patches to SuperLU_MT...")
-  file(GLOB_RECURSE PATCH_FILES RELATIVE "${SUPERLU_MT_PATCHES_DIR}" "${SUPERLU_MT_PATCHES_DIR}/*")
 
-  foreach(file IN LISTS PATCH_FILES)
-    set(src "${SUPERLU_MT_PATCHES_DIR}/${file}")
-    set(dst "${SUPERLU_MT_DIR}/${file}")
+  # message(STATUS "Applying patches to SuperLU_MT...")
+  # file(GLOB_RECURSE PATCH_FILES RELATIVE "${SUPERLU_MT_PATCHES_DIR}" "${SUPERLU_MT_PATCHES_DIR}/*")
 
-    # ensure the destination directory exists
-    get_filename_component(dst_dir "${dst}" DIRECTORY)
-    file(MAKE_DIRECTORY "${dst_dir}")
+  # foreach(file IN LISTS PATCH_FILES)
+  # set(src "${SUPERLU_MT_PATCHES_DIR}/${file}")
+  # set(dst "${SUPERLU_MT_DIR}/${file}")
 
-    # print the file being copied
-    message(STATUS "  Patching: ${file}")
+  # # ensure the destination directory exists
+  # get_filename_component(dst_dir "${dst}" DIRECTORY)
+  # file(MAKE_DIRECTORY "${dst_dir}")
+  # # print the file being copied
+  # message(STATUS "  Patching: ${file}")
 
-    # copy the file
-    file(COPY "${src}" DESTINATION "${dst_dir}")
-  endforeach()
+  # # copy the file
+  # file(COPY "${src}" DESTINATION "${dst_dir}")
+  # endforeach()
 
-  message(STATUS "SuperLU_MT patched.")
-
+  # message(STATUS "SuperLU_MT patched.")
   if(NOT EXISTS "${SUPERLU_MT_DIR}/CMakeLists.txt")
     message(
       FATAL_ERROR

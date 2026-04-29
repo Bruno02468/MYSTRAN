@@ -7,7 +7,7 @@
 
 [submodule "superlu_mt"]
 	path = superlu_mt
-	url = https://github.com/xiaoyeli/superlu_mt
+	url = https://github.com/Bruno02468/superlu_mt.git
 	ignore = all
 	update = checkout
 	branch = master
