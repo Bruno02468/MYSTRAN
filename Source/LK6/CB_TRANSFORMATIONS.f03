@@ -273,12 +273,12 @@
       USE FBS_SUPRLU_Interface
       USE deallocate_sparse_mat_Interface
       USE ALLOCATE_SPARSE_MAT_Interface
-      USE ALLOCATE_L6_2_Interface
       USE READ_MATRIX_2_Interface
       USE GET_I_MAT_FROM_I2_MAT_Interface
       USE MATTRNSP_SS_Interface
       USE COUNTER_INIT_Interface
       USE COUNTER_PROGRESS_Interface
+      USE L6_WORKSPACE, ONLY          :  ALLOCATE_L6_2
 
       IMPLICIT NONE
 

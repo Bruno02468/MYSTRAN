@@ -24,6 +24,16 @@
 
 ! End MIT license text.
 
+   MODULE LINK6_MOD
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: LINK6
+
+   CONTAINS
+
       SUBROUTINE LINK6
 
 ! LINK6 generates Craig-Bampton model matrices and outputs those matrices to unformatted files as requested in Executive Control
@@ -65,7 +75,11 @@
                                          I_MRRcb , J_MRRcb , MRRcb , I_MRR   , J_MRR   , MRR   , I_MXX   , J_MXX   , MXX   ,       &
                                          I_PHIXA , J_PHIXA , PHIXA
 
-      USE LINK6_USE_IFs                                      ! Added 2019/07/14
+      USE CB_TRANSFORMATIONS, ONLY      :  CALC_PHIZL, MERGE_PHIXA
+      USE CB_LOAD_TRANSFORMATIONS, ONLY:  INTERFACE_FORCE_LTM, NET_CG_LOADS_LTM, MERGE_LTM, SOLVE_DLR
+      USE CB_REDUCED_MATRICES, ONLY   :  CALC_KRRCB, CALC_MRRCB, CALC_MRN, MERGE_KXX, MERGE_MXX
+      USE CB_EFFECTIVE_PROPERTIES, ONLY:  CALC_CB_MEFM_MPF
+      USE L6_WORKSPACE, ONLY          :  ALLOCATE_L6_2
       USE LINK_MESSAGE_Interface
 
       IMPLICIT NONE
@@ -465,3 +479,5 @@
 ! ##################################################################################################################################
 
       END SUBROUTINE LINK6
+
+   END MODULE LINK6_MOD

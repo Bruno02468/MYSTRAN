@@ -45,7 +45,7 @@
       USE LINK2_MOD, ONLY             :  LINK2
       USE LINK3_MOD, ONLY             :  LINK3
       USE LINK4_MOD, ONLY             :  LINK4
-      USE LINK6_Interface
+      USE LINK6_MOD, ONLY             :  LINK6
       USE DEALLOCATE_RBGLOBAL_Interface
       USE LINK5_MOD, ONLY             :  LINK5
       USE OUTA_HERE_Interface
