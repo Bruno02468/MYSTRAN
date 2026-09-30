@@ -39,7 +39,7 @@
       USE MKJCARD_Interface
       USE LEFT_ADJ_BDFLD_Interface
       USE MKCARD_Interface
-      USE BD_SEQGP_Interface
+      USE GRID_COORDINATES, ONLY      :  BD_SEQGP
       USE WRITE_INTEGER_VEC_Interface
       USE FILE_CLOSE_Interface
 

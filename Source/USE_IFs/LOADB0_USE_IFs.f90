@@ -31,29 +31,16 @@
       USE OUTA_HERE_Interface
       USE FFIELD_Interface
       USE FFIELD2_Interface
-      USE BD_BAROR0_Interface
-      USE BD_BEAMOR0_Interface
-      USE BD_CBAR0_Interface
-      USE BD_CBUSH0_Interface
-      USE BD_CHEXA0_Interface
-      USE BD_CPENTA0_Interface
-      USE BD_CQUAD0_Interface
-      USE BD_CQUAD80_Interface
-      USE BD_CTETRA0_Interface
-      USE BD_CTRIA0_Interface
-      USE BD_CUSERIN0_Interface
-      USE BD_DEBUG0_Interface
-      USE BD_GRDSET0_Interface
-      USE BD_LOAD0_Interface
-      USE BD_MPC0_Interface
-      USE BD_MPCADD0_Interface
-      USE BD_PARAM0_Interface
-      USE BD_PCOMP0_Interface
-      USE BD_PCOMP10_Interface
-      USE BD_RBE30_Interface
-      USE BD_RSPLINE0_Interface
-      USE BD_SLOAD0_Interface
-      USE BD_SPCADD0_Interface
-      USE BD_SPOINT0_Interface
+      USE ROD_BAR_BEAM_CARDS, ONLY    :  BD_BAROR0, BD_BEAMOR0, BD_CBAR0
+      USE SPRING_BUSH_MASS, ONLY      :  BD_CBUSH0
+      USE SOLID_CARDS, ONLY           :  BD_CHEXA0, BD_CPENTA0, BD_CTETRA0
+      USE SHELL_COMPOSITE_CARDS, ONLY :  BD_CQUAD0, BD_CQUAD80, BD_CTRIA0, BD_PCOMP0, BD_PCOMP10
+      USE USER_ELEMENTS, ONLY         :  BD_CUSERIN0
+      USE DEBUG_CARDS, ONLY           :  BD_DEBUG0
+      USE GRID_COORDINATES, ONLY      :  BD_GRDSET0, BD_SPOINT0
+      USE BULK_DATA_LOADS, ONLY       :  BD_LOAD0, BD_SLOAD0
+      USE CONSTRAINT_CARDS, ONLY      :  BD_SPCADD0, BD_MPC0, BD_MPCADD0
+      USE PARAM_CARDS, ONLY           :  BD_PARAM0
+      USE RIGID_ELEMENTS, ONLY        :  BD_RBE30, BD_RSPLINE0
 
       END MODULE LOADB0_USE_IFs

@@ -31,87 +31,22 @@
       USE OUTA_HERE_Interface
       USE FFIELD_Interface
       USE FFIELD2_Interface
-      USE BD_ASET_Interface
-      USE BD_ASET1_Interface
-      USE BD_BAROR_Interface
-      USE BD_BEAMOR_Interface
-      USE BD_CBAR_Interface
-      USE BD_CBUSH_Interface
-      USE BD_CELAS1_Interface
-      USE BD_CELAS2_Interface
-      USE BD_CELAS3_Interface
-      USE BD_CELAS4_Interface
-      USE BD_CHEXA_Interface
-      USE BD_CMASS1_Interface
-      USE BD_CMASS2_Interface
-      USE BD_CMASS3_Interface
-      USE BD_CMASS4_Interface
-      USE BD_CONROD_Interface
-      USE BD_CONM2_Interface
-      USE BD_CORD_Interface
-      USE BD_CPENTA_Interface
-      USE BD_CQUAD_Interface
-      USE BD_CQUAD8_Interface
-      USE BD_CROD_Interface
-      USE BD_CSHEAR_Interface
-      USE BD_CTETRA_Interface
-      USE BD_CTRIA_Interface
-      USE BD_CUSER1_Interface
-      USE BD_CUSERIN_Interface
-      USE BD_DEBUG_Interface
-      USE BD_EIGR_Interface
-      USE BD_EIGRL_Interface
-      USE BD_FORMOM_Interface
-      USE BD_GRAV_Interface
-      USE BD_GRDSET_Interface
-      USE BD_GRID_Interface
-      USE BD_LOAD_Interface
-      USE BD_MAT1_Interface
-      USE BD_MAT2_Interface
-      USE BD_MAT8_Interface
-      USE BD_MAT9_Interface
-      USE BD_MPC_Interface
-      USE BD_MPCADD_Interface
-      USE BD_NLPARM_Interface
-      USE BD_PARAM_Interface
-      USE BD_PARVEC_Interface
-      USE BD_PARVEC1_Interface
-      USE BD_PBAR_Interface
-      USE BD_PBARL_Interface
-      USE BD_PBEAM_Interface
-      USE BD_PBUSH_Interface
-      USE BD_PCOMP_Interface
-      USE BD_PCOMP1_Interface
-      USE BD_PELAS_Interface
-      USE BD_PLOAD4_Interface
-      USE BD_PLOAD2_Interface
-      USE BD_PLOTEL_Interface
-      USE BD_PMASS_Interface
-      USE BD_PROD_Interface
-      USE BD_PSHEAR_Interface
-      USE BD_PSHEL_Interface
-      USE BD_PSOLID_Interface
-      USE BD_PUSER1_Interface
-      USE BD_PUSERIN_Interface
-      USE BD_RBAR_Interface
-      USE BD_RBE1_Interface
-      USE BD_RBE2_Interface
-      USE BD_RBE3_Interface
-      USE BD_RFORCE_Interface
-      USE BD_RSPLINE_Interface
-      USE BD_SEQGP_Interface
-      USE BD_SLOAD_Interface
-      USE BD_SNORM_Interface
-      USE BD_SPC_Interface
-      USE BD_SPC1_Interface
-      USE BD_SPCADD_Interface
-      USE BD_SPOINT_Interface
-      USE BD_SUPORT_Interface
-      USE BD_TEMP_Interface
-      USE BD_TEMPD_Interface
-      USE BD_TEMPRP_Interface
-      USE BD_USET_Interface
-      USE BD_USET1_Interface
+      USE DOF_SETS, ONLY              :  BD_ASET, BD_ASET1, BD_USET, BD_USET1, BD_SUPORT
+      USE ROD_BAR_BEAM_CARDS, ONLY    :  BD_BAROR, BD_BEAMOR, BD_CBAR, BD_CROD, BD_CONROD, BD_PROD, BD_PBAR, BD_PBARL, BD_PBEAM, BD_PLOTEL
+      USE SPRING_BUSH_MASS, ONLY      :  BD_CELAS1, BD_CELAS2, BD_CELAS3, BD_CELAS4, BD_PELAS, BD_CBUSH, BD_PBUSH, BD_CMASS1, BD_CMASS2, BD_CMASS3, BD_CMASS4, BD_PMASS, BD_CONM2
+      USE SOLID_CARDS, ONLY           :  BD_CHEXA, BD_CPENTA, BD_CTETRA, BD_PSOLID
+      USE GRID_COORDINATES, ONLY      :  BD_CORD, BD_GRID, BD_GRDSET, BD_SEQGP, BD_SPOINT, BD_SNORM
+      USE SHELL_COMPOSITE_CARDS, ONLY :  BD_CQUAD, BD_CQUAD8, BD_CTRIA, BD_CSHEAR, BD_PSHEAR, BD_PSHEL, BD_PCOMP, BD_PCOMP1
+      USE USER_ELEMENTS, ONLY         :  BD_CUSER1, BD_CUSERIN, BD_PUSER1, BD_PUSERIN
+      USE DEBUG_CARDS, ONLY           :  BD_DEBUG
+      USE EIGEN_NONLINEAR_CARDS, ONLY :  BD_EIGR, BD_EIGRL, BD_NLPARM
+      USE BULK_DATA_LOADS, ONLY       :  BD_LOAD, BD_FORMOM, BD_GRAV, BD_PLOAD2, BD_PLOAD4, BD_RFORCE, BD_SLOAD
+      USE MATERIAL_CARDS, ONLY        :  BD_MAT1, BD_MAT2, BD_MAT8, BD_MAT9
+      USE CONSTRAINT_CARDS, ONLY      :  BD_SPC, BD_SPC1, BD_SPCADD, BD_MPC, BD_MPCADD
+      USE PARAM_CARDS, ONLY           :  BD_PARAM
+      USE PARTITION_VECTORS, ONLY     :  BD_PARVEC, BD_PARVEC1
+      USE RIGID_ELEMENTS, ONLY        :  BD_RBAR, BD_RBE1, BD_RBE2, BD_RBE3, BD_RSPLINE
+      USE BULK_DATA_TEMPERATURES, ONLY:  BD_TEMP, BD_TEMPD, BD_TEMPRP
       USE ALLOCATE_MODEL_STUF_Interface
       USE SORTING, ONLY               :  SORT_INT1
 

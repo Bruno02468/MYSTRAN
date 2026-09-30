@@ -34,6 +34,6 @@
       USE MKJCARD_Interface
       USE I4FLD_Interface
       USE MKCARD_Interface
-      USE BD_PARAM_Interface
+      USE PARAM_CARDS, ONLY           :  BD_PARAM
 
       END MODULE LOADB_RESTART_USE_IFs
