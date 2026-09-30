@@ -31,6 +31,6 @@
       USE OUTA_HERE_Interface
       USE REPLACE_TABS_W_BLANKS_Interface
       USE CSHIFT_Interface
-      USE CC_SET0_Interface
+      USE CASE_CONTROL_SETS, ONLY     :  CC_SET0
 
       END MODULE LOADC0_USE_IFs

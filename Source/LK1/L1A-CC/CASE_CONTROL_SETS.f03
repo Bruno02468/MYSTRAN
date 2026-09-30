@@ -24,6 +24,143 @@
 
 ! End MIT license text.
 
+   MODULE CASE_CONTROL_SETS
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: CC_SET0, CC_SET, CC_SUBC
+
+   CONTAINS
+
+      SUBROUTINE CC_SET0 ( CARD )
+
+! Processes Case Control SET cards to determine LSETLN, the length of all SET characters that go into array
+! ALL_STES_ARRAY. No error messages are written if, in trying to determine LSETLN, errors occur. This subr returns
+! and, when CC_SET runs (when called by LOADC), it will discover the same errors and report them before attempting
+! to write characters to ALL_SETS_ARRAY
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06, IN1
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM, CC_ENTRY_LEN, LSETLN
+      USE TIMDAT, ONLY                :  TSEC
+
+      USE TOKCHK_Interface
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'CC_SET0'
+      CHARACTER(LEN=*), INTENT(IN)    :: CARD              ! A Bulk Data card
+      CHARACTER(LEN=LEN(CARD))        :: CARD1             ! SET card read from C.C deck
+      CHARACTER( 8*BYTE)              :: TOKEN             ! An 8 char string from the SET card where the set ID should be located
+      CHARACTER( 8*BYTE)              :: TOKTYP            ! The type of the char string TOKEN
+
+      INTEGER(LONG)                   :: ECOL      = 0     ! Col, on CARD, where "=" sign is located
+      INTEGER(LONG)                   :: I                 ! DO loop index
+      INTEGER(LONG)                   :: ICONT     = 0     ! Indicator if there is a cont card (yes if last entry is ",")
+      INTEGER(LONG)                   :: MORE      = 0     ! Count of additional bytes to add to LSETLN as this card is read
+      INTEGER(LONG)                   :: IOCHK     = 0     ! IOSTAT error number when reading a Case Control card from unit IN1
+      INTEGER(LONG)                   :: K         = 0     ! Counter
+      INTEGER(LONG)                   :: SETERR    = 0     ! Error indicator as set ID is read
+
+
+      INTRINSIC INDEX
+
+
+
+! **********************************************************************************************************************************
+      CARD1 = CARD
+
+! Process SET cards only to count LSETLN. Later processing in CC_SET will put data into ALL_SETS_ARRAY.
+
+! Check for SET cards. These can have continuation if last entry is a comma. Need to make sure that equal sign is
+! included for use in subr SETPRO which processes the character string ALL_SETS_ARRAY. A logical SET card consists
+! of all physical cards in a set.
+
+! Make sure equal sign is in. We use it later in subcase processor
+
+      ECOL = INDEX(CARD1(1:),'=')
+      IF (ECOL == 0) THEN
+         RETURN
+      ENDIF
+
+! Now find SET ID and check for proper type
+
+      TOKEN = '        '
+      SETERR = 0
+      K = 0
+      DO I=5,ECOL-1
+         IF (CARD1(I:I) == ' ') CYCLE
+         K = K + 1
+         IF (K > 8) THEN
+            SETERR = 1
+            EXIT
+         ENDIF
+         TOKEN(K:K) = CARD1(I:I)
+      ENDDO
+      IF (SETERR == 0) THEN
+         CALL TOKCHK ( TOKEN, TOKTYP )
+         IF (TOKTYP /= 'INTEGER ') THEN
+            RETURN
+         ENDIF
+      ENDIF
+
+! Find out if there are continuation cards (last non-blank entry on  this card will be a comma if there is more)
+
+      DO
+
+! Get rid of trailing blanks
+
+         MORE = CC_ENTRY_LEN
+         DO I=CC_ENTRY_LEN,1,-1
+            IF (CARD1(I:I) == ' ') THEN
+               MORE = MORE - 1
+            ELSE
+               EXIT
+            ENDIF
+         ENDDO
+
+         LSETLN = LSETLN + MORE
+
+! Find out if last entry is a ','
+
+         ICONT = 0
+         DO I=CC_ENTRY_LEN,1,-1
+            IF (CARD1(I:I) == ' ') THEN
+               CYCLE
+            ELSE IF (CARD1(I:I) == ',') THEN
+               ICONT = 1
+               EXIT
+            ELSE
+               ICONT = 0
+               EXIT
+            ENDIF
+         ENDDO
+
+         IF (ICONT == 1) THEN
+            CALL READ_BDF_LINE(IN1, IOCHK, CARD1)
+            IF (IOCHK > 0) THEN
+               RETURN
+            ENDIF
+            CYCLE
+         ELSE
+            EXIT
+         ENDIF
+      ENDDO
+
+
+
+      RETURN
+
+! **********************************************************************************************************************************
+  101 FORMAT(A)
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE CC_SET0
+
+
       SUBROUTINE CC_SET ( CARD )
 
 ! Processes Case Control SET cards
@@ -35,7 +172,9 @@
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  ALL_SETS_ARRAY, SETS_IDS
 
-      USE CC_SET_USE_IFs
+      USE TOKCHK_Interface
+      USE OUTA_HERE_Interface
+      USE STOKEN_Interface
 
       IMPLICIT NONE
 
@@ -599,3 +738,96 @@ i_do5:DO I=SETLEN,1,-1
 ! **********************************************************************************************************************************
 
       END SUBROUTINE CC_SET
+
+
+      SUBROUTINE CC_SUBC ( CARD )
+
+! Processes Case Control SUBCASE cards
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06
+      USE SCONTR, ONLY                :  CC_ENTRY_LEN, FATAL_ERR, LSUB, NSUB, BLNK_SUB_NAM, NUM_SUBC_CARDS
+      USE TIMDAT, ONLY                :  TSEC
+      USE MODEL_STUF, ONLY            :  SCNUM
+
+      USE OUTA_HERE_Interface
+      USE CSHIFT_Interface
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'CC_SUBC'
+      CHARACTER(LEN=*), INTENT(IN)    :: CARD              ! A Bulk Data card
+      CHARACTER(LEN=LEN(CARD))        :: CARD1             ! CARD shifted to begin in col after "=" sign
+      CHARACTER(1*BYTE)               :: EQUAL_SIGN        ! 'Y' if CARD has an = sign between SUBCASE and the subcase number
+
+      INTEGER(LONG)                   :: ECOL              ! Col, on CARD, where "E" is located (last letter of SUBCASE)
+      INTEGER(LONG)                   :: I                 ! DO loop index
+      INTEGER(LONG)                   :: IERR              ! Output from subr CSHIFT indicating an error
+      INTEGER(LONG)                   :: JERR              ! Error indicator if this subcase number is the same as a previous one
+      INTEGER(LONG)                   :: SUBCASE_NUM       ! Subcase number from the SUBCASE card being read
+
+
+
+
+! **********************************************************************************************************************************
+! Process SUBCASE cards
+      NUM_SUBC_CARDS = NUM_SUBC_CARDS + 1
+      NSUB = NSUB + 1
+      IF (NSUB > LSUB) THEN
+         FATAL_ERR = FATAL_ERR + 1
+         WRITE(ERR,1279) SUBR_NAME,LSUB
+         WRITE(F06,1279) SUBR_NAME,LSUB
+         CALL OUTA_HERE ( 'Y' )                              ! Coding error, so quit
+         RETURN
+      ENDIF
+
+! Is there an = sign?
+
+      EQUAL_SIGN = 'N'
+      DO I=1,CC_ENTRY_LEN
+         IF (CARD(I:I) == '=') THEN
+            EQUAL_SIGN = 'Y'
+            EXIT
+         ENDIF
+      ENDDO
+
+      JERR = 0
+
+! There should be no problem finding the 'E' in SUBCASE, subr LOADC wouldn't have called this subr otherwise
+
+      IF (EQUAL_SIGN == 'Y') THEN
+         CALL CSHIFT ( CARD, '=', CARD1, ECOL, IERR )
+      ELSE
+         CALL CSHIFT ( CARD, 'E', CARD1, ECOL, IERR )
+      ENDIF
+      IF (IERR == 0) THEN
+         READ(CARD1,'(I8)') SUBCASE_NUM
+         DO I=1,NSUB-1
+            IF (SUBCASE_NUM == SCNUM(I)) THEN
+               FATAL_ERR = FATAL_ERR + 1
+               JERR = JERR + 1
+               WRITE(ERR,1277) SUBCASE_NUM
+               WRITE(F06,1277) SUBCASE_NUM
+               EXIT
+            ENDIF
+         ENDDO
+         IF (JERR == 0) THEN
+            SCNUM(NSUB) = SUBCASE_NUM
+         ENDIF
+      ENDIF
+
+
+
+      RETURN
+
+! **********************************************************************************************************************************
+ 1277 FORMAT(' *ERROR  1277: SUBCASE NUMBER ',I8,' IS A DUPLICATE SUBCASE NUMBER')
+
+ 1279 FORMAT(' *ERROR  1279: PROGRAMMING ERROR IN SUBROUTINE ',A                                                                   &
+                    ,/,14X,' TOO MANY SUBCASES; LIMIT = ',I8)
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE CC_SUBC
+
+   END MODULE CASE_CONTROL_SETS
