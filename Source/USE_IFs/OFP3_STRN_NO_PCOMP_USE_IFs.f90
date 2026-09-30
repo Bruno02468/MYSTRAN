@@ -30,7 +30,7 @@
       USE OURTIM_Interface
       USE IS_ELEM_PCOMP_PROPS_Interface
       USE EMG_Interface
-      USE ELMDIS_Interface
+      USE RESULT_COORDINATES, ONLY    :  ELMDIS
       USE ELEM_STRE_STRN_ARRAYS_Interface
       USE POLYNOM_FIT_STRE_STRN_Interface
       USE CALC_ELEM_STRAINS_Interface

@@ -37,9 +37,8 @@
       USE EMG_Interface
       USE ELEM_TRANSFORM_LBG_Interface
       USE TDOF_COL_NUM_Interface
-      USE ELMDIS_Interface
+      USE RESULT_COORDINATES, ONLY    :  ELMDIS, TRANSFORM_NODE_FORCES
       USE CALC_ELEM_NODE_FORCES_Interface
-      USE TRANSFORM_NODE_FORCES_Interface
       USE COUNTER_INIT_Interface
       USE COUNTER_PROGRESS_Interface
 

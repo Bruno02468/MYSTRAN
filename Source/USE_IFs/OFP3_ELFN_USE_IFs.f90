@@ -29,9 +29,8 @@
 
       USE OURTIM_Interface
       USE EMG_Interface
-      USE ELMDIS_Interface
+      USE RESULT_COORDINATES, ONLY    :  ELMDIS, TRANSFORM_NODE_FORCES
       USE CALC_ELEM_NODE_FORCES_Interface
-      USE TRANSFORM_NODE_FORCES_Interface
       USE ELMOUT_Interface
       USE OUTA_HERE_Interface
       USE GET_GRID_NUM_COMPS_Interface

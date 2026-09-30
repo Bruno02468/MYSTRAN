@@ -29,7 +29,7 @@
 
       USE OURTIM_Interface
       USE EMG_Interface
-      USE ELMDIS_Interface
+      USE RESULT_COORDINATES, ONLY    :  ELMDIS
       USE CALC_ELEM_NODE_FORCES_Interface
       USE OUTA_HERE_Interface
       USE ELEM_STRE_STRN_ARRAYS_Interface

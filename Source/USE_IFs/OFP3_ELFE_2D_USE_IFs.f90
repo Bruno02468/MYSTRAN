@@ -30,7 +30,7 @@
       USE OURTIM_Interface
       USE is_elem_pcomp_props_Interface
       USE EMG_Interface
-      USE ELMDIS_Interface
+      USE RESULT_COORDINATES, ONLY    :  ELMDIS
       USE ELEM_STRE_STRN_ARRAYS_Interface
       USE SHELL_ENGR_FORCE_OGEL_Interface
       USE CHK_OGEL_ZEROS_Interface

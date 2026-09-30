@@ -46,6 +46,7 @@
                                          SHELL_AALP, SHELL_A, SHELL_PROP_ALP, TREF, TYPE, XEB, XEL, ELGP, FCONV, STRESS, KED,      &
                                          NUM_EMG_FATAL_ERRS
       USE DEBUG_PARAMETERS, ONLY      :  DEBUG
+      USE RESULT_COORDINATES, ONLY     :  ELMDIS
 
       USE TMEM1_USE_IFs
 

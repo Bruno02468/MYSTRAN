@@ -31,8 +31,7 @@
       USE IS_ELEM_PCOMP_PROPS_Interface
       USE GET_ELEM_NUM_PLIES_Interface
       USE EMG_Interface
-      USE ELMDIS_Interface
-      USE ELMDIS_PLY_Interface
+      USE RESULT_COORDINATES, ONLY    :  ELMDIS, ELMDIS_PLY
       USE SUSER1_Interface
       USE ELEM_STRE_STRN_ARRAYS_Interface
       USE ROT_COMP_ELEM_AXES_Interface

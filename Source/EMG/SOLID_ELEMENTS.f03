@@ -26,6 +26,8 @@
 
    MODULE SOLID_ELEMENTS
 
+   USE RESULT_COORDINATES, ONLY: ELMDIS
+
    USE QUADRATURE, ONLY          :  ORDER_GAUSS, ORDER_TRIA, ORDER_TETRA
    USE SHAPE_FUNCTIONS_3D, ONLY  :  SHP3DH, SHP3DP, SHP3DT
    USE JACOBIAN, ONLY             :  JAC2D, JAC3D
@@ -63,7 +65,7 @@
                                          NUM_EMG_FATAL_ERRS, PLOAD4_3D_DATA, PPE, PRESS, PTE, RHO, SE1, SE2, STE1, STRESS, TREF,   &
                                          TYPE, XEL
       USE OUTA_HERE_Interface
-      USE ELMDIS_Interface
+      USE RESULT_COORDINATES, ONLY    :  ELMDIS
       USE ELEM_STRE_STRN_ARRAYS_Interface
       USE EXPAND_MASS_DOFS_Interface
 
@@ -1068,7 +1070,6 @@
 
       USE MATMULT_FFF_Interface
       USE MATMULT_FFF_T_Interface
-      USE ELMDIS_Interface
       USE ELEM_STRE_STRN_ARRAYS_Interface
       USE EXPAND_MASS_DOFS_Interface
 
@@ -1649,7 +1650,6 @@ opt234:IF ((OPT(2) == 'Y') .OR. (OPT(3) == 'Y') .OR. (OPT(4) == 'Y') .OR. (OPT(6
 
       USE MATMULT_FFF_Interface
       USE MATMULT_FFF_T_Interface
-      USE ELMDIS_Interface
       USE ELEM_STRE_STRN_ARRAYS_Interface
       USE EXPAND_MASS_DOFS_Interface
 
