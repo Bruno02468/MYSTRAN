@@ -29,7 +29,7 @@
 
       USE OURTIM_Interface
       USE ORDER_TETRA_Interface
-      USE SHP3DT_Interface
+      USE SHAPE_FUNCTIONS_3D, ONLY    :  SHP3DT
       USE JAC3D_Interface
       USE MATMULT_FFF_Interface
       USE BMATRIX_3D, ONLY            :  B3D_ISOPARAMETRIC
