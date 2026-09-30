@@ -27,9 +27,7 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE BUILD_KGGD_FROM_UG
 
-      USE ESP0_Interface
-      USE ESP_Interface
-      USE SPARSE_KGGD_Interface
+      USE STIFFNESS_MATRIX_ASSEMBLY, ONLY:  ESP0, ESP, SPARSE_KGGD
       USE ALLOCATE_STF_ARRAYS_Interface
       USE DEALLOCATE_STF_ARRAYS_Interface
       USE DEALLOCATE_SPARSE_MAT_Interface
