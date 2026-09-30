@@ -54,7 +54,7 @@
       USE NET_CG_LOADS_LTM_Interface
       USE MERGE_LTM_Interface
       USE GET_SPARSE_CRS_COL_Interface
-      USE CALC_CB_MEFM_MPF_Interface
+      USE CB_EFFECTIVE_PROPERTIES, ONLY:  CALC_CB_MEFM_MPF
       USE OUTPUT4_PROC_Interface
       USE WRITE_USERIN_BD_CARDS_Interface
       USE DEALLOCATE_EIGEN1_MAT_Interface

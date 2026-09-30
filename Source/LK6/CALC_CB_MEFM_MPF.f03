@@ -24,6 +24,16 @@
 
 ! End MIT license text.
 
+   MODULE CB_EFFECTIVE_PROPERTIES
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: CALC_CB_MEFM_MPF
+
+   CONTAINS
+
       SUBROUTINE CALC_CB_MEFM_MPF
 
 ! Calculates the modal participation factors and modal mass via the technique described in my document MPF.doc:
@@ -50,7 +60,10 @@
       USE SCRATCH_MATRICES, ONLY      :  I_CRS1, J_CRS1, CRS1
       USE EIGEN_MATRICES_1, ONLY      :  EIGEN_VEC, GEN_MASS, MEFFMASS, MPFACTOR_NR, MPFACTOR_N6
 
-      USE CALC_CB_MEFM_MPF_USE_IFs
+      USE ALLOCATE_EIGEN1_MAT_Interface
+      USE SPARSE_CRS_TO_FULL_Interface
+      USE MATMULT_FFF_Interface
+      USE MATMULT_FFF_T_Interface
 
       IMPLICIT NONE
 
@@ -133,3 +146,5 @@
 ! **********************************************************************************************************************************
 
       END SUBROUTINE CALC_CB_MEFM_MPF
+
+   END MODULE CB_EFFECTIVE_PROPERTIES
