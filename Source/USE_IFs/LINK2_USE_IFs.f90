@@ -38,7 +38,7 @@
       USE REDUCE_N_FS_Interface
       USE REDUCE_F_AO_Interface
       USE WRITE_MATRIX_1_Interface
-      USE REDUCE_A_LR_Interface
+      USE REDUCTION_A_TO_L, ONLY      :  REDUCE_A_LR
       USE DEALLOCATE_RBGLOBAL_Interface
       USE OUTPUT4_PROC_Interface
       USE WRITE_USERIN_BD_CARDS_Interface

@@ -24,6 +24,16 @@
 
 ! End MIT license text.
 
+   MODULE REDUCTION_A_TO_L
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: REDUCE_A_LR
+
+   CONTAINS
+
       SUBROUTINE REDUCE_A_LR
 
 ! Call routines to reduce stiffness, mass, loads from A-set to L, R-sets
@@ -50,7 +60,16 @@
       USE OUTPUT4_MATRICES, ONLY      :  ACT_OU4_MYSTRAN_NAMES, NUM_OU4_REQUESTS
       USE DEBUG_PARAMETERS
 
-      USE REDUCE_A_LR_USE_IFs
+      USE OURTIM_Interface
+      USE PARTITION_VEC_Interface
+      USE ALLOCATE_SPARSE_MAT_Interface
+      USE DEALLOCATE_SPARSE_MAT_Interface
+      USE WRITE_SPARSE_CRS_Interface
+      USE GET_MATRIX_DIAG_STATS_Interface
+      USE ALLOCATE_RBGLOBAL_Interface
+      USE TDOF_COL_NUM_Interface
+      USE STIFF_MAT_EQUIL_CHK_Interface
+      USE DEALLOCATE_RBGLOBAL_Interface
 
       IMPLICIT NONE
 
@@ -495,3 +514,372 @@
 ! **********************************************************************************************************************************
 
       END SUBROUTINE REDUCE_A_LR
+
+
+      SUBROUTINE REDUCE_KAAD_TO_KLLD ( PART_VEC_A_LR )
+
+! Call routines to reduce the KAAD differential stiffness matrix from the A-set to the L, R-sets
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06, L2K, L2L, LINK2K, LINK2L, L2K_MSG, L2L_MSG
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM, FATAL_ERR, NDOFA, NDOFL, NDOFR, NTERM_KAAD, NTERM_KLLD, NTERM_KRLD,         &
+                                         NTERM_KRRD,  SOL_NAME
+      USE TIMDAT, ONLY                :  HOUR, MINUTE, SEC, SFRAC, TSEC
+      USE SPARSE_MATRICES, ONLY       :  I_KAAD, J_KAAD, KAAD, I_KLLD, J_KLLD, KLLD, I_KRLD, J_KRLD, KRLD, I_KRRD, J_KRRD, KRRD,   &
+                                         SYM_KAAD, SYM_KLLD, SYM_KRLD, SYM_KRRD
+      USE SCRATCH_MATRICES
+
+      USE PARTITION_SS_NTERM_Interface
+      USE ALLOCATE_SPARSE_MAT_Interface
+      USE PARTITION_SS_Interface
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'REDUCE_KAAD_TO_KLLD'
+
+      INTEGER(LONG), INTENT(IN)       :: PART_VEC_A_LR(NDOFA)! Partitioning vector (F set into A and O sets)
+      INTEGER(LONG)                   :: KLLD_ROW_MAX_TERMS   ! Output from subr PARTITION_SIZE (max terms in any row of matrix)
+      INTEGER(LONG)                   :: KRLD_ROW_MAX_TERMS   ! Output from subr PARTITION_SIZE (max terms in any row of matrix)
+      INTEGER(LONG)                   :: KRRD_ROW_MAX_TERMS   ! Output from subr PARTITION_SIZE (max terms in any row of matrix)
+      INTEGER(LONG), PARAMETER        :: NUM1        = 1     ! Used in subr's that partition matrices
+      INTEGER(LONG), PARAMETER        :: NUM2        = 2     ! Used in subr's that partition matrices
+
+
+
+
+! **********************************************************************************************************************************
+! Partition KLLD from KAAD (This is KLLD before reduction, or KLLD(bar) )
+
+      IF (NDOFL > 0) THEN
+
+         CALL PARTITION_SS_NTERM ( 'KAAD', NTERM_KAAD, NDOFA, NDOFA, SYM_KAAD, I_KAAD, J_KAAD,      PART_VEC_A_LR, PART_VEC_A_LR,  &
+                                    NUM1, NUM1, KLLD_ROW_MAX_TERMS, 'KLLD', NTERM_KLLD, SYM_KLLD )
+
+         CALL ALLOCATE_SPARSE_MAT ( 'KLLD', NDOFL, NTERM_KLLD, SUBR_NAME )
+
+         IF (NTERM_KLLD > 0) THEN
+            CALL PARTITION_SS ( 'KAAD', NTERM_KAAD, NDOFA, NDOFA, SYM_KAAD, I_KAAD, J_KAAD, KAAD, PART_VEC_A_LR, PART_VEC_A_LR,    &
+                                 NUM1, NUM1, KLLD_ROW_MAX_TERMS, 'KLLD', NTERM_KLLD, NDOFL, SYM_KLLD, I_KLLD, J_KLLD, KLLD )
+         ENDIF
+
+      ENDIF
+
+! Partition KRLD from KAAD
+
+      IF ((NDOFL > 0) .AND. (NDOFR > 0)) THEN
+
+         CALL PARTITION_SS_NTERM ( 'KAAD', NTERM_KAAD, NDOFA, NDOFA, SYM_KAAD, I_KAAD, J_KAAD,      PART_VEC_A_LR, PART_VEC_A_LR,  &
+                                    NUM2, NUM1, KRLD_ROW_MAX_TERMS, 'KRLD', NTERM_KRLD, SYM_KRLD )
+
+         CALL ALLOCATE_SPARSE_MAT ( 'KRLD', NDOFR, NTERM_KRLD, SUBR_NAME )
+
+         IF (NTERM_KRLD > 0) THEN
+            CALL PARTITION_SS ( 'KAAD', NTERM_KAAD, NDOFA, NDOFA, SYM_KAAD, I_KAAD, J_KAAD, KAAD, PART_VEC_A_LR, PART_VEC_A_LR,    &
+                                 NUM2, NUM1, KRLD_ROW_MAX_TERMS, 'KRLD', NTERM_KRLD, NDOFR, SYM_KRLD, I_KRLD, J_KRLD, KRLD )
+         ENDIF
+
+      ENDIF
+
+! Partition KRRD from KAAD
+
+      IF (NDOFR > 0) THEN
+
+         CALL PARTITION_SS_NTERM ( 'KAAD', NTERM_KAAD, NDOFA, NDOFA, SYM_KAAD, I_KAAD, J_KAAD,      PART_VEC_A_LR, PART_VEC_A_LR,  &
+                                    NUM2, NUM2, KRRD_ROW_MAX_TERMS, 'KRRD', NTERM_KRRD, SYM_KRRD )
+
+         CALL ALLOCATE_SPARSE_MAT ( 'KRRD', NDOFR, NTERM_KRRD, SUBR_NAME )
+
+         IF (NTERM_KRRD > 0) THEN
+            CALL PARTITION_SS ( 'KAAD', NTERM_KAAD, NDOFA, NDOFA, SYM_KAAD, I_KAAD, J_KAAD, KAAD, PART_VEC_A_LR, PART_VEC_A_LR,    &
+                                 NUM2, NUM2, KRRD_ROW_MAX_TERMS, 'KRRD', NTERM_KRRD, NDOFR, SYM_KRRD, I_KRRD, J_KRRD, KRRD )
+         ENDIF
+
+      ENDIF
+
+
+
+      RETURN
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE REDUCE_KAAD_TO_KLLD
+
+
+      SUBROUTINE REDUCE_KAA_TO_KLL ( PART_VEC_A_LR )
+
+! Call routines to reduce the KAA linear stiffness matrix from the A-set to the L, R-sets
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06, L2K, L2L, LINK2K, LINK2L, L2K_MSG, L2L_MSG
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM, FATAL_ERR, NDOFA, NDOFL, NDOFR, NTERM_KAA, NTERM_KLL, NTERM_KRL, NTERM_KRR, &
+                                         SOL_NAME
+      USE TIMDAT, ONLY                :  HOUR, MINUTE, SEC, SFRAC, TSEC
+      USE SPARSE_MATRICES, ONLY       :  I_KAA, J_KAA, KAA, I_KLL, J_KLL, KLL, I_KRL, J_KRL, KRL, I_KRR, J_KRR, KRR,               &
+                                         SYM_KAA, SYM_KLL, SYM_KRL, SYM_KRR
+      USE SCRATCH_MATRICES
+
+      USE PARTITION_SS_NTERM_Interface
+      USE ALLOCATE_SPARSE_MAT_Interface
+      USE PARTITION_SS_Interface
+      USE WRITE_MATRIX_1_Interface
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'REDUCE_KAA_TO_KLL'
+
+      INTEGER(LONG), INTENT(IN)       :: PART_VEC_A_LR(NDOFA)! Partitioning vector (F set into A and O sets)
+      INTEGER(LONG)                   :: KLL_ROW_MAX_TERMS   ! Output from subr PARTITION_SIZE (max terms in any row of matrix)
+      INTEGER(LONG)                   :: KRL_ROW_MAX_TERMS   ! Output from subr PARTITION_SIZE (max terms in any row of matrix)
+      INTEGER(LONG)                   :: KRR_ROW_MAX_TERMS   ! Output from subr PARTITION_SIZE (max terms in any row of matrix)
+      INTEGER(LONG), PARAMETER        :: NUM1        = 1     ! Used in subr's that partition matrices
+      INTEGER(LONG), PARAMETER        :: NUM2        = 2     ! Used in subr's that partition matrices
+
+
+
+
+! **********************************************************************************************************************************
+! Partition KLL from KAA (This is KLL before reduction, or KLL(bar) )
+
+      IF (NDOFL > 0) THEN
+
+         CALL PARTITION_SS_NTERM ( 'KAA', NTERM_KAA, NDOFA, NDOFA, SYM_KAA, I_KAA, J_KAA,      PART_VEC_A_LR, PART_VEC_A_LR,       &
+                                    NUM1, NUM1, KLL_ROW_MAX_TERMS, 'KLL', NTERM_KLL, SYM_KLL )
+
+         CALL ALLOCATE_SPARSE_MAT ( 'KLL', NDOFL, NTERM_KLL, SUBR_NAME )
+
+         IF (NTERM_KLL > 0) THEN
+            CALL PARTITION_SS ( 'KAA', NTERM_KAA, NDOFA, NDOFA, SYM_KAA, I_KAA, J_KAA, KAA, PART_VEC_A_LR, PART_VEC_A_LR,          &
+                                 NUM1, NUM1, KLL_ROW_MAX_TERMS, 'KLL', NTERM_KLL, NDOFL, SYM_KLL, I_KLL, J_KLL, KLL )
+         ENDIF
+
+      ENDIF
+
+! Partition KRL from KAA
+
+      IF ((NDOFL > 0) .AND. (NDOFR > 0)) THEN
+
+         CALL PARTITION_SS_NTERM ( 'KAA', NTERM_KAA, NDOFA, NDOFA, SYM_KAA, I_KAA, J_KAA,      PART_VEC_A_LR, PART_VEC_A_LR,       &
+                                    NUM2, NUM1, KRL_ROW_MAX_TERMS, 'KRL', NTERM_KRL, SYM_KRL )
+
+         CALL ALLOCATE_SPARSE_MAT ( 'KRL', NDOFR, NTERM_KRL, SUBR_NAME )
+
+         IF (NTERM_KRL > 0) THEN
+            CALL PARTITION_SS ( 'KAA', NTERM_KAA, NDOFA, NDOFA, SYM_KAA, I_KAA, J_KAA, KAA, PART_VEC_A_LR, PART_VEC_A_LR,          &
+                                 NUM2, NUM1, KRL_ROW_MAX_TERMS, 'KRL', NTERM_KRL, NDOFR, SYM_KRL, I_KRL, J_KRL, KRL )
+         ENDIF
+
+      ENDIF
+
+! Partition KRR from KAA
+
+      IF (NDOFR > 0) THEN
+
+         CALL PARTITION_SS_NTERM ( 'KAA', NTERM_KAA, NDOFA, NDOFA, SYM_KAA, I_KAA, J_KAA,      PART_VEC_A_LR, PART_VEC_A_LR,       &
+                                    NUM2, NUM2, KRR_ROW_MAX_TERMS, 'KRR', NTERM_KRR, SYM_KRR )
+
+         CALL ALLOCATE_SPARSE_MAT ( 'KRR', NDOFR, NTERM_KRR, SUBR_NAME )
+
+         IF (NTERM_KRR > 0) THEN
+            CALL PARTITION_SS ( 'KAA', NTERM_KAA, NDOFA, NDOFA, SYM_KAA, I_KAA, J_KAA, KAA, PART_VEC_A_LR, PART_VEC_A_LR,          &
+                                 NUM2, NUM2, KRR_ROW_MAX_TERMS, 'KRR', NTERM_KRR, NDOFR, SYM_KRR, I_KRR, J_KRR, KRR )
+         ENDIF
+
+      ENDIF
+
+! Write matrices needed for Craig-Bampton, if this is a CB soln
+
+      IF (SOL_NAME(1:12) == 'GEN CB MODEL') THEN
+         CALL WRITE_MATRIX_1 ( LINK2K, L2K, 'Y', 'KEEP', L2K_MSG, 'KRL', NTERM_KRL, NDOFR, I_KRL, J_KRL, KRL )
+         CALL WRITE_MATRIX_1 ( LINK2L, L2L, 'Y', 'KEEP', L2L_MSG, 'KRR', NTERM_KRR, NDOFR, I_KRR, J_KRR, KRR )
+      ENDIF
+
+
+
+      RETURN
+
+! **********************************************************************************************************************************
+ 2092 FORMAT(4X,A44,20X,I2,':',I2,':',I2,'.',I3)
+
+ 2400 FORMAT(' *ERROR  2400: PROGRAMMING ERROR IN SUBROUTINE ',A                                                                   &
+                    ,/,14X,' THERE IS AN O-SET BUT GUYAN REDUCTION MATRIX GOA HAS ',I12,' TERMS IN IT. MUST BE > 0')
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE REDUCE_KAA_TO_KLL
+
+
+      SUBROUTINE REDUCE_MAA_TO_MLL ( PART_VEC_A_LR )
+
+! Call routines to reduce the MAA mass matrix from the A-set to the L, R-sets. See Appendix B to the MYSTRAN User's Reference Manual
+! Reference Manual for the derivation of the reduction equations.
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06, L2M, L2N, LINK2M, LINK2N, L2M_MSG, L2N_MSG
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM, FATAL_ERR, NDOFA, NDOFL, NDOFR, NTERM_MAA, NTERM_MLL, NTERM_MRL, NTERM_MRR, &
+                                         SOL_NAME
+      USE PARAMS, ONLY                :  EPSIL
+      USE TIMDAT, ONLY                :  TSEC
+      USE SPARSE_MATRICES, ONLY       :  I_MAA, J_MAA, MAA, I_MLL, J_MLL, MLL, I_MRL, J_MRL, MRL, I_MRR, J_MRR, MRR,               &
+                                         SYM_MAA, SYM_MLL, SYM_MRL, SYM_MRR
+      USE SCRATCH_MATRICES
+
+      USE PARTITION_SS_NTERM_Interface
+      USE ALLOCATE_SPARSE_MAT_Interface
+      USE PARTITION_SS_Interface
+      USE WRITE_MATRIX_1_Interface
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'REDUCE_MAA_TO_MLL'
+
+      INTEGER(LONG), INTENT(IN)       :: PART_VEC_A_LR(NDOFA)! Partitioning vector (F set into A and O sets)
+      INTEGER(LONG)                   :: MLL_ROW_MAX_TERMS   ! Output from subr PARTITION_SIZE (max terms in any row of matrix)
+      INTEGER(LONG)                   :: MRL_ROW_MAX_TERMS   ! Output from subr PARTITION_SIZE (max terms in any row of matrix)
+      INTEGER(LONG)                   :: MRR_ROW_MAX_TERMS   ! Output from subr PARTITION_SIZE (max terms in any row of matrix)
+      INTEGER(LONG), PARAMETER        :: NUM1        = 1     ! Used in subr's that partition matrices
+      INTEGER(LONG), PARAMETER        :: NUM2        = 2     ! Used in subr's that partition matrices
+
+
+
+
+! **********************************************************************************************************************************
+! Partition MLL from MAA
+
+      IF (NDOFL > 0) THEN
+
+         CALL PARTITION_SS_NTERM ( 'MAA', NTERM_MAA, NDOFA, NDOFA, SYM_MAA, I_MAA, J_MAA,      PART_VEC_A_LR, PART_VEC_A_LR,       &
+                                    NUM1, NUM1, MLL_ROW_MAX_TERMS, 'MLL', NTERM_MLL, SYM_MLL )
+
+         CALL ALLOCATE_SPARSE_MAT ( 'MLL', NDOFL, NTERM_MLL, SUBR_NAME )
+
+         IF (NTERM_MLL > 0) THEN
+            CALL PARTITION_SS ( 'MAA', NTERM_MAA, NDOFA, NDOFA, SYM_MAA, I_MAA, J_MAA, MAA, PART_VEC_A_LR, PART_VEC_A_LR,          &
+                                 NUM1, NUM1, MLL_ROW_MAX_TERMS, 'MLL', NTERM_MLL, NDOFL, SYM_MLL, I_MLL, J_MLL, MLL )
+         ENDIF
+
+      ENDIF
+
+! Partition MRL from MAA
+
+      IF ((NDOFL > 0) .AND. (NDOFR > 0)) THEN
+
+         CALL PARTITION_SS_NTERM ( 'MAA', NTERM_MAA, NDOFA, NDOFA, SYM_MAA, I_MAA, J_MAA,      PART_VEC_A_LR, PART_VEC_A_LR,       &
+                                    NUM2, NUM1, MRL_ROW_MAX_TERMS, 'MRL', NTERM_MRL, SYM_MRL )
+
+         CALL ALLOCATE_SPARSE_MAT ( 'MRL', NDOFR, NTERM_MRL, SUBR_NAME )
+
+         IF (NTERM_MRL > 0) THEN
+            CALL PARTITION_SS ( 'MAA', NTERM_MAA, NDOFA, NDOFA, SYM_MAA, I_MAA, J_MAA, MAA, PART_VEC_A_LR, PART_VEC_A_LR,          &
+                                 NUM2, NUM1, MRL_ROW_MAX_TERMS, 'MRL', NTERM_MRL, NDOFR, SYM_MRL, I_MRL, J_MRL, MRL )
+         ENDIF
+
+      ENDIF
+
+! Partition MRR from MAA
+
+      IF (NDOFR > 0) THEN
+
+         CALL PARTITION_SS_NTERM ( 'MAA', NTERM_MAA, NDOFA, NDOFA, SYM_MAA, I_MAA, J_MAA,      PART_VEC_A_LR, PART_VEC_A_LR,       &
+                                    NUM2, NUM2, MRR_ROW_MAX_TERMS, 'MRR', NTERM_MRR, SYM_MRR )
+
+         CALL ALLOCATE_SPARSE_MAT ( 'MRR', NDOFR, NTERM_MRR, SUBR_NAME )
+
+         IF (NTERM_MRR > 0) THEN
+            CALL PARTITION_SS ( 'MAA', NTERM_MAA, NDOFA, NDOFA, SYM_MAA, I_MAA, J_MAA, MAA, PART_VEC_A_LR, PART_VEC_A_LR,          &
+                                 NUM2, NUM2, MRR_ROW_MAX_TERMS, 'MRR', NTERM_MRR, NDOFR, SYM_MRR, I_MRR, J_MRR, MRR )
+         ENDIF
+
+      ENDIF
+
+! Write matrices needed for Craig-Bampton, if this is a CB soln
+
+      IF (SOL_NAME(1:12) == 'GEN CB MODEL') THEN
+         CALL WRITE_MATRIX_1 ( LINK2M, L2M, 'Y', 'KEEP', L2M_MSG, 'MRL', NTERM_MRL, NDOFR, I_MRL, J_MRL, MRL )
+         CALL WRITE_MATRIX_1 ( LINK2N, L2N, 'Y', 'KEEP', L2N_MSG, 'MRR', NTERM_MRR, NDOFR, I_MRR, J_MRR, MRR )
+      ENDIF
+
+
+
+      RETURN
+
+! **********************************************************************************************************************************
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE REDUCE_MAA_TO_MLL
+
+
+      SUBROUTINE REDUCE_PA_TO_PL ( PART_VEC_A_LR, PART_VEC_SUB )
+
+! Call routines to reduce the PA grid point load matrix from the A-set to the L, R-sets. See Appendix B to the MYSTRAN User's
+! Reference Manual for the derivation of the reduction equations.
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM, FATAL_ERR, NDOFA, NDOFL, NDOFR, NSUB, NTERM_GOA, NTERM_PA, NTERM_PL, NTERM_PR
+      USE TIMDAT, ONLY                :  TSEC
+      USE CONSTANTS_1, ONLY           :  ONE
+      USE SPARSE_MATRICES, ONLY       :  I_PA, J_PA, PA, I_PL, J_PL, PL, I_PR, J_PR, PR, I_GOA, J_GOA, GOA, I_GOAt, J_GOAt, GOAt
+      USE SPARSE_MATRICES, ONLY       :  SYM_PA, SYM_PL, SYM_PR
+
+      USE PARTITION_SS_NTERM_Interface
+      USE ALLOCATE_SPARSE_MAT_Interface
+      USE PARTITION_SS_Interface
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)) :: SUBR_NAME = 'REDUCE_PA_TO_PL'
+
+      INTEGER(LONG), INTENT(IN)        :: PART_VEC_A_LR(NDOFA)! Partitioning vector (F set into A and O sets)
+      INTEGER(LONG), INTENT(IN)        :: PART_VEC_SUB(NSUB)  ! Partitioning vector (1's for all subcases)
+      INTEGER(LONG), PARAMETER         :: NUM1        = 1     ! Used in subr's that partition matrices
+      INTEGER(LONG), PARAMETER         :: NUM2        = 2     ! Used in subr's that partition matrices
+      INTEGER(LONG)                    :: PL_ROW_MAX_TERMS    ! Output from subr PARTITION_SIZE (max terms in any row of matrix)
+      INTEGER(LONG)                    :: PR_ROW_MAX_TERMS    ! Output from subr PARTITION_SIZE (max terms in any row of matrix)
+
+
+
+
+! **********************************************************************************************************************************
+! Partition PL from PA
+
+      IF (NDOFL > 0) THEN
+
+         CALL PARTITION_SS_NTERM ( 'PA' , NTERM_PA , NDOFA, NSUB , SYM_PA , I_PA , J_PA      , PART_VEC_A_LR, PART_VEC_SUB,        &
+                                    NUM1, NUM1, PL_ROW_MAX_TERMS, 'PL', NTERM_PL, SYM_PL )
+
+         CALL ALLOCATE_SPARSE_MAT ( 'PL', NDOFL, NTERM_PL, SUBR_NAME )
+
+         IF (NTERM_PL  > 0) THEN
+            CALL PARTITION_SS ( 'PA' , NTERM_PA , NDOFA, NSUB , SYM_PA , I_PA , J_PA , PA , PART_VEC_A_LR, PART_VEC_SUB,           &
+                                 NUM1, NUM1, PL_ROW_MAX_TERMS, 'PL', NTERM_PL , NDOFL, SYM_PL, I_PL , J_PL , PL  )
+         ENDIF
+
+      ENDIF
+
+! Partition PR from PA
+
+      IF (NDOFR > 0) THEN
+
+         CALL PARTITION_SS_NTERM ( 'PA' , NTERM_PA , NDOFA, NSUB , SYM_PA , I_PA , J_PA ,      PART_VEC_A_LR, PART_VEC_SUB,        &
+                                    NUM2, NUM1, PR_ROW_MAX_TERMS, 'PR', NTERM_PR, SYM_PR )
+
+         CALL ALLOCATE_SPARSE_MAT ( 'PR', NDOFR, NTERM_PR, SUBR_NAME )
+
+         IF (NTERM_PR  > 0) THEN
+            CALL PARTITION_SS ( 'PA' , NTERM_PA , NDOFA, NSUB , SYM_PA , I_PA , J_PA , PA , PART_VEC_A_LR, PART_VEC_SUB,           &
+                                 NUM2, NUM1, PR_ROW_MAX_TERMS, 'PR', NTERM_PR , NDOFR, SYM_PR, I_PR , J_PR , PR  )
+         ENDIF
+
+      ENDIF
+
+
+
+      RETURN
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE REDUCE_PA_TO_PL
+
+
+   END MODULE REDUCTION_A_TO_L
