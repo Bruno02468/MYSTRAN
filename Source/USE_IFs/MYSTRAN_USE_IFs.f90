@@ -42,7 +42,7 @@
       USE READ_L1A_Interface
       USE LINK0_Interface
       USE LINK1_Interface
-      USE LINK2_Interface
+      USE LINK2_MOD, ONLY             :  LINK2
       USE LINK3_MOD, ONLY             :  LINK3
       USE LINK4_MOD, ONLY             :  LINK4
       USE LINK6_Interface
