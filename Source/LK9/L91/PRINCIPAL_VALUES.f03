@@ -24,6 +24,115 @@
 
 ! End MIT license text.
 
+   MODULE PRINCIPAL_VALUES
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: PRINCIPAL_STRESS_2D, PRINCIPAL_STRAIN_2D, PRINCIPAL_3D
+
+   CONTAINS
+
+      SUBROUTINE PRINCIPAL_STRESS_2D ( SX, SY, SXY, ANGLE, SMAJOR, SMINOR, SXYMAX, MEAN, VONMISES )
+
+! Calculates principal stresses for 2-D shell elems:
+
+      USE PENTIUM_II_KIND, ONLY       :  DOUBLE
+      USE CONSTANTS_1, ONLY           :  ZERO, QUARTER, HALF, TWO, CONV_RAD_DEG
+
+      IMPLICIT NONE
+
+      REAL(DOUBLE), INTENT(IN)        :: SX                 ! Normal x stress
+      REAL(DOUBLE), INTENT(IN)        :: SY                 ! Normal y stress
+      REAL(DOUBLE), INTENT(IN)        :: SXY                ! Shear stress
+      REAL(DOUBLE), INTENT(OUT)       :: ANGLE              ! Angle of principal stresses
+      REAL(DOUBLE), INTENT(OUT)       :: MEAN               ! Mean stresses
+      REAL(DOUBLE), INTENT(OUT)       :: SMAJOR             ! Major principal stress
+      REAL(DOUBLE), INTENT(OUT)       :: SMINOR             ! Minor principal stress
+      REAL(DOUBLE), INTENT(OUT)       :: SXYMAX             ! Max shear stress
+      REAL(DOUBLE), INTENT(OUT)       :: VONMISES           ! von Mises stress
+      REAL(DOUBLE)                    :: DENR               ! Denominator in arctan calculation of ANGLE
+      REAL(DOUBLE)                    :: SAVG               ! Average of SX and SY
+      REAL(DOUBLE)                    :: NUMR               ! Numerator in arctan calculation of ANGLE
+
+      INTRINSIC                       :: DATAN2, DSQRT
+
+
+
+! **********************************************************************************************************************************
+! Initialize outputs
+
+      ANGLE  = ZERO
+      SMINOR = ZERO
+      SXYMAX = ZERO
+
+! Calc outputs
+
+      DENR     = SX - SY
+      NUMR     = TWO*SXY
+
+! Calculate angle for principal axes.
+
+      ANGLE = (HALF*DATAN2(NUMR,DENR))*CONV_RAD_DEG
+
+! Calculate the principal stresses and max shear
+
+      SXYMAX = DSQRT(QUARTER*DENR*DENR + SXY*SXY)
+      SAVG   = HALF*(SX + SY)
+      SMAJOR = SAVG + SXYMAX
+      SMINOR = SAVG - SXYMAX
+
+! Calculate mean andvon Mises stress for 2D stress state
+
+      MEAN     = HALF*(SMAJOR + SMINOR)
+      VONMISES = DSQRT( SMAJOR*SMAJOR - SMAJOR*SMINOR + SMINOR*SMINOR)
+
+      RETURN
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE PRINCIPAL_STRESS_2D
+
+
+      SUBROUTINE PRINCIPAL_STRAIN_2D ( SX, SY, SXY, ANGLE, SMAJOR, SMINOR, SXYMAX, MEAN, VONMISES )
+
+! Calculates principal strains for 2-D shell elems:
+
+      USE PENTIUM_II_KIND, ONLY       :  DOUBLE
+      USE CONSTANTS_1, ONLY           :  HALF, CONV_RAD_DEG
+
+      IMPLICIT NONE
+
+      REAL(DOUBLE), INTENT(IN)        :: SX                 ! Normal x strain
+      REAL(DOUBLE), INTENT(IN)        :: SY                 ! Normal y strain
+      REAL(DOUBLE), INTENT(IN)        :: SXY                ! Shear strain
+      REAL(DOUBLE), INTENT(OUT)       :: ANGLE              ! Angle of principal strain
+      REAL(DOUBLE), INTENT(OUT)       :: MEAN               ! Mean strain
+      REAL(DOUBLE), INTENT(OUT)       :: SMAJOR             ! Major principal strain
+      REAL(DOUBLE), INTENT(OUT)       :: SMINOR             ! Minor principal strain
+      REAL(DOUBLE), INTENT(OUT)       :: SXYMAX             ! Max shear strain
+      REAL(DOUBLE), INTENT(OUT)       :: VONMISES           ! von Mises strain
+
+      INTRINSIC                       :: DATAN2, DSQRT
+
+
+! **********************************************************************************************************************************
+
+      ANGLE = (HALF*DATAN2(SXY,SX - SY))*CONV_RAD_DEG
+      SXYMAX = DSQRT((SX - SY)**2 + SXY**2)
+      MEAN   = HALF*(SX + SY)
+      SMAJOR = MEAN + SXYMAX / 2
+      SMINOR = MEAN - SXYMAX / 2
+      VONMISES = DSQRT(4.0 / 9.0 * (SX**2 + SY**2 -SX*SY) + 1.0/3.0 * SXY**2)
+
+      RETURN
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE PRINCIPAL_STRAIN_2D
+
+
       SUBROUTINE PRINCIPAL_3D ( STR, PRINCIPAL_STR, MEAN, VONMISES, SIG_OCT, TAU_OCT )
 
 ! Calculates principal stresses or stains in solid elems:
@@ -38,7 +147,7 @@
       USE CONSTANTS_1, ONLY           :  ZERO, HALF, TWO, THREE
       USE PARAMS, ONLY                :  SUPWARN
 
-      USE PRINCIPAL_3D_USE_IFs
+      USE OUTA_HERE_Interface
 
       IMPLICIT NONE
 
@@ -235,3 +344,5 @@
       END SUBROUTINE ROOTS_3D
 
       END SUBROUTINE PRINCIPAL_3D
+
+   END MODULE PRINCIPAL_VALUES
