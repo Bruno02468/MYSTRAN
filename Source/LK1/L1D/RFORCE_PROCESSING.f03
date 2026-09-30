@@ -24,6 +24,16 @@
 
 ! End MIT license text.
 
+   MODULE RFORCE_PROCESSING
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: RFORCE_PROC
+
+   CONTAINS
+
       SUBROUTINE RFORCE_PROC
 
 ! RFORCE load processor. Forces on grids for an RFORCE are:
@@ -106,7 +116,15 @@
       USE DOF_TABLES, ONLY            :  TDOF, TDOF_ROW_START
       USE MODEL_STUF, ONLY            :  CORD, GRID, GRID_ID, LOAD_FACS, LOAD_SIDS, RCORD, RGRID, SYS_LOAD, SUBLOD
 
-      USE RFORCE_PROC_USE_IFs
+      USE OUTA_HERE_Interface
+      USE READERR_Interface
+      USE GET_ARRAY_ROW_NUM_Interface
+      USE MATMULT_FFF_Interface
+      USE GEN_T0L_Interface
+      USE MATMULT_FFF_T_Interface
+      USE GET_GRID_6X6_MASS_Interface
+      USE TDOF_COL_NUM_Interface
+      USE CROSS_Interface
 
       IMPLICIT NONE
 
@@ -401,3 +419,5 @@ j_do_22: DO IRFORCE = 1,NRFORCE                            ! Process RFORCE card
 ! **********************************************************************************************************************************
 
       END SUBROUTINE RFORCE_PROC
+
+   END MODULE RFORCE_PROCESSING

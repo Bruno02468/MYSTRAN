@@ -24,6 +24,16 @@
 
 ! End MIT license text.
 
+   MODULE FORCE_MOM_PROCESSING
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: FORCE_MOM_PROC
+
+   CONTAINS
+
       SUBROUTINE FORCE_MOM_PROC
 
 ! Force/moment processor
@@ -93,7 +103,15 @@
       USE DOF_TABLES, ONLY            :  TDOF, TDOF_ROW_START
       USE MODEL_STUF, ONLY            :  LOAD_SIDS, LOAD_FACS, SYS_LOAD, SUBLOD, GRID, GRID_ID, CORD
 
-      USE FORCE_MOM_PROC_USE_IFs
+      USE OPNERR_Interface
+      USE FILE_CLOSE_Interface
+      USE OUTA_HERE_Interface
+      USE READERR_Interface
+      USE GET_ARRAY_ROW_NUM_Interface
+      USE GEN_T0L_Interface
+      USE MATMULT_FFF_Interface
+      USE MATMULT_FFF_T_Interface
+      USE TDOF_COL_NUM_Interface
 
       IMPLICIT NONE
 
@@ -417,3 +435,5 @@ k_do222:    DO K = COMP1,COMP2
 ! **********************************************************************************************************************************
 
       END SUBROUTINE FORCE_MOM_PROC
+
+   END MODULE FORCE_MOM_PROCESSING

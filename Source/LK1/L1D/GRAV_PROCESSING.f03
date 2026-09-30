@@ -24,6 +24,16 @@
 
 ! End MIT license text.
 
+   MODULE GRAV_PROCESSING
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: GRAV_PROC
+
+   CONTAINS
+
       SUBROUTINE GRAV_PROC
 
 ! Gravity load processor
@@ -96,7 +106,16 @@
       USE DOF_TABLES, ONLY            :  TDOF, TDOF_ROW_START
       USE MODEL_STUF, ONLY            :  CORD, GRID, GRID_ID, LOAD_FACS, LOAD_SIDS, RCORD, RGRID, SYS_LOAD, SUBLOD
 
-      USE GRAV_PROC_USE_IFs
+      USE OPNERR_Interface
+      USE FILE_CLOSE_Interface
+      USE OUTA_HERE_Interface
+      USE READERR_Interface
+      USE GET_ARRAY_ROW_NUM_Interface
+      USE MATMULT_FFF_Interface
+      USE GEN_T0L_Interface
+      USE MATMULT_FFF_T_Interface
+      USE GET_GRID_6X6_MASS_Interface
+      USE TDOF_COL_NUM_Interface
 
       IMPLICIT NONE
 
@@ -469,3 +488,5 @@ l_do_2214:     DO L = 1,6
 ! **********************************************************************************************************************************
 
       END SUBROUTINE GRAV_PROC
+
+   END MODULE GRAV_PROCESSING

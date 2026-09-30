@@ -33,11 +33,11 @@
       USE OUTA_HERE_Interface
       USE ALLOCATE_MODEL_STUF_Interface
       USE FILE_OPEN_Interface
-      USE MPC_PROC_Interface
+      USE MPC_PROCESSING, ONLY        :  MPC_PROC
       USE FILE_CLOSE_Interface
-      USE RIGID_ELEM_PROC_Interface
+      USE RIGID_ELEMENT_PROCESSING, ONLY:  RIGID_ELEM_PROC
       USE SPARSE_RMG_Interface
-      USE FORCE_MOM_PROC_Interface
+      USE FORCE_MOM_PROCESSING, ONLY  :  FORCE_MOM_PROC
       USE EPTL_Interface
       USE EMP0_Interface
       USE ALLOCATE_EMS_ARRAYS_Interface
@@ -48,8 +48,8 @@
       USE DEALLOCATE_EMS_ARRAYS_Interface
       USE DEALLOCATE_L1_MGG_Interface
       USE DEALLOCATE_MODEL_STUF_Interface
-      USE GRAV_PROC_Interface
-      USE RFORCE_PROC_Interface
+      USE GRAV_PROCESSING, ONLY       :  GRAV_PROC
+      USE RFORCE_PROCESSING, ONLY     :  RFORCE_PROC
       USE SLOAD_PROC_Interface
       USE SPARSE_PG_Interface
       USE ESP0_Interface

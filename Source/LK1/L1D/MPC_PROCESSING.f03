@@ -24,6 +24,16 @@
 
 ! End MIT license text.
 
+   MODULE MPC_PROCESSING
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: MPC_PROC
+
+   CONTAINS
+
       SUBROUTINE MPC_PROC
 
 ! Processes MPC equations to get terms for the RMG constraint matrix
@@ -36,7 +46,11 @@
       USE DOF_TABLES, ONLY            :  TDOF, TDOF_ROW_START
       USE NONLINEAR_PARAMS, ONLY      :  LOAD_ISTEP
 
-      USE MPC_PROC_USE_IFs
+      USE TDOF_COL_NUM_Interface
+      USE READERR_Interface
+      USE OUTA_HERE_Interface
+      USE GET_ARRAY_ROW_NUM_Interface
+      USE DEALLOCATE_MODEL_STUF_Interface
 
       IMPLICIT NONE
 
@@ -228,3 +242,5 @@ j_do3:   DO J=1,NUM_MPCSIDS
 ! **********************************************************************************************************************************
 
       END SUBROUTINE MPC_PROC
+
+   END MODULE MPC_PROCESSING
