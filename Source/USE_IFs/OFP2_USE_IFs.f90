@@ -29,7 +29,7 @@
 
       USE OURTIM_Interface
       USE ALLOCATE_COL_VEC_Interface
-      USE TDOF_COL_NUM_Interface
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
       USE MATMULT_SFF_Interface
       USE DEALLOCATE_COL_VEC_Interface
       USE GET_ARRAY_ROW_NUM_Interface

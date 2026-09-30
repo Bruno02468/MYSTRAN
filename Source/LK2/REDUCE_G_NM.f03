@@ -72,7 +72,7 @@
       USE WRITE_SPARSE_CRS_Interface
       USE GET_MATRIX_DIAG_STATS_Interface
       USE ALLOCATE_RBGLOBAL_Interface
-      USE TDOF_COL_NUM_Interface
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM, TDOF_PROC
       USE REDUCTION_CHECKS, ONLY      :  STIFF_MAT_EQUIL_CHK
       USE GET_GRID_NUM_COMPS_Interface
       USE AUTOSPC_SUMMARY_MSGS_Interface
@@ -81,7 +81,6 @@
       USE OUTA_HERE_Interface
       USE GET_ARRAY_ROW_NUM_Interface
       USE FILE_CLOSE_Interface
-      USE TDOF_PROC_Interface
       USE FILE_OPEN_Interface
       USE WRITE_DOF_TABLES_Interface
       USE COUNTER_INIT_Interface

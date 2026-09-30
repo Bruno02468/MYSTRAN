@@ -56,7 +56,7 @@
       USE OFP1_Interface
       USE OFP2_Interface
       USE MATMULT_SFF_Interface
-      USE TDOF_COL_NUM_Interface
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
       USE GP_FORCE_BALANCE_PROC_Interface
       USE OFP3_Interface
       USE FILE_CLOSE_Interface

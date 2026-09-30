@@ -32,7 +32,7 @@
       USE WRITE_FIJFIL_Interface
       USE GET_ARRAY_ROW_NUM_Interface
       USE GET_GRID_NUM_COMPS_Interface
-      USE TDOF_COL_NUM_Interface
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
       USE ELEMENT_TRANSFORMATIONS, ONLY:  ELEM_TRANSFORM_LBG
       USE OUTA_HERE_Interface
       USE COUNTER_INIT_Interface

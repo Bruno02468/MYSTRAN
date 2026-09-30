@@ -29,6 +29,6 @@
 
       USE OURTIM_Interface
       USE OUTA_HERE_Interface
-      USE TDOF_COL_NUM_Interface
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
 
       END MODULE WRITE_USETSTR_USE_IFs

@@ -27,7 +27,7 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE WRITE_USERIN_BD_CARDS
 
-      USE TDOF_COL_NUM_Interface
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
       USE GET_ARRAY_ROW_NUM_Interface
       USE BDF_FIELD_VALIDATION, ONLY  :  LEFT_ADJ_BDFLD
 

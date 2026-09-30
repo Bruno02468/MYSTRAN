@@ -28,7 +28,7 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE PARTITION_VEC
 
       USE OURTIM_Interface
-      USE TDOF_COL_NUM_Interface
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
       USE OUTA_HERE_Interface
 
       END MODULE PARTITION_VEC_USE_IFs

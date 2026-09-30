@@ -28,6 +28,6 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE GET_MATRIX_DIAG_STATS
 
       USE OURTIM_Interface
-      USE TDOF_COL_NUM_Interface
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
 
       END MODULE GET_MATRIX_DIAG_STATS_USE_IFs

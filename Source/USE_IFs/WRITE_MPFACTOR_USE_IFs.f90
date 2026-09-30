@@ -28,6 +28,6 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE WRITE_MPFACTOR
 
       USE OURTIM_Interface
-      USE TDOF_COL_NUM_Interface
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
 
       END MODULE WRITE_MPFACTOR_USE_IFs

@@ -29,7 +29,7 @@
 
       USE OURTIM_Interface
       USE READERR_Interface
-      USE TDOF_COL_NUM_Interface
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
       USE GET_ARRAY_ROW_NUM_Interface
       USE FILERR_Interface
       USE OUTA_HERE_Interface

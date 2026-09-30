@@ -29,7 +29,7 @@
 
       USE OURTIM_Interface
       USE GET_OU4_MAT_STATS_Interface
-      USE OU4_PARTVEC_PROC_Interface
+      USE OUTPUT4_PARTITIONING, ONLY  :  OU4_PARTVEC_PROC
       USE WRITE_PARTNd_MAT_HDRS_Interface
       USE PARTITION_SS_NTERM_Interface
       USE ALLOCATE_SCR_CRS_MAT_Interface

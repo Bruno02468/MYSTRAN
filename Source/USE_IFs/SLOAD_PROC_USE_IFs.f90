@@ -32,7 +32,7 @@
       USE FILE_CLOSE_Interface
       USE OUTA_HERE_Interface
       USE GET_ARRAY_ROW_NUM_Interface
-      USE TDOF_COL_NUM_Interface
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
       USE FILERR_Interface
 
       END MODULE SLOAD_PROC_USE_IFs

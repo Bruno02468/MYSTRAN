@@ -148,8 +148,8 @@
       USE GEN_T0L_Interface
       USE MATMULT_FFF_T_Interface
       USE MATMULT_FFF_Interface
-      USE TDOF_COL_NUM_Interface
-      USE RDOF_Interface
+      USE DOF_SET_CONSTRUCTION, ONLY  :  RDOF
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
 
       IMPLICIT NONE
 
@@ -479,8 +479,8 @@
       USE READERR_Interface
       USE GET_ARRAY_ROW_NUM_Interface
       USE GEN_T0L_Interface
-      USE TDOF_COL_NUM_Interface
-      USE RDOF_Interface
+      USE DOF_SET_CONSTRUCTION, ONLY  :  RDOF
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
 
       IMPLICIT NONE
 
@@ -1064,8 +1064,8 @@
       USE READERR_Interface
       USE GET_ARRAY_ROW_NUM_Interface
       USE GEN_T0L_Interface
-      USE TDOF_COL_NUM_Interface
-      USE RDOF_Interface
+      USE DOF_SET_CONSTRUCTION, ONLY  :  RDOF
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
       USE OUTA_HERE_Interface
       USE SORTING, ONLY               :  CALC_VEC_SORT_ORDER
       USE CROSS_Interface

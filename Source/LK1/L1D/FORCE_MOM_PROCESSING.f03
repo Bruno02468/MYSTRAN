@@ -111,7 +111,7 @@
       USE GEN_T0L_Interface
       USE MATMULT_FFF_Interface
       USE MATMULT_FFF_T_Interface
-      USE TDOF_COL_NUM_Interface
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
 
       IMPLICIT NONE
 

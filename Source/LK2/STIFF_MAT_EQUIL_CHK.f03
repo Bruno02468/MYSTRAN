@@ -60,7 +60,7 @@
       USE BANDGEN_LAPACK_DPB_Interface
       USE WRITE_MATRIX_BY_ROWS_Interface
       USE DEALLOCATE_LAPACK_MAT_Interface
-      USE TDOF_COL_NUM_Interface
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
       USE MATMULT_FFF_T_Interface
 
       IMPLICIT NONE

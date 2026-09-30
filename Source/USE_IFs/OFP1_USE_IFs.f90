@@ -30,7 +30,7 @@
       USE OURTIM_Interface
       USE GET_ARRAY_ROW_NUM_Interface
       USE GET_GRID_NUM_COMPS_Interface
-      USE TDOF_COL_NUM_Interface
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
       USE CHK_OGEL_ZEROS_Interface
       USE WRITE_GRD_PRT_OUTPUTS_Interface
       USE WRITE_FEMAP_GRID_VECS_Interface

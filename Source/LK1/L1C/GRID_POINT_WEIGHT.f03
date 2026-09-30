@@ -1131,7 +1131,7 @@ userin:        IF ((WHICH(1:8) == 'OA MODEL') .OR. (WHICH(1:6) == 'USERIN')) THE
       USE RIGID_BODY_DISP_MATS, ONLY  :  RBGLOBAL_GSET
       USE DEBUG_PARAMETERS, ONLY      :  DEBUG
 
-      USE TDOF_COL_NUM_Interface
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
       USE GET_ARRAY_ROW_NUM_Interface
       USE OUTA_HERE_Interface
       USE GET_GRID_NUM_COMPS_Interface

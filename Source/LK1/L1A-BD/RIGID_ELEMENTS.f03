@@ -813,7 +813,7 @@
       USE ARRAY_SIZE_ERROR_1_Interface
       USE BDF_SET_SYNTAX, ONLY        :  TOKCHK
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE RDOF_Interface
+      USE DOF_SET_CONSTRUCTION, ONLY  :  RDOF
 
       IMPLICIT NONE
 

@@ -29,9 +29,9 @@
 
       USE OURTIM_Interface
       USE GRID_POINT_WEIGHT, ONLY     :  RB_DISP_MATRIX_PROC
-      USE TDOF_COL_NUM_Interface
+      USE DOF_SET_CONSTRUCTION, ONLY  :  RDOF
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
       USE GET_ARRAY_ROW_NUM_Interface
-      USE RDOF_Interface
       USE ALLOCATE_IN4_FILES_Interface
       USE FILE_OPEN_Interface
       USE READ_IN4_FULL_MAT_Interface

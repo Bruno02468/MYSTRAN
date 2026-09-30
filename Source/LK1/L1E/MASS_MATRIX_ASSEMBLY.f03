@@ -307,7 +307,7 @@ elems:DO I=1,NELE
       USE WRITE_FIJFIL_Interface
       USE GET_ARRAY_ROW_NUM_Interface
       USE GET_GRID_NUM_COMPS_Interface
-      USE TDOF_COL_NUM_Interface
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
       USE OUTA_HERE_Interface
       USE COUNTER_INIT_Interface
       USE COUNTER_PROGRESS_Interface
@@ -916,7 +916,7 @@ i_do1:DO I=1,NGRID
       USE SPARSE_MATRICES, ONLY       :  I_MGGS, J_MGGS, MGGS
 
       USE ALLOCATE_L1_MGG_Interface
-      USE TDOF_COL_NUM_Interface
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
       USE GET_ARRAY_ROW_NUM_Interface
       USE OUTA_HERE_Interface
       USE SORTING, ONLY               :  SORT_INT2_REAL1

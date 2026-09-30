@@ -77,7 +77,7 @@
       USE ALLOCATE_EIGEN1_MAT_Interface
       USE READ_L1M_Interface
       USE ALLOCATE_FULL_MAT_Interface
-      USE TDOF_COL_NUM_Interface
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
       USE DEALLOCATE_COL_VEC_Interface
       USE DEALLOCATE_MISC_MAT_Interface
       USE ALLOCATE_MISC_MAT_Interface
@@ -1104,7 +1104,7 @@ j_do: DO J = 1,NUM_SOLNS
       USE PARAMS, ONLY                :  PRTDISP
       USE COL_VECS, ONLY              :  UL_COL, UA_COL, UR_COL
 
-      USE TDOF_COL_NUM_Interface
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
       USE MERGE_COL_VECS_Interface
       USE WRITE_VECTOR_Interface
 
@@ -1192,7 +1192,7 @@ j_do: DO J = 1,NUM_SOLNS
       USE COL_VECS, ONLY              :  UA_COL, UF_COL, UO_COL, UO0_COL
 
       USE MATMULT_SFF_Interface
-      USE TDOF_COL_NUM_Interface
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
       USE MERGE_COL_VECS_Interface
       USE WRITE_VECTOR_Interface
 
@@ -1279,7 +1279,7 @@ j_do: DO J = 1,NUM_SOLNS
       USE PARAMS, ONLY                :  PRTDISP
       USE COL_VECS, ONLY              :  UF_COL, UN_COL, US_COL, YSe
 
-      USE TDOF_COL_NUM_Interface
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
       USE MERGE_COL_VECS_Interface
       USE WRITE_VECTOR_Interface
 
@@ -1379,7 +1379,7 @@ j_do: DO J = 1,NUM_SOLNS
       USE COL_VECS, ONLY              :  UG_COL, UM_COL, UN_COL
 
       USE MATMULT_SFF_Interface
-      USE TDOF_COL_NUM_Interface
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
       USE MERGE_COL_VECS_Interface
       USE WRITE_VECTOR_Interface
 

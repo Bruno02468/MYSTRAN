@@ -46,7 +46,7 @@
       USE DOF_TABLES, ONLY            :  TDOF, TDOF_ROW_START
       USE NONLINEAR_PARAMS, ONLY      :  LOAD_ISTEP
 
-      USE TDOF_COL_NUM_Interface
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
       USE READERR_Interface
       USE OUTA_HERE_Interface
       USE GET_ARRAY_ROW_NUM_Interface
