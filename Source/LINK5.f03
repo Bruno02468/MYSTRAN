@@ -85,7 +85,7 @@
       USE WRITE_L1M_Interface
       USE DEALLOCATE_SPARSE_MAT_Interface
       USE GET_GRID_NUM_COMPS_Interface
-      USE EIG_SUMMARY_Interface
+      USE EIGEN_SUPPORT, ONLY         :  EIG_SUMMARY
       USE OUTPUT4_PROC_Interface
       USE DEALLOCATE_EIGEN1_MAT_Interface
       USE WRITE_L1A_Interface

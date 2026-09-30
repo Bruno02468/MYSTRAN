@@ -24,6 +24,224 @@
 
 ! End MIT license text.
 
+   MODULE EIGEN_SUPPORT
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: CALC_GEN_MASS, RENORM_ON_MASS, EIG_SUMMARY
+
+   CONTAINS
+
+      SUBROUTINE CALC_GEN_MASS
+
+! Generates generalized mass from mass matrix and eigenvectors:
+
+!   The generalized mass matrix is a square matrix of terms:
+
+!         MIJ = EIGEN_VEC(i)'*MLL*EIGEN_VEC(j)   where EIGEN_VEC(i) is the ith eigenvector and MLL is the L-set mass matrix
+!                                                The ' indicates a transpose of EIGEN_VEC(i)
+
+!   Array GEN_MASS is a 1-D array of the diagonal terms, MIJ (i = j) from the square generalized mass matrix outlined above.
+!   This subr calculates all NDOFL diagonal terms of the generalized mass matrix plus all off diagonal terms below the diagonal.
+!   The diagonal terms go into array GEN_MASS. The off diagonal terms are not stored, only the largest one, MAXMIJ is kept, and
+!   output later, so that the user will know to what accuracy the eigenvectors were calculated
+
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM, NDOFL, NTERM_KLLDn, NTERM_MLLn, NVEC, SOL_NAME
+      USE TIMDAT, ONLY                :  TSEC
+      USE CONSTANTS_1, ONLY           :  ZERO, ONE
+      USE DEBUG_PARAMETERS, ONLY      :  DEBUG
+      USE PARAMS, ONLY                :  EPSIL
+      USE EIGEN_MATRICES_1, ONLY      :  GEN_MASS, EIGEN_VEC
+      USE MODEL_STUF, ONLY            :  EIG_CRIT, MAXMIJ, MIJ_COL, MIJ_ROW, NUM_FAIL_CRIT
+      USE SPARSE_MATRICES, ONLY       :  I_KLLDn, J_KLLDn, KLLDn, I_MLLn, J_MLLn, MLLn
+      USE SPARSE_MATRICES, ONLY       :  SYM_MLLn
+
+      USE MATMULT_SFF_Interface
+      USE COUNTER_INIT_Interface
+      USE COUNTER_PROGRESS_Interface
+
+      IMPLICIT NONE
+
+      CHARACTER, PARAMETER            :: CR13 = CHAR(13)   ! This causes a carriage return simulating the "+" action in a FORMAT
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'CALC_GEN_MASS'
+
+
+      INTEGER(LONG)                   :: I,J,K             ! DO loop indices
+
+      REAL(DOUBLE)                    :: DMIJ              ! DABS of MIJ
+      REAL(DOUBLE)                    :: MAX               ! Temporary variable used in finding MAXMIJ
+      REAL(DOUBLE)                    :: MIJ               ! The i,j-th value from gen. mass matrix. Used to find MAXMIJ
+      REAL(DOUBLE)                    :: OUTVECI(NDOFL,1)  ! One eigenvector
+      REAL(DOUBLE)                    :: OUTVECJ(NDOFL,1)  ! One eigenvector
+      REAL(DOUBLE)                    :: ZVEC(NDOFL,1)     ! Intermediate matrix in the calculation of GEN_MASS
+
+      REAL(DOUBLE), EXTERNAL          :: DDOT              ! BLAS dot-product function
+
+      INTRINSIC                       :: DABS
+
+
+
+! **********************************************************************************************************************************
+!xx   WRITE(SC1, * )                                       ! Advance 1 line for screen messages
+
+      NUM_FAIL_CRIT = 0
+      MIJ_ROW       = 1
+      MIJ_COL       = 1
+      MAX           = ZERO
+      MAXMIJ        = ZERO
+      CALL COUNTER_INIT('     Diag term for eigenvector ', NVEC)
+      DO I=1,NVEC
+
+         DO K=1,NDOFL                                      ! Calc diag terms
+            OUTVECI(K,1) = EIGEN_VEC(K,I)
+         ENDDO
+
+         IF (SOL_NAME(1:8) == 'BUCKLING') THEN
+            CALL MATMULT_SFF ( 'KLLDn', NDOFL, NDOFL, NTERM_KLLDn, 'N'     , I_KLLDn, J_KLLDn, KLLDn, 'OUTVECI', NDOFL, 1,         &
+                                OUTVECI, 'N', 'ZVEC', ONE, ZVEC )
+         ELSE
+            CALL MATMULT_SFF ( 'MLLn' , NDOFL, NDOFL, NTERM_MLLn , SYM_MLLn, I_MLLn , J_MLLn , MLLn , 'OUTVECI', NDOFL, 1,         &
+                                OUTVECI, 'N', 'ZVEC', ONE, ZVEC )
+         ENDIF
+
+         GEN_MASS(I) = DDOT ( NDOFL, OUTVECI, 1, ZVEC, 1 )
+         GEN_MASS(I) = ABS(GEN_MASS(I))
+         IF (DEBUG(48) == 0) THEN                          ! Calc off-diag terms
+
+            !CALL COUNTER_INIT('Off-diag term ', I-1)
+            DO J=1,I-1
+
+               DO K=1,NDOFL
+                  OUTVECJ(K,1) = EIGEN_VEC(K,J)
+               ENDDO
+
+               IF (SOL_NAME(1:8) == 'BUCKLING') THEN
+                  CALL MATMULT_SFF ( 'KLLDn', NDOFL, NDOFL, NTERM_KLLDn, 'N'     , I_KLLDn, J_KLLDn, KLLDn, 'OUTVECJ', NDOFL, 1,   &
+                                      OUTVECJ, 'N', 'ZVEC', ONE, ZVEC )
+               ELSE
+                  CALL MATMULT_SFF ( 'MLLn' , NDOFL, NDOFL, NTERM_MLLn , SYM_MLLn, I_MLLn , J_MLLn , MLLn , 'OUTVECJ', NDOFL, 1,   &
+                                      OUTVECJ,'N', 'ZVEC', ONE, ZVEC )
+               ENDIF
+
+               MIJ = DDOT ( NDOFL, OUTVECI, 1, ZVEC, 1 )
+
+               DMIJ = DABS(MIJ)
+               IF (DMIJ > MAX) THEN
+                  MAXMIJ  = MIJ
+                  MAX     = DMIJ
+                  MIJ_ROW = I
+                  MIJ_COL = J
+               ENDIF
+               IF (DMIJ > EIG_CRIT) THEN
+                  NUM_FAIL_CRIT = NUM_FAIL_CRIT + 1
+               ENDIF
+               !CALL COUNTER_PROGRESS(J)
+            ENDDO
+
+         ENDIF
+         CALL COUNTER_PROGRESS(I)
+      ENDDO
+
+
+
+      RETURN
+
+! **********************************************************************************************************************************
+
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE CALC_GEN_MASS
+
+
+      SUBROUTINE RENORM_ON_MASS ( NVC, EPS1 )
+
+! Renormalizes eigenvectors to unit generalized mass
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06
+      USE SCONTR, ONLY                :  NDOFL, BLNK_SUB_NAM, WARN_ERR
+      USE TIMDAT, ONLY                :  TSEC
+      USE PARAMS, ONLY                :  EPSIL, SUPINFO, SUPWARN
+      USE CONSTANTS_1, ONLY           :  ZERO, ONE
+      USE EIGEN_MATRICES_1 , ONLY     :  GEN_MASS, EIGEN_VEC
+      USE MODEL_STUF, ONLY            :  EIG_NORM, MAXMIJ, MIJ_COL, MIJ_ROW
+      USE DEBUG_PARAMETERS, ONLY      :  DEBUG
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'RENORM_ON_MASS'
+
+      INTEGER(LONG), INTENT(IN)       :: NVC               ! Number of eigenvectors to be renormalized.
+      INTEGER(LONG)                   :: I,J               ! DO loop index
+
+
+      REAL(DOUBLE) , INTENT(IN)       :: EPS1              ! Small number to compare variables against zero
+      REAL(DOUBLE)                    :: DEN               ! Normalizing factor in gen mass matrix normalization
+
+      INTRINSIC DSQRT,DABS
+
+
+
+! **********************************************************************************************************************************
+      IF (EIG_NORM /= 'MASS    ') THEN
+         WRITE(ERR,1001) EIG_NORM
+         IF (SUPINFO == 'N') THEN
+            WRITE(F06,1001) EIG_NORM
+         ENDIF
+      ENDIF
+
+      DO I=1,NVC
+         IF (DABS(GEN_MASS(I)) < EPS1) THEN
+            WARN_ERR = WARN_ERR + 1
+            WRITE(ERR,4301) I, GEN_MASS(I)
+            IF (SUPWARN == 'N') THEN
+               WRITE(F06,4301) I, GEN_MASS(I)
+            ENDIF
+            RETURN
+         ENDIF
+      ENDDO
+
+! Adjust MAXMIJ, the largest off-diag gen mass term. It was originally calculated in subr CALC_GEN_MASS and will change if the
+! gen masses have changed as a result of this renormalization
+
+      MAXMIJ = MAXMIJ/(GEN_MASS(MIJ_ROW)*GEN_MASS(MIJ_COL))! NOTE: all gen mass terms checked above for > 0.
+
+! Normalize the eigenvectors so that they produce unit generalized mass and reset the gen masses to unity
+
+      DO J=1,NVC
+         DEN = DSQRT(GEN_MASS(J))
+         DO I=1,NDOFL
+            EIGEN_VEC(I,J) = EIGEN_VEC(I,J)/DEN
+         ENDDO
+         GEN_MASS(J) = ONE                                 ! Now reset generalized masses to unity
+      ENDDO
+
+
+
+      RETURN
+
+! **********************************************************************************************************************************
+ 1001 FORMAT(' *INFORMATION: EIGENVECTORS WILL BE RENORMALIZED BASED ON GEN MASS IN LINK4. THEY WILL BE RENORMALIZED TO ',         &
+                             A,' LATER IN LINK5',/)
+
+ 4301 FORMAT(' *WARNING    : THE GENERALIZED MASS MATRIX HAS A DIAGONAL TERM THAT IS TOO SMALL TO ALLOW RENORMALIZATION OF THE',   &
+                           ' EIGENVECTORS.'                                                                                        &
+                    ,/,14X,' THE SMALL TERM IS FOR EIGENVECTOR ',I8,' AND ITS VALUE IS ',1ES9.2                                    &
+                    ,/,14X,' EIGENVECTORS WILL NOT BE RENORMALIZED TO UNIT MASS IN SUBR RENORM_ON_MASS')
+
+99001 FORMAT(1X,10(1ES13.6))
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE RENORM_ON_MASS
+
+
       SUBROUTINE EIG_SUMMARY ( ISUB )
 
 ! Prints eigenvalue analysis summary table
@@ -39,8 +257,6 @@
       USE EIGEN_MATRICES_1, ONLY      :  GEN_MASS, MODE_NUM, EIGEN_VAL
       USE MODEL_STUF, ONLY            :  EIG_COMP, EIG_CRIT, EIG_GRID, EIG_LAP_MAT_TYPE, EIG_METH, EIG_MODE, EIG_N2, EIG_NORM,     &
                                          EIG_SIGMA, LABEL, MAXMIJ, MIJ_COL, MIJ_ROW, NUM_FAIL_CRIT, SCNUM, STITLE, TITLE
-
-      USE EIG_SUMMARY_USE_IFs
 
       IMPLICIT NONE
 
@@ -306,3 +522,5 @@
 ! **********************************************************************************************************************************
 
       END SUBROUTINE EIG_SUMMARY
+
+   END MODULE EIGEN_SUPPORT

@@ -42,10 +42,8 @@
       USE EIG_LANCZOS_ARPACK_ADAPTIVE_Interface
       USE DEALLOCATE_SPARSE_MAT_Interface
       USE ALLOCATE_EIGEN1_MAT_Interface
-      USE CALC_GEN_MASS_Interface
-      USE RENORM_ON_MASS_Interface
+      USE EIGEN_SUPPORT, ONLY         :  CALC_GEN_MASS, RENORM_ON_MASS, EIG_SUMMARY
       USE WRITE_L1M_Interface
-      USE EIG_SUMMARY_Interface
       USE FILE_OPEN_Interface
       USE FILE_CLOSE_Interface
       USE WRITE_VECTOR_Interface
