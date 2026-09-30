@@ -45,7 +45,7 @@
       USE MITC_STUF, ONLY             :  GP_RS
 
       USE MITC_INITIALIZE_Interface
-      USE ORDER_GAUSS_Interface
+      USE QUADRATURE, ONLY            :  ORDER_GAUSS
       USE OUTA_HERE_Interface
       USE MATMULT_FFF_Interface
       USE MATMULT_FFF_T_Interface

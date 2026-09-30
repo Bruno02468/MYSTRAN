@@ -27,7 +27,6 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE PRINT_ORDER
 
-      USE ORDER_GAUSS_Interface
-      USE ORDER_TRIA_Interface
+      USE QUADRATURE, ONLY            :  ORDER_GAUSS, ORDER_TRIA
 
       END MODULE PRINT_ORDER_USE_IFs

@@ -28,7 +28,7 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE TETRA
 
       USE OURTIM_Interface
-      USE ORDER_TETRA_Interface
+      USE QUADRATURE, ONLY            :  ORDER_TETRA
       USE SHAPE_FUNCTIONS_3D, ONLY    :  SHP3DT
       USE JACOBIAN, ONLY               :  JAC3D
       USE MATMULT_FFF_Interface

@@ -28,7 +28,7 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE QPLT1
 
       USE OURTIM_Interface
-      USE ORDER_GAUSS_Interface
+      USE QUADRATURE, ONLY            :  ORDER_GAUSS
       USE SHP2DQ_Interface
       USE JACOBIAN, ONLY               :  JAC2D
       USE MATMULT_FFF_Interface

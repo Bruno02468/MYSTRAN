@@ -34,6 +34,7 @@
       USE CONSTANTS_1, ONLY           :  ZERO, ONE
       USE SCONTR, ONLY                :  MAX_ORDER_GAUSS
       USE JACOBIAN, ONLY               :  JAC2D
+      USE QUADRATURE, ONLY            :  ORDER_GAUSS
       USE CROSS_Interface
       USE MATMULT_FFF_T_Interface
 

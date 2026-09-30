@@ -29,7 +29,7 @@
 
       USE OURTIM_Interface
       USE OUTA_HERE_Interface
-      USE ORDER_GAUSS_Interface
+      USE QUADRATURE, ONLY            :  ORDER_GAUSS
       USE PARAM_CORDS_ACT_CORDS_Interface
       USE SURFACE_FIT_Interface
 

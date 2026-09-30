@@ -37,7 +37,7 @@
       USE MODEL_STUF, ONLY            :  NUM_EMG_FATAL_ERRS, PCOMP_PROPS, ELGP, ES, KE, EM, ET
       USE CONSTANTS_1, ONLY           :  ZERO
 
-      USE ORDER_GAUSS_Interface
+      USE QUADRATURE, ONLY            :  ORDER_GAUSS
       USE OUTA_HERE_Interface
       USE MATMULT_FFF_Interface
       USE MATMULT_FFF_T_Interface

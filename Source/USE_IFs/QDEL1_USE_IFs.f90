@@ -28,7 +28,7 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE QDEL1
 
       USE OURTIM_Interface
-      USE ORDER_GAUSS_Interface
+      USE QUADRATURE, ONLY            :  ORDER_GAUSS
       USE JACOBIAN, ONLY               :  JAC2D
       USE QSHEAR_Interface
       USE QMEM1_Interface

@@ -28,8 +28,7 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE PENTA
 
       USE OURTIM_Interface
-      USE ORDER_TRIA_Interface
-      USE ORDER_GAUSS_Interface
+      USE QUADRATURE, ONLY            :  ORDER_GAUSS, ORDER_TRIA
       USE SHAPE_FUNCTIONS_3D, ONLY    :  SHP3DP
       USE JACOBIAN, ONLY               :  JAC3D
       USE MATMULT_FFF_Interface
