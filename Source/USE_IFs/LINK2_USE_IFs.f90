@@ -35,7 +35,7 @@
       USE GET_MATRIX_DIAG_STATS_Interface
       USE STIFF_MAT_EQUIL_CHK_Interface
       USE REDUCE_G_NM_Interface
-      USE REDUCE_N_FS_Interface
+      USE REDUCTION_N_TO_F, ONLY      :  REDUCE_N_FS
       USE REDUCE_F_AO_Interface
       USE WRITE_MATRIX_1_Interface
       USE REDUCTION_A_TO_L, ONLY      :  REDUCE_A_LR
