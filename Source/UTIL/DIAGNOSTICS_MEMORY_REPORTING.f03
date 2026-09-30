@@ -1335,8 +1335,7 @@ j_do:    DO J=1,LEN(ARRAY_NAME)
       USE SCONTR, ONLY                :  BLNK_SUB_NAM, FATAL_ERR, NDOFG
       USE TIMDAT, ONLY                :  TSEC
       USE DOF_TABLES, ONLY            :  TDOFI
-
-      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
+      USE DOF_LOOKUP_UTILS, ONLY      :  TDOF_COL_NUM
 
       IMPLICIT NONE
 
@@ -1487,9 +1486,8 @@ j_do:    DO J=1,LEN(ARRAY_NAME)
       USE CONSTANTS_1, ONLY           :  ZERO
       USE PARAMS, ONLY                :  AUTOSPC_RAT, EPSIL
       USE DOF_TABLES, ONLY            :  TDOFI
+      USE DOF_LOOKUP_UTILS, ONLY      :  TDOF_COL_NUM
       USE DEBUG_PARAMETERS, ONLY      :  DEBUG
-
-      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
 
       IMPLICIT NONE
 
