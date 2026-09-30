@@ -52,12 +52,11 @@
       USE OUTA_HERE_Interface
       USE WRITE_ENF_TO_L1O_Interface
       USE FILE_CLOSE_Interface
-      USE ELESORT_Interface
-      USE ELEM_PROP_MATL_IIDS_Interface
+      USE ELEMENT_MODEL_INDEXING, ONLY:  ELESORT, ELEM_PROP_MATL_IIDS
       USE GRID_PROC_Interface
       USE GET_ELEM_AGRID_BGRID_Interface
       USE SEQ_PROC_Interface
-      USE SUBCASE_PROC_Interface
+      USE SUBCASE_PROCESSING, ONLY    :  SUBCASE_PROC
       USE GRID_ELEM_CONN_TABLE_Interface
       USE CORD_PROC_Interface
       USE WRITE_GRID_COORDS_Interface
@@ -69,18 +68,15 @@
       USE EMG_Interface
       USE DOF_PROC_Interface
       USE WRITE_USETSTR_Interface
-      USE CONM2_PROC_1_Interface
+      USE CONM2_PROCESSING, ONLY      :  CONM2_PROC_1, CONM2_PROC_2
       USE ALLOCATE_RBGLOBAL_Interface
-      USE GPWG_USERIN_Interface
-      USE GPWG_Interface
+      USE GRID_POINT_WEIGHT, ONLY     :  GPWG, GPWG_USERIN, RB_DISP_MATRIX_PROC
       USE ALLOCATE_SPARSE_MAT_Interface
       USE READ_MATRIX_1_Interface
       USE PRT_MATS_ON_RESTART_Interface
       USE DEALLOCATE_SPARSE_MAT_Interface
-      USE RB_DISP_MATRIX_PROC_Interface
       USE GET_MATRIX_DIAG_STATS_Interface
       USE REDUCTION_CHECKS, ONLY      :  STIFF_MAT_EQUIL_CHK
-      USE CONM2_PROC_2_Interface
       USE TEMPERATURE_DATA_PROC_Interface
       USE PRESSURE_DATA_PROC_Interface
       USE TDOF_COL_NUM_Interface

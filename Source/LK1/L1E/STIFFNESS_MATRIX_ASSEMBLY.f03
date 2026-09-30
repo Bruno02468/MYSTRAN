@@ -26,6 +26,8 @@
 
    MODULE STIFFNESS_MATRIX_ASSEMBLY
 
+   USE ELEMENT_TRANSFORMATIONS, ONLY:  ELEM_TRANSFORM_LBG
+
    IMPLICIT NONE
 
    PRIVATE
@@ -67,7 +69,7 @@
 
       USE GET_ELGP_Interface
       USE EMG_Interface
-      USE ELEM_TRANSFORM_LBG_Interface
+      USE ELEMENT_TRANSFORMATIONS, ONLY:  ELEM_TRANSFORM_LBG
       USE OUTA_HERE_Interface
       USE COUNTER_INIT_Interface
       USE COUNTER_PROGRESS_Interface
@@ -518,12 +520,12 @@ kgg_cols:   DO K=KSTART,ELDOF
       USE MODEL_STUF, ONLY            :  AGRID, ELDT, ELDOF, ELGP, GRID_ID, NUM_EMG_FATAL_ERRS, PLY_NUM, KE, TYPE
       USE STF_ARRAYS, ONLY            :  STFKEY, STF3
       USE DEBUG_PARAMETERS, ONLY      :  DEBUG
+      USE ELEMENT_TRANSFORMATIONS, ONLY:  ELEM_TRANSFORM_LBG
 
       USE EMG_Interface
       USE GET_ARRAY_ROW_NUM_Interface
       USE GET_GRID_NUM_COMPS_Interface
       USE TDOF_COL_NUM_Interface
-      USE ELEM_TRANSFORM_LBG_Interface
       USE COUNTER_INIT_Interface
       USE COUNTER_PROGRESS_Interface
 
@@ -743,7 +745,6 @@ stfpnt0:          DO                                       ! so, run this loop u
       USE GET_ARRAY_ROW_NUM_Interface
       USE GET_GRID_NUM_COMPS_Interface
       USE TDOF_COL_NUM_Interface
-      USE ELEM_TRANSFORM_LBG_Interface
       USE OUTA_HERE_Interface
       USE DEALLOCATE_TEMPLATE_Interface
       USE OPNERR_Interface

@@ -28,7 +28,7 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE USERIN
 
       USE OURTIM_Interface
-      USE RB_DISP_MATRIX_PROC_Interface
+      USE GRID_POINT_WEIGHT, ONLY     :  RB_DISP_MATRIX_PROC
       USE TDOF_COL_NUM_Interface
       USE GET_ARRAY_ROW_NUM_Interface
       USE RDOF_Interface

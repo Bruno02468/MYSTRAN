@@ -24,6 +24,16 @@
 
 ! End MIT license text.
 
+   MODULE ELEMENT_TRANSFORMATIONS
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: ELEM_TRANSFORM_LBG
+
+   CONTAINS
+
       SUBROUTINE ELEM_TRANSFORM_LBG ( WHICH, ZE, QE )
 
 ! Transforms one element stiff, mass, thermal load or pressure load matrix from local to basic to global coords at each
@@ -41,7 +51,15 @@
       USE MODEL_STUF, ONLY            :  AGRID, CORD, ELDOF, GRID, GRID_ID, KEG, TE_IDENT, TYPE
       USE MODEL_STUF, ONLY            :  ELGP
 
-      USE ELEM_TRANSFORM_LBG_USE_IFs
+      USE OUTA_HERE_Interface
+      USE ELMTLB_Interface
+      USE GET_ARRAY_ROW_NUM_Interface
+      USE GEN_T0L_Interface
+      USE MATGET_Interface
+      USE MATMULT_FFF_Interface
+      USE MATMULT_FFF_T_Interface
+      USE MATPUT_Interface
+      USE ELMOFF_Interface
 
       IMPLICIT NONE
 
@@ -352,3 +370,5 @@ k_cord2:       DO K=1,NCORD
 
 
       END SUBROUTINE ELEM_TRANSFORM_LBG
+
+   END MODULE ELEMENT_TRANSFORMATIONS

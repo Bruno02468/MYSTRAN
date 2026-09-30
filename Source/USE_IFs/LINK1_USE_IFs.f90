@@ -53,7 +53,7 @@
       USE DEALLOCATE_IN4_FILES_Interface
       USE DEALLOCATE_STF_ARRAYS_Interface
       USE WRITE_DOF_TABLES_Interface
-      USE ELSAVE_Interface
+      USE ELEMENT_MODEL_INDEXING, ONLY:  ELSAVE
       USE CHK_ARRAY_ALLOC_STAT_Interface
       USE WRITE_ALLOC_MEM_TABLE_Interface
       USE WRITE_L1A_Interface
