@@ -32,7 +32,7 @@
       USE ORDER_GAUSS_Interface
       USE SHP3DH_Interface
       USE JAC3D_Interface
-      USE B3D_ISOPARAMETRIC_Interface
+      USE BMATRIX_3D, ONLY            :  B3D_ISOPARAMETRIC
       USE MATMULT_FFF_T_Interface
       USE OUTA_HERE_Interface
       USE ELMDIS_Interface
