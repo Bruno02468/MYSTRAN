@@ -46,9 +46,7 @@
       USE BUSH_Interface
       USE TREL1_Interface
       USE QDEL1_Interface
-      USE HEXA_Interface
-      USE PENTA_Interface
-      USE TETRA_Interface
+      USE SOLID_ELEMENTS, ONLY        :  HEXA, PENTA, TETRA
       USE KUSER1_Interface
       USE USERIN_Interface
       USE ELMOFF_Interface
