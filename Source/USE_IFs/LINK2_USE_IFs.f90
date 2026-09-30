@@ -34,7 +34,7 @@
       USE OUTA_HERE_Interface
       USE GET_MATRIX_DIAG_STATS_Interface
       USE STIFF_MAT_EQUIL_CHK_Interface
-      USE REDUCE_G_NM_Interface
+      USE REDUCTION_G_TO_N, ONLY      :  REDUCE_G_NM
       USE REDUCTION_N_TO_F, ONLY      :  REDUCE_N_FS
       USE REDUCTION_F_TO_A, ONLY      :  REDUCE_F_AO
       USE WRITE_MATRIX_1_Interface

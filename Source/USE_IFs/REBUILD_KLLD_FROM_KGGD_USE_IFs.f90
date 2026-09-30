@@ -29,7 +29,7 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE REBUILD_KLLD_FROM_KGGD
 
       USE BUILD_KGGD_FROM_UG_Interface
-      USE REDUCE_G_NM_Interface
+      USE REDUCTION_G_TO_N, ONLY      :  REDUCE_G_NM
       USE REDUCTION_N_TO_F, ONLY      :  REDUCE_N_FS
       USE REDUCTION_F_TO_A, ONLY      :  REDUCE_F_AO
       USE REDUCTION_A_TO_L, ONLY      :  REDUCE_A_LR
