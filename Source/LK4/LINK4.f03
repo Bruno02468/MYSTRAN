@@ -24,6 +24,16 @@
 
 ! End MIT license text.
 
+   MODULE LINK4_MOD
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: LINK4
+
+   CONTAINS
+
    SUBROUTINE LINK4
 
 ! Calculates system eigenvalues, eigenvectors. There are 4 eigenvalue extraction methods in MYSTRAN, none of which seem suited to
@@ -73,8 +83,38 @@
       USE EIGEN_MATRICES_1, ONLY      :  GEN_MASS, MODE_NUM, EIGEN_VAL, EIGEN_VEC
       USE LAPACK_DPB_MATRICES, ONLY   :  ABAND, BBAND
       USE DEBUG_PARAMETERS, ONLY      :  DEBUG
+      USE GIVENS, ONLY                :  EIG_GIV_MGIV
+      USE INVERSE_POWER, ONLY         :  EIG_INV_PWR
+      USE LANCZOS, ONLY               :  EIG_LANCZOS_ARPACK, EIG_LANCZOS_ARPACK_ADAPTIVE
+      USE EIGEN_SUPPORT, ONLY         :  CALC_GEN_MASS, RENORM_ON_MASS, EIG_SUMMARY
 
-      USE LINK4_USE_IFs
+      USE TIME_INIT_Interface
+      USE OURDAT_Interface
+      USE OURTIM_Interface
+      USE READ_L1A_Interface
+      USE OUTA_HERE_Interface
+      USE READ_L1M_Interface
+      USE SPARSE_MAT_DIAG_ZEROS_Interface
+      USE ALLOCATE_SPARSE_MAT_Interface
+      USE CRS_SYM_TO_CRS_NONSYM_Interface
+      USE DEALLOCATE_SPARSE_MAT_Interface
+      USE ALLOCATE_EIGEN1_MAT_Interface
+      USE WRITE_L1M_Interface
+      USE FILE_OPEN_Interface
+      USE FILE_CLOSE_Interface
+      USE WRITE_VECTOR_Interface
+      USE OUTPUT4_PROC_Interface
+      USE DEALLOCATE_LAPACK_MAT_Interface
+      USE DEALLOCATE_EIGEN1_MAT_Interface
+      USE WRITE_L1A_Interface
+      USE CHK_ARRAY_ALLOC_STAT_Interface
+      USE WRITE_ALLOC_MEM_TABLE_Interface
+      USE FILE_INQUIRE_Interface
+      USE READ_L5A_UG_FOR_SUBCASE_Interface
+      USE REBUILD_KLLD_FROM_KGGD_Interface
+      USE ALLOCATE_COL_VEC_Interface
+      USE DEALLOCATE_COL_VEC_Interface
+      USE DEALLOCATE_MODEL_STUF_Interface
       USE LINK_MESSAGE_Interface
 
       IMPLICIT NONE
@@ -770,3 +810,5 @@ m_lp: DO ITER = 1, N_MODES_ITER
 ! **********************************************************************************************************************************
 
    END SUBROUTINE LINK4
+
+   END MODULE LINK4_MOD
