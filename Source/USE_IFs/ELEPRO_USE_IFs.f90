@@ -29,6 +29,6 @@
 
       USE OURTIM_Interface
       USE OUTA_HERE_Interface
-      USE I4FLD_Interface
+      USE BDF_FIELD_VALIDATION, ONLY  :  I4FLD
 
       END MODULE ELEPRO_USE_IFs

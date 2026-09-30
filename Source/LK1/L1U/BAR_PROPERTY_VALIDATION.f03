@@ -24,6 +24,16 @@
 
 ! End MIT license text.
 
+   MODULE BAR_PROPERTY_VALIDATION
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: CHECK_BAR_MOIS
+
+   CONTAINS
+
       SUBROUTINE CHECK_BAR_MOIs ( NAME, ID, I1, I2, I12, IERR )
 
 ! Checks sensibility of the 3 MOI's of a BAR or BEAM element and replaces zero values with small finite ones
@@ -34,8 +44,6 @@
       USE TIMDAT, ONLY                :  TSEC
       USE PARAMS, ONLY                :  EPSIL, SUPINFO
       USE CONSTANTS_1, ONLY           :  ZERO
-
-      USE CHECK_BAR_MOIs_USE_IFs
 
       IMPLICIT NONE
 
@@ -103,3 +111,5 @@
 
       END SUBROUTINE CHECK_BAR_MOIs
 
+
+   END MODULE BAR_PROPERTY_VALIDATION

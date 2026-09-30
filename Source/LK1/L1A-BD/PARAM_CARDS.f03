@@ -81,14 +81,9 @@
                                          WTMASS          , K6ROT,                                                                  &
                                          PRTNEU          , SPIENV6         , SPIENV7         , SPIENV8         , SLU_NTHR
 
-      USE MKJCARD_Interface
-      USE R8FLD_Interface
-      USE BD_IMBEDDED_BLANK_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CHAR_FLD, CRDERR, I4FLD, LEFT_ADJ_BDFLD, R8FLD
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE CRDERR_Interface
-      USE CHAR_FLD_Interface
-      USE LEFT_ADJ_BDFLD_Interface
-      USE I4FLD_Interface
 
       IMPLICIT NONE
 
@@ -3120,11 +3115,8 @@ do_i:    DO I=1,JCARD_LEN
       USE TIMDAT, ONLY                :  TSEC
       USE PARAMS, ONLY                :  EPSIL, GRIDSEQ, PBARLDEC, PBARLSHR
 
-      USE MKJCARD_Interface
-      USE LEFT_ADJ_BDFLD_Interface
-      USE I4FLD_Interface
-      USE CHAR_FLD_Interface
-      USE R8FLD_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
+      USE BDF_FIELD_VALIDATION, ONLY  :  CHAR_FLD, I4FLD, LEFT_ADJ_BDFLD, R8FLD
 
       IMPLICIT NONE
 

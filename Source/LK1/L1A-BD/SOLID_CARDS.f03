@@ -46,12 +46,9 @@
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  ETYPE
 
-      USE MKJCARD_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD, NEXTC, NEXTC2
       USE ELEPRO_Interface
-      USE BD_IMBEDDED_BLANK_Interface
-      USE CRDERR_Interface
-      USE NEXTC_Interface
-      USE NEXTC2_Interface
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR
       USE CARD_FLDS_NOT_BLANK_Interface
 
       IMPLICIT NONE
@@ -215,9 +212,7 @@
       USE SCONTR, ONLY                :  BLNK_SUB_NAM, JCARD_LEN, MEDAT_CHEXA8, MEDAT_CHEXA20
       USE TIMDAT, ONLY                :  TSEC
 
-      USE MKJCARD_Interface
-      USE NEXTC0_Interface
-      USE NEXTC20_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD, NEXTC0, NEXTC20
 
       IMPLICIT NONE
 
@@ -285,12 +280,9 @@
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  ETYPE
 
-      USE MKJCARD_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD, NEXTC, NEXTC2
       USE ELEPRO_Interface
-      USE BD_IMBEDDED_BLANK_Interface
-      USE CRDERR_Interface
-      USE NEXTC_Interface
-      USE NEXTC2_Interface
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR
       USE CARD_FLDS_NOT_BLANK_Interface
 
       IMPLICIT NONE
@@ -442,9 +434,7 @@
       USE SCONTR, ONLY                :  BLNK_SUB_NAM, JCARD_LEN, MEDAT_CPENTA6, MEDAT_CPENTA15
       USE TIMDAT, ONLY                :  TSEC
 
-      USE MKJCARD_Interface
-      USE NEXTC0_Interface
-      USE NEXTC20_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD, NEXTC0, NEXTC20
 
       IMPLICIT NONE
 
@@ -504,13 +494,10 @@
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  ETYPE
 
-      USE MKJCARD_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD, NEXTC, NEXTC2
       USE ELEPRO_Interface
-      USE BD_IMBEDDED_BLANK_Interface
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE CRDERR_Interface
-      USE NEXTC_Interface
-      USE NEXTC2_Interface
 
       IMPLICIT NONE
 
@@ -633,9 +620,7 @@
       USE SCONTR, ONLY                :  BLNK_SUB_NAM, JCARD_LEN, MEDAT_CTETRA4, MEDAT_CTETRA10
       USE TIMDAT, ONLY                :  TSEC
 
-      USE MKJCARD_Interface
-      USE NEXTC0_Interface
-      USE NEXTC20_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD, NEXTC0, NEXTC20
 
       IMPLICIT NONE
 
@@ -700,12 +685,9 @@
       USE PARAMS, ONLY                :  SUPWARN
       USE MODEL_STUF, ONLY            :  PSOLID
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE LEFT_ADJ_BDFLD_Interface
-      USE BD_IMBEDDED_BLANK_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD, LEFT_ADJ_BDFLD
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE CRDERR_Interface
 
       IMPLICIT NONE
 

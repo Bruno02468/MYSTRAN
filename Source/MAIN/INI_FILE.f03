@@ -69,7 +69,7 @@
 
       USE OPNERR_Interface
       USE OUTA_HERE_Interface
-      USE MKJCARD_08_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD_08
       USE FILE_CLOSE_Interface
       USE SET_FILE_CLOSE_STAT_Interface
       USE WRITE_FILNAM_Interface

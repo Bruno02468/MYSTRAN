@@ -32,9 +32,9 @@
       USE FILE_CLOSE_Interface
       USE FILE_OPEN_Interface
       USE READERR_Interface
-      USE MKJCARD_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
       USE GET_ARRAY_ROW_NUM_Interface
-      USE TOKCHK_Interface
+      USE BDF_SET_SYNTAX, ONLY        :  TOKCHK
       USE GET_ELGP_Interface
 
       END MODULE TEMPERATURE_DATA_PROC_USE_IFs

@@ -46,14 +46,9 @@
       USE PARAMS, ONLY                :  EPSIL, SUPINFO, SUPWARN
       USE MODEL_STUF, ONLY            :  MATL, RMATL
 
-      USE MKJCARD_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD, NEXTC, NEXTC2
       USE OUTA_HERE_Interface
-      USE I4FLD_Interface
-      USE R8FLD_Interface
-      USE BD_IMBEDDED_BLANK_Interface
-      USE CRDERR_Interface
-      USE NEXTC_Interface
-      USE NEXTC2_Interface
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD, R8FLD
       USE CARD_FLDS_NOT_BLANK_Interface
 
       IMPLICIT NONE
@@ -342,14 +337,9 @@
       USE PARAMS, ONLY                :  EPSIL, SUPWARN
       USE MODEL_STUF, ONLY            :  MATL, RMATL
 
-      USE MKJCARD_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD, NEXTC, NEXTC2
       USE OUTA_HERE_Interface
-      USE I4FLD_Interface
-      USE R8FLD_Interface
-      USE NEXTC_Interface
-      USE NEXTC2_Interface
-      USE BD_IMBEDDED_BLANK_Interface
-      USE CRDERR_Interface
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD, R8FLD
 
       IMPLICIT NONE
 
@@ -484,14 +474,9 @@
       USE PARAMS, ONLY                :  EPSIL
       USE MODEL_STUF, ONLY            :  MATL, RMATL
 
-      USE MKJCARD_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD, NEXTC, NEXTC2
       USE OUTA_HERE_Interface
-      USE I4FLD_Interface
-      USE R8FLD_Interface
-      USE BD_IMBEDDED_BLANK_Interface
-      USE CRDERR_Interface
-      USE NEXTC_Interface
-      USE NEXTC2_Interface
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD, R8FLD
       USE CARD_FLDS_NOT_BLANK_Interface
 
       IMPLICIT NONE
@@ -739,14 +724,9 @@
       USE PARAMS, ONLY                :  EPSIL, SUPWARN
       USE MODEL_STUF, ONLY            :  MATL, RMATL
 
-      USE MKJCARD_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD, NEXTC, NEXTC2
       USE OUTA_HERE_Interface
-      USE I4FLD_Interface
-      USE R8FLD_Interface
-      USE NEXTC_Interface
-      USE NEXTC2_Interface
-      USE BD_IMBEDDED_BLANK_Interface
-      USE CRDERR_Interface
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD, R8FLD
       USE CARD_FLDS_NOT_BLANK_Interface
 
       IMPLICIT NONE

@@ -28,6 +28,6 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE FFIELD2
 
       USE OURTIM_Interface
-      USE MKCARD_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKCARD
 
       END MODULE FFIELD2_USE_IFs

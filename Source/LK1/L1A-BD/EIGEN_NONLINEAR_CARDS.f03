@@ -48,15 +48,8 @@
                                          EIG_LAP_MAT_TYPE, EIG_MODE, EIG_N1, EIG_N2, EIG_NCVFACL, EIG_NORM, EIG_SID, EIG_SIGMA,    &
                                          EIG_VECS, MAXMIJ, MIJ_COL, MIJ_ROW, NUM_FAIL_CRIT
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE LEFT_ADJ_BDFLD_Interface
-      USE CHAR_FLD_Interface
-      USE R8FLD_Interface
-      USE BD_IMBEDDED_BLANK_Interface
-      USE CRDERR_Interface
-      USE NEXTC_Interface
-      USE NEXTC2_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD, NEXTC, NEXTC2
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CHAR_FLD, CRDERR, I4FLD, LEFT_ADJ_BDFLD, R8FLD
       USE CARD_FLDS_NOT_BLANK_Interface
       USE WRITE_L1M_Interface
 
@@ -436,13 +429,8 @@
                                          EIG_METH, EIG_MSGLVL, EIG_LAP_MAT_TYPE, EIG_MODE, EIG_N1, EIG_N2, EIG_NCVFACL, EIG_NORM,  &
                                          EIG_SID, EIG_SIGMA, EIG_VECS, MAXMIJ, MIJ_COL, MIJ_ROW, NUM_FAIL_CRIT
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE R8FLD_Interface
-      USE CHAR_FLD_Interface
-      USE BD_IMBEDDED_BLANK_Interface
-      USE CRDERR_Interface
-      USE NEXTC_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD, NEXTC
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CHAR_FLD, CRDERR, I4FLD, R8FLD
       USE WRITE_L1M_Interface
 
       IMPLICIT NONE
@@ -780,11 +768,9 @@
       USE TIMDAT, ONLY                :  TSEC
       USE NONLINEAR_PARAMS, ONLY      :  NL_MAXITER, NL_NUM_LOAD_STEPS, NL_SID
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE BD_IMBEDDED_BLANK_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE CRDERR_Interface
 
       IMPLICIT NONE
 

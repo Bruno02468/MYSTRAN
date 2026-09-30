@@ -28,6 +28,6 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE EC_IN4FIL
 
       USE OURTIM_Interface
-      USE TOKCHK_Interface
+      USE BDF_SET_SYNTAX, ONLY        :  TOKCHK
 
       END MODULE EC_IN4FIL_USE_IFs

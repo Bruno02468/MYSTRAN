@@ -27,7 +27,7 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE EC_DEBUG
 
-      USE MKJCARD_08_Interface
-      USE I4FLD_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD_08
+      USE BDF_FIELD_VALIDATION, ONLY  :  I4FLD
 
       END MODULE EC_DEBUG_USE_IFs

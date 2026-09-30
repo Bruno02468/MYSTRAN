@@ -29,9 +29,9 @@
 
       USE OURTIM_Interface
       USE READERR_Interface
-      USE MKJCARD_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
       USE OUTA_HERE_Interface
-      USE TOKCHK_Interface
+      USE BDF_SET_SYNTAX, ONLY        :  TOKCHK
       USE FILE_CLOSE_Interface
       USE FILE_OPEN_Interface
       USE GET_ARRAY_ROW_NUM_Interface

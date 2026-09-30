@@ -46,12 +46,10 @@
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  EDAT, ETYPE
 
-      USE MKJCARD_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
       USE ELEPRO_Interface
-      USE I4FLD_Interface
-      USE BD_IMBEDDED_BLANK_Interface
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE CRDERR_Interface
 
       IMPLICIT NONE
 
@@ -157,11 +155,8 @@
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  EDAT, ETYPE, PELAS, RPELAS
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE R8FLD_Interface
-      USE BD_IMBEDDED_BLANK_Interface
-      USE CRDERR_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD, R8FLD
       USE ELEPRO_Interface
 
       IMPLICIT NONE
@@ -307,11 +302,10 @@
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  EDAT, ETYPE
 
-      USE MKJCARD_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
       USE ELEPRO_Interface
-      USE BD_IMBEDDED_BLANK_Interface
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE CRDERR_Interface
 
       IMPLICIT NONE
 
@@ -384,12 +378,9 @@
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  EDAT, ETYPE, PELAS, RPELAS
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE R8FLD_Interface
-      USE BD_IMBEDDED_BLANK_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD, R8FLD
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE CRDERR_Interface
       USE ELEPRO_Interface
 
       IMPLICIT NONE
@@ -495,12 +486,9 @@
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  PELAS, RPELAS
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE R8FLD_Interface
-      USE BD_IMBEDDED_BLANK_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD, R8FLD
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE CRDERR_Interface
 
       IMPLICIT NONE
 
@@ -584,16 +572,10 @@
       USE PARAMS, ONLY                :  EPSIL, SUPWARN
       USE MODEL_STUF, ONLY            :  BUSHOFF, EDAT, ETYPE, VVEC
 
-      USE MKJCARD_Interface
-      USE LEFT_ADJ_BDFLD_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD, NEXTC, NEXTC2
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD, LEFT_ADJ_BDFLD, R8FLD
       USE ELEPRO_Interface
-      USE R8FLD_Interface
-      USE I4FLD_Interface
       USE OUTA_HERE_Interface
-      USE BD_IMBEDDED_BLANK_Interface
-      USE CRDERR_Interface
-      USE NEXTC_Interface
-      USE NEXTC2_Interface
       USE CARD_FLDS_NOT_BLANK_Interface
 
       IMPLICIT NONE
@@ -952,9 +934,7 @@ vec:  IF (JCARD(9)(1:) == ' ') THEN                        ! CID field is blank 
       USE SCONTR, ONLY                :  BLNK_SUB_NAM, JCARD_LEN, LBUSHOFF, LVVEC
       USE TIMDAT, ONLY                :  TSEC
 
-      USE MKJCARD_Interface
-      USE NEXTC0_Interface
-      USE NEXTC20_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD, NEXTC0, NEXTC20
 
       IMPLICIT NONE
 
@@ -1035,15 +1015,9 @@ vec:  IF (JCARD(9)(1:) == ' ') THEN                        ! CID field is blank 
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  PBUSH, RPBUSH
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE LEFT_ADJ_BDFLD_Interface
-      USE BD_IMBEDDED_BLANK_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD, NEXTC, NEXTC2
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD, LEFT_ADJ_BDFLD, R8FLD
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE R8FLD_Interface
-      USE CRDERR_Interface
-      USE NEXTC_Interface
-      USE NEXTC2_Interface
 
       IMPLICIT NONE
 
@@ -1241,11 +1215,9 @@ pcont:DO I=1,4
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  CMASS
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE BD_IMBEDDED_BLANK_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE CRDERR_Interface
 
       IMPLICIT NONE
 
@@ -1368,12 +1340,9 @@ pcont:DO I=1,4
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  CMASS, PMASS, RPMASS
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE R8FLD_Interface
-      USE BD_IMBEDDED_BLANK_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD, R8FLD
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE CRDERR_Interface
 
       IMPLICIT NONE
 
@@ -1500,11 +1469,9 @@ pcont:DO I=1,4
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  CMASS
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE BD_IMBEDDED_BLANK_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE CRDERR_Interface
 
       IMPLICIT NONE
 
@@ -1630,12 +1597,9 @@ pcont:DO I=1,4
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  CMASS, PMASS, RPMASS
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE R8FLD_Interface
-      USE BD_IMBEDDED_BLANK_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD, R8FLD
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE CRDERR_Interface
 
       IMPLICIT NONE
 
@@ -1766,11 +1730,8 @@ pcont:DO I=1,4
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  PMASS, RPMASS
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE R8FLD_Interface
-      USE BD_IMBEDDED_BLANK_Interface
-      USE CRDERR_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD, R8FLD
 
       IMPLICIT NONE
 
@@ -1871,14 +1832,9 @@ pcont:DO I=1,4
       USE PARAMS, ONLY                :  SUPWARN
       USE MODEL_STUF, ONLY            :  CONM2, RCONM2
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE R8FLD_Interface
-      USE BD_IMBEDDED_BLANK_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD, NEXTC, NEXTC2
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD, R8FLD
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE CRDERR_Interface
-      USE NEXTC_Interface
-      USE NEXTC2_Interface
 
       IMPLICIT NONE
 

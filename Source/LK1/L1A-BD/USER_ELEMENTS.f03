@@ -46,14 +46,10 @@
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  EDAT, ETYPE
 
-      USE MKJCARD_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD, NEXTC, NEXTC2
       USE ELEPRO_Interface
-      USE BD_IMBEDDED_BLANK_Interface
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE CRDERR_Interface
-      USE NEXTC_Interface
-      USE NEXTC2_Interface
-      USE I4FLD_Interface
 
       IMPLICIT NONE
 
@@ -167,16 +163,11 @@
       USE PARAMS, ONLY                :  SUPWARN
       USE MODEL_STUF, ONLY            :  EDAT, ETYPE
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD, NEXTC, NEXTC2
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD, IP6CHK
       USE ELEPRO_Interface
-      USE BD_IMBEDDED_BLANK_Interface
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE CRDERR_Interface
-      USE NEXTC_Interface
-      USE NEXTC2_Interface
-      USE IP6CHK_Interface
-      USE TOKCHK_Interface
+      USE BDF_SET_SYNTAX, ONLY        :  TOKCHK
 
       IMPLICIT NONE
 
@@ -590,8 +581,8 @@ do_i2:         DO WHILE (NS_FOUND < NS)
       USE SCONTR, ONLY                :  BLNK_SUB_NAM, IERRFL, JCARD_LEN, JF
       USE TIMDAT, ONLY                :  TSEC
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
+      USE BDF_FIELD_VALIDATION, ONLY  :  I4FLD
 
       IMPLICIT NONE
 
@@ -655,13 +646,8 @@ do_i2:         DO WHILE (NS_FOUND < NS)
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  PUSER1, RPUSER1
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE R8FLD_Interface
-      USE BD_IMBEDDED_BLANK_Interface
-      USE CRDERR_Interface
-      USE NEXTC_Interface
-      USE NEXTC2_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD, NEXTC, NEXTC2
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD, R8FLD
       USE CARD_FLDS_NOT_BLANK_Interface
 
       IMPLICIT NONE
@@ -795,11 +781,9 @@ do_i2:         DO WHILE (NS_FOUND < NS)
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  PUSERIN, USERIN_MAT_NAMES
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE BD_IMBEDDED_BLANK_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE CRDERR_Interface
 
       IMPLICIT NONE
 

@@ -31,9 +31,8 @@
       USE OUTA_HERE_Interface
       USE FFIELD_Interface
       USE FFIELD2_Interface
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE MKCARD_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKCARD, MKJCARD
+      USE BDF_FIELD_VALIDATION, ONLY  :  I4FLD
       USE PARAM_CARDS, ONLY           :  BD_PARAM
 
       END MODULE LOADB_RESTART_USE_IFs

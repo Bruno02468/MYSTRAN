@@ -46,12 +46,9 @@
       USE PARAMS, ONLY                :  EPSIL
       USE MODEL_STUF, ONLY            :  BAROR_VVEC_TYPE, BAROR_G0, BAROR_VV, BAROR_PID
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE R8FLD_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD, R8FLD
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE BD_IMBEDDED_BLANK_Interface
-      USE CRDERR_Interface
       USE OUTA_HERE_Interface
 
       IMPLICIT NONE
@@ -188,9 +185,8 @@
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  BAROR_PID, BAROR_G0, BAROR_VV, BAROR_VVEC_TYPE, JBAROR
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE R8FLD_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
+      USE BDF_FIELD_VALIDATION, ONLY  :  I4FLD, R8FLD
 
       IMPLICIT NONE
 
@@ -309,12 +305,9 @@
       USE PARAMS, ONLY                :  EPSIL
       USE MODEL_STUF, ONLY            :  BEAMOR_VVEC_TYPE, BEAMOR_G0, BEAMOR_VV, BEAMOR_PID
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE R8FLD_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD, R8FLD
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE BD_IMBEDDED_BLANK_Interface
-      USE CRDERR_Interface
       USE OUTA_HERE_Interface
 
       IMPLICIT NONE
@@ -451,9 +444,8 @@
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  BEAMOR_PID, BEAMOR_G0, BEAMOR_VV, BEAMOR_VVEC_TYPE, JBEAMOR
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE R8FLD_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
+      USE BDF_FIELD_VALIDATION, ONLY  :  I4FLD, R8FLD
 
       IMPLICIT NONE
 
@@ -572,17 +564,11 @@
       USE MODEL_STUF, ONLY            :  BAROFF, BAROR_G0, BEAMOR_G0, BAROR_PID, BEAMOR_PID, BAROR_VVEC_TYPE, BEAMOR_VVEC_TYPE,    &
                                          BAROR_VV, BEAMOR_VV, EDAT, ETYPE, JBAROR, JBEAMOR, VVEC
 
-      USE MKJCARD_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD, NEXTC, NEXTC2
       USE ELEPRO_Interface
-      USE R8FLD_Interface
-      USE I4FLD_Interface
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD, IP6CHK, R8FLD
       USE OUTA_HERE_Interface
-      USE BD_IMBEDDED_BLANK_Interface
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE CRDERR_Interface
-      USE NEXTC_Interface
-      USE NEXTC2_Interface
-      USE IP6CHK_Interface
 
       IMPLICIT NONE
 
@@ -921,9 +907,7 @@
       USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG
       USE SCONTR, ONLY                :  BLNK_SUB_NAM, JCARD_LEN, LBAROFF, LVVEC
 
-      USE MKJCARD_Interface
-      USE NEXTC0_Interface
-      USE NEXTC20_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD, NEXTC0, NEXTC20
 
       IMPLICIT NONE
 
@@ -996,11 +980,10 @@
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  ETYPE
 
-      USE MKJCARD_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
       USE ELEPRO_Interface
-      USE BD_IMBEDDED_BLANK_Interface
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE CRDERR_Interface
 
       IMPLICIT NONE
 
@@ -1073,11 +1056,8 @@
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  EDAT, ETYPE, PROD, RPROD
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE R8FLD_Interface
-      USE BD_IMBEDDED_BLANK_Interface
-      USE CRDERR_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD, R8FLD
       USE ELEPRO_Interface
 
       IMPLICIT NONE
@@ -1206,12 +1186,9 @@
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  PROD, RPROD
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE R8FLD_Interface
-      USE BD_IMBEDDED_BLANK_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD, R8FLD
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE CRDERR_Interface
 
       IMPLICIT NONE
 
@@ -1314,15 +1291,10 @@
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  PBAR, RPBAR
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE R8FLD_Interface
-      USE BD_IMBEDDED_BLANK_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD, NEXTC, NEXTC2
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD, R8FLD
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE CRDERR_Interface
-      USE NEXTC_Interface
-      USE NEXTC2_Interface
-      USE CHECK_BAR_MOIs_Interface
+      USE BAR_PROPERTY_VALIDATION, ONLY:  CHECK_BAR_MOIS
 
       IMPLICIT NONE
 
@@ -1517,18 +1489,11 @@
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  PBAR, RPBAR
 
-      USE MKJCARD_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD, NEXTC, NEXTC2
       USE OUTA_HERE_Interface
-      USE I4FLD_Interface
-      USE LEFT_ADJ_BDFLD_Interface
-      USE CHAR_FLD_Interface
-      USE BD_IMBEDDED_BLANK_Interface
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CHAR_FLD, CRDERR, I4FLD, LEFT_ADJ_BDFLD, R8FLD
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE CRDERR_Interface
-      USE NEXTC_Interface
-      USE NEXTC2_Interface
-      USE R8FLD_Interface
-      USE CHECK_BAR_MOIs_Interface
+      USE BAR_PROPERTY_VALIDATION, ONLY:  CHECK_BAR_MOIS
 
       IMPLICIT NONE
 
@@ -3014,15 +2979,9 @@ D_do1:   DO J=2,9                                          ! --- Read cross-sect
       USE MODEL_STUF, ONLY            :  PBEAM, RPBEAM
       USE PARAMS, ONLY                :  SUPINFO
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE R8FLD_Interface
-      USE CHECK_BAR_MOIs_Interface
-      USE NEXTC_Interface
-      USE NEXTC2_Interface
-      USE BD_IMBEDDED_BLANK_Interface
-      USE CRDERR_Interface
-      USE CHAR_FLD_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD, NEXTC, NEXTC2
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CHAR_FLD, CRDERR, I4FLD, R8FLD
+      USE BAR_PROPERTY_VALIDATION, ONLY:  CHECK_BAR_MOIS
 
       IMPLICIT NONE
 
@@ -3391,11 +3350,9 @@ D_do1:   DO J=2,9                                          ! --- Read cross-sect
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  EDAT, ETYPE
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE BD_IMBEDDED_BLANK_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE CRDERR_Interface
       USE ELEPRO_Interface
 
       IMPLICIT NONE

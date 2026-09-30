@@ -143,8 +143,7 @@
       USE PARAMS, ONLY                :  SUPWARN
       USE MODEL_STUF, ONLY            :  CCELDT
 
-      USE GET_ANSID_Interface
-      USE STOKEN_Interface
+      USE BDF_SET_SYNTAX, ONLY        :  GET_ANSID, STOKEN
 
       IMPLICIT NONE
 
@@ -803,7 +802,7 @@
       USE SCONTR, ONLY                :  BLNK_SUB_NAM, CC_CMD_DESCRIBERS, LSUB, NCCCD, NSUB
       USE TIMDAT, ONLY                :  TSEC
 
-      USE GET_ANSID_Interface
+      USE BDF_SET_SYNTAX, ONLY        :  GET_ANSID
       USE PARSE_CHAR_STRING_Interface
 
       IMPLICIT NONE

@@ -93,7 +93,7 @@
       USE WRITE_ALLOC_MEM_TABLE_Interface
       USE FILE_INQUIRE_Interface
       USE WRITE_FILNAM_Interface
-      USE I4FLD_Interface
+      USE BDF_FIELD_VALIDATION, ONLY  :  I4FLD
       USE LINK_MESSAGE_Interface
       USE READ_L5A_UG_FOR_SUBCASE_Interface
 

@@ -50,11 +50,8 @@
       USE TIMDAT, ONLY                :  TSEC
       USE DOF_TABLES, ONLY            :  TSET_CHR_LEN
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE IP6CHK_Interface
-      USE BD_IMBEDDED_BLANK_Interface
-      USE CRDERR_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD, IP6CHK
 
       IMPLICIT NONE
 
@@ -165,15 +162,10 @@
       USE TIMDAT, ONLY                :  TSEC
       USE DOF_TABLES, ONLY            :  TSET_CHR_LEN
 
-      USE MKJCARD_Interface
-      USE TOKCHK_Interface
-      USE IP6CHK_Interface
-      USE I4FLD_Interface
-      USE BD_IMBEDDED_BLANK_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD, NEXTC, NEXTC2
+      USE BDF_SET_SYNTAX, ONLY        :  TOKCHK
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD, IP6CHK
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE CRDERR_Interface
-      USE NEXTC_Interface
-      USE NEXTC2_Interface
 
       IMPLICIT NONE
 
@@ -393,14 +385,9 @@
       USE PARAMS, ONLY                :  SUPWARN
       USE DOF_TABLES, ONLY            :  TSET_CHR_LEN
 
-      USE MKJCARD_Interface
-      USE CHAR_FLD_Interface
-      USE LEFT_ADJ_BDFLD_Interface
-      USE I4FLD_Interface
-      USE IP6CHK_Interface
-      USE BD_IMBEDDED_BLANK_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CHAR_FLD, CRDERR, I4FLD, IP6CHK, LEFT_ADJ_BDFLD
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE CRDERR_Interface
 
       IMPLICIT NONE
 
@@ -537,17 +524,10 @@
       USE CONSTANTS_1, ONLY           :  ZERO
       USE DOF_TABLES, ONLY            :  TSET_CHR_LEN
 
-      USE MKJCARD_Interface
-      USE CHAR_FLD_Interface
-      USE LEFT_ADJ_BDFLD_Interface
-      USE IP6CHK_Interface
-      USE I4FLD_Interface
-      USE TOKCHK_Interface
-      USE BD_IMBEDDED_BLANK_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD, NEXTC, NEXTC2
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CHAR_FLD, CRDERR, I4FLD, IP6CHK, LEFT_ADJ_BDFLD
+      USE BDF_SET_SYNTAX, ONLY        :  TOKCHK
       USE CARD_FLDS_NOT_BLANK_Interface
-      USE CRDERR_Interface
-      USE NEXTC_Interface
-      USE NEXTC2_Interface
 
       IMPLICIT NONE
 
@@ -792,11 +772,8 @@
       USE SCONTR, ONLY                :  BLNK_SUB_NAM, FATAL_ERR, IERRFL, JCARD_LEN, JF, NUM_SUPT_CARDS
       USE TIMDAT, ONLY                :  TSEC
 
-      USE MKJCARD_Interface
-      USE I4FLD_Interface
-      USE IP6CHK_Interface
-      USE BD_IMBEDDED_BLANK_Interface
-      USE CRDERR_Interface
+      USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
+      USE BDF_FIELD_VALIDATION, ONLY  :  BD_IMBEDDED_BLANK, CRDERR, I4FLD, IP6CHK
 
       IMPLICIT NONE
 

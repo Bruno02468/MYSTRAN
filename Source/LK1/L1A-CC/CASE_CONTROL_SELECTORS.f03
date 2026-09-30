@@ -44,7 +44,7 @@
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  SUBLOD
 
-      USE GET_SETID_Interface
+      USE BDF_SET_SYNTAX, ONLY        :  GET_SETID
 
       IMPLICIT NONE
 
@@ -94,7 +94,7 @@
       USE PARAMS, ONLY                :  SUPWARN
       USE MODEL_STUF, ONLY            :  CC_EIGR_SID, CC_EIGR_SID_SUB, CC_EIGR_SID_DECK, IS_MODES_SUBCASE
 
-      USE GET_SETID_Interface
+      USE BDF_SET_SYNTAX, ONLY        :  GET_SETID
 
       IMPLICIT NONE
 
@@ -176,7 +176,7 @@
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  MPCSETS
 
-      USE GET_SETID_Interface
+      USE BDF_SET_SYNTAX, ONLY        :  GET_SETID
 
       IMPLICIT NONE
 
@@ -224,7 +224,7 @@
       USE TIMDAT, ONLY                :  TSEC
       USE NONLINEAR_PARAMS, ONLY      :  NL_SID
 
-      USE GET_SETID_Interface
+      USE BDF_SET_SYNTAX, ONLY        :  GET_SETID
 
       IMPLICIT NONE
 
@@ -283,7 +283,7 @@
       USE PARAMS, ONLY                :  SUPWARN
       USE MODEL_STUF, ONLY            :  SPCSETS
 
-      USE GET_SETID_Interface
+      USE BDF_SET_SYNTAX, ONLY        :  GET_SETID
 
       IMPLICIT NONE
 
@@ -339,7 +339,7 @@
       USE PARAMS, ONLY                :  SUPWARN
       USE MODEL_STUF, ONLY            :  CC_STATSUB_DECK, CC_STATSUB_SUB
 
-      USE GET_SETID_Interface
+      USE BDF_SET_SYNTAX, ONLY        :  GET_SETID
 
       IMPLICIT NONE
 
@@ -440,7 +440,7 @@
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  SUBLOD
 
-      USE GET_SETID_Interface
+      USE BDF_SET_SYNTAX, ONLY        :  GET_SETID
 
       IMPLICIT NONE
 

@@ -35,8 +35,7 @@
       USE EC_IN4FIL_Interface
       USE EC_OUTPUT4_Interface
       USE EC_PARTN_Interface
-      USE STOKEN_Interface
-      USE I4FLD_Interface
-      USE CRDERR_Interface
+      USE BDF_SET_SYNTAX, ONLY        :  STOKEN
+      USE BDF_FIELD_VALIDATION, ONLY  :  CRDERR, I4FLD
 
       END MODULE LOADE_USE_IFs

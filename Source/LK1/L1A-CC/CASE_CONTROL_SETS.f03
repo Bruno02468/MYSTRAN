@@ -46,7 +46,7 @@
       USE SCONTR, ONLY                :  BLNK_SUB_NAM, CC_ENTRY_LEN, LSETLN
       USE TIMDAT, ONLY                :  TSEC
 
-      USE TOKCHK_Interface
+      USE BDF_SET_SYNTAX, ONLY        :  TOKCHK
 
       IMPLICIT NONE
 
@@ -172,9 +172,8 @@
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  ALL_SETS_ARRAY, SETS_IDS
 
-      USE TOKCHK_Interface
+      USE BDF_SET_SYNTAX, ONLY        :  STOKEN, TOKCHK
       USE OUTA_HERE_Interface
-      USE STOKEN_Interface
 
       IMPLICIT NONE
 
