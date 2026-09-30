@@ -2680,11 +2680,10 @@ j_do:       DO J=JSTART,NDOFG                               ! Loop over rows of 
       USE SPARSE_FORMAT_CONVERSION, ONLY:  SPARSE_CRS_SPARSE_CCS, SPARSE_CRS_TO_FULL
       USE GET_GRID_AND_COMP_Interface
       USE ALLOCATE_SCR_CCS_MAT_Interface
-      USE SYM_MAT_DECOMP_SUPRLU_Interface
+      USE SUPERLU_ADAPTERS, ONLY      :  FBS_SUPRLU, SYM_MAT_DECOMP_SUPRLU
       USE OPNERR_Interface
       USE FILE_CLOSE_Interface
       USE SPARSE_CRS_ACCESS, ONLY     :  GET_SPARSE_CRS_COL
-      USE FBS_SUPRLU_Interface
       USE DEALLOCATE_SCR_MAT_Interface
       USE DEALLOCATE_FULL_MAT_Interface
       USE READ_MATRIX_2_Interface

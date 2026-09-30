@@ -10,6 +10,8 @@
       USE SuperLU_STUF, ONLY          :  SLU_FACTORS, SLU_INFO
       USE PARAMS, ONLY                :  SOLLIB
       USE ARPACK_UTIL
+      USE SUPERLU_ADAPTERS, ONLY       :  FBS_SUPRLU,                                  &
+     &                                   SYM_MAT_DECOMP_SUPRLU
 
       USE OURTIM_Interface
       USE SPARSE_FULL_MULTIPLICATION, ONLY: MATMULT_SFF

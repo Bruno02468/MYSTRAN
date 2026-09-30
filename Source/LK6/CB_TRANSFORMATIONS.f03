@@ -264,8 +264,8 @@
       USE FILE_CLOSE_Interface
       USE OUTA_HERE_Interface
       USE SPARSE_CRS_ACCESS, ONLY     :  GET_SPARSE_CRS_COL
-      USE FBS_LAPACK_Interface
-      USE FBS_SUPRLU_Interface
+      USE LAPACK_ADAPTERS, ONLY       :  FBS_LAPACK
+      USE SUPERLU_ADAPTERS, ONLY      :  FBS_SUPRLU
       USE deallocate_sparse_mat_Interface
       USE ALLOCATE_SPARSE_MAT_Interface
       USE READ_MATRIX_2_Interface

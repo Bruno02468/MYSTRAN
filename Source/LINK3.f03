@@ -64,6 +64,8 @@
       USE LINK_MESSAGE_Interface
 
       USE SPARSE_CRS_ACCESS, ONLY     :  GET_SPARSE_CRS_COL
+      USE LAPACK_ADAPTERS, ONLY       :  FBS_LAPACK, SYM_MAT_DECOMP_LAPACK
+      USE SUPERLU_ADAPTERS, ONLY      :  FBS_SUPRLU, SYM_MAT_DECOMP_SUPRLU
       IMPLICIT NONE
 
       CHARACTER, PARAMETER            :: CR13 = CHAR(13)   ! This causes a carriage return simulating the "+" action in a FORMAT

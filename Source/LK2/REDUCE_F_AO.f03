@@ -719,8 +719,8 @@ FreeS:      IF (SOLLIB == 'SPARSE  ') THEN                       ! Last, free th
 
       USE MATRIX_PARTITIONING, ONLY   :  PARTITION_SS, PARTITION_SS_NTERM
       USE ALLOCATE_SPARSE_MAT_Interface
-      USE SYM_MAT_DECOMP_LAPACK_Interface
-      USE SYM_MAT_DECOMP_SUPRLU_Interface
+      USE LAPACK_ADAPTERS, ONLY       :  SYM_MAT_DECOMP_LAPACK
+      USE SUPERLU_ADAPTERS, ONLY      :  SYM_MAT_DECOMP_SUPRLU
       USE OUTA_HERE_Interface
       USE WRITE_MATRIX_1_Interface
       USE ALLOCATE_SCR_CCS_MAT_Interface
@@ -1763,8 +1763,8 @@ FreeS:      IF (SOLLIB == 'SPARSE  ') THEN                       ! Last, free th
       USE OPNERR_Interface
       USE FILE_CLOSE_Interface
       USE SPARSE_CRS_ACCESS, ONLY     :  GET_SPARSE_CRS_ROW
-      USE FBS_LAPACK_Interface
-      USE FBS_SUPRLU_Interface
+      USE LAPACK_ADAPTERS, ONLY       :  FBS_LAPACK
+      USE SUPERLU_ADAPTERS, ONLY      :  FBS_SUPRLU
       USE ALLOCATE_SPARSE_MAT_Interface
       USE READ_MATRIX_2_Interface
       USE SORTING, ONLY               :  SORT_INT2_REAL1
@@ -1997,8 +1997,8 @@ FreeS:      IF (SOLLIB == 'SPARSE  ') THEN                       ! Last, free th
       USE FILE_OPEN_Interface
       USE ALLOCATE_COL_VEC_Interface
       USE SPARSE_CRS_ACCESS, ONLY     :  GET_SPARSE_CRS_COL
-      USE FBS_LAPACK_Interface
-      USE FBS_SUPRLU_Interface
+      USE LAPACK_ADAPTERS, ONLY       :  FBS_LAPACK
+      USE SUPERLU_ADAPTERS, ONLY      :  FBS_SUPRLU
       USE WRITE_VECTOR_Interface
       USE DEALLOCATE_COL_VEC_Interface
       USE FILE_CLOSE_Interface

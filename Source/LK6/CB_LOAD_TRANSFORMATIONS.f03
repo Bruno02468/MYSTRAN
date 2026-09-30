@@ -437,14 +437,12 @@
                                          I_KLL, I2_KLL, J_KLL, KLL
 
 
-      USE SYM_MAT_DECOMP_LAPACK_Interface
+      USE LAPACK_ADAPTERS, ONLY       :  FBS_LAPACK, SYM_MAT_DECOMP_LAPACK
       USE OUTA_HERE_Interface
-      USE SYM_MAT_DECOMP_SUPRLU_Interface
+      USE SUPERLU_ADAPTERS, ONLY      :  FBS_SUPRLU, SYM_MAT_DECOMP_SUPRLU
       USE OPNERR_Interface
       USE FILE_CLOSE_Interface
       USE SPARSE_CRS_ACCESS, ONLY     :  GET_SPARSE_CRS_ROW
-      USE FBS_LAPACK_Interface
-      USE FBS_SUPRLU_Interface
       USE ALLOCATE_SPARSE_MAT_Interface
       USE READ_MATRIX_2_Interface
       USE GET_I_MAT_FROM_I2_MAT_Interface
