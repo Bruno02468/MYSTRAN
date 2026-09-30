@@ -26,10 +26,15 @@
 ! End MIT license text.
 
       MODULE DSBAND_PREFAC_MOD
+
       IMPLICIT NONE
+
       PRIVATE
+
       PUBLIC :: DSBAND_PREFAC
+
       CONTAINS
+
 c
 c     DSBAND_PREFAC: Version of DSBAND that assumes the matrix has already been factored.
 c
@@ -731,6 +736,6 @@ c
 
       END SUBROUTINE ARP_DEB_PREFAC
 
-      end subroutine dsband_prefac
+            end subroutine dsband_prefac
 
-      END MODULE DSBAND_PREFAC_MOD
+         END MODULE DSBAND_PREFAC_MOD
