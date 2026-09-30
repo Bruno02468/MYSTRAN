@@ -41,10 +41,9 @@
       USE FILE_CLOSE_Interface
       USE SOLVE_DLR_Interface
       USE PARTITION_VEC_Interface
-      USE MERGE_PHIXA_Interface
+      USE CB_TRANSFORMATIONS, ONLY    :  CALC_PHIZL, MERGE_PHIXA
       USE WRITE_SPARSE_CRS_Interface
       USE DEALLOCATE_SPARSE_MAT_Interface
-      USE CALC_PHIZL_Interface
       USE CALC_KRRcb_Interface
       USE MERGE_KXX_Interface
       USE CALC_MRRcb_Interface
