@@ -27,6 +27,6 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE CHECK_TE_MATRIX
 
-      USE MATMULT_FFF_T_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF_T
 
       END MODULE CHECK_TE_MATRIX_USE_IFs

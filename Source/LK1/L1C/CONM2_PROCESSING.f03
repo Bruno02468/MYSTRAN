@@ -57,8 +57,7 @@
       USE GET_GRID_NUM_COMPS_Interface
       USE OUTA_HERE_Interface
       USE GEN_T0L_Interface
-      USE MATMULT_FFF_Interface
-      USE MATMULT_FFF_T_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
 
       IMPLICIT NONE
 
@@ -429,8 +428,7 @@ j_loop1:    DO J=1,NCORD
 
       USE GET_ARRAY_ROW_NUM_Interface
       USE GEN_T0L_Interface
-      USE MATMULT_FFF_T_Interface
-      USE MATMULT_FFF_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
       USE OUTA_HERE_Interface
 
       IMPLICIT NONE

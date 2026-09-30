@@ -36,7 +36,6 @@
       USE QPLT1_Interface
       USE QPLT2_Interface
       USE QPLT3_Interface
-      USE MATMULT_FFF_Interface
-      USE MATMULT_FFF_T_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
 
       END MODULE QDEL1_USE_IFs

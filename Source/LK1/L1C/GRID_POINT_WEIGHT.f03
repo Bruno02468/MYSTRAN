@@ -53,7 +53,7 @@
       USE GET_ARRAY_ROW_NUM_Interface
       USE EMG_Interface
       USE GEN_T0L_Interface
-      USE MATMULT_FFF_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF
       USE GET_GRID_NUM_COMPS_Interface
       USE OUTA_HERE_Interface
       USE COUNTER_INIT_Interface
@@ -1136,8 +1136,7 @@ userin:        IF ((WHICH(1:8) == 'OA MODEL') .OR. (WHICH(1:6) == 'USERIN')) THE
       USE OUTA_HERE_Interface
       USE GET_GRID_NUM_COMPS_Interface
       USE GEN_T0L_Interface
-      USE MATMULT_FFF_Interface
-      USE MATMULT_FFF_T_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
 
       IMPLICIT NONE
 

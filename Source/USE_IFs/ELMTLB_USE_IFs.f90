@@ -29,8 +29,7 @@
 
       USE OURTIM_Interface
       USE MATGET_Interface
-      USE MATMULT_FFF_Interface
-      USE MATMULT_FFF_T_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
       USE MATPUT_Interface
 
       END MODULE ELMTLB_USE_IFs

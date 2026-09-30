@@ -30,7 +30,7 @@
       USE OURTIM_Interface
       USE CROSS_Interface
       USE PLANE_COORD_TRANS_21_Interface
-      USE MATMULT_FFF_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF
       USE CHECK_TE_MATRIX_Interface
 
       END MODULE ELMGM3_USE_IFs

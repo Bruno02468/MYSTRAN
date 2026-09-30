@@ -183,7 +183,7 @@
       USE MODEL_STUF, ONLY            :  AGRID, TE, XEB, XEL
 
       USE RIGID_BODY_DISP_MAT_Interface
-      USE MATMULT_FFF_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF
 
       IMPLICIT NONE
 

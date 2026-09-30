@@ -487,8 +487,8 @@ FreeS:IF (SOLLIB == 'SPARSE  ') THEN                       ! Last, free the stor
       USE SPARSE_MATRICES, ONLY       :  SYM_KLL
       USE COL_VECS, ONLY              :  UL_COL, PL_COL
 
-      USE MATMULT_SFF_Interface
-      USE MATADD_FFF_Interface
+      USE SPARSE_FULL_MULTIPLICATION, ONLY:  MATMULT_SFF
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATADD_FFF
 
       IMPLICIT NONE
 

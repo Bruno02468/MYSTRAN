@@ -119,9 +119,8 @@
       USE OUTA_HERE_Interface
       USE READERR_Interface
       USE GET_ARRAY_ROW_NUM_Interface
-      USE MATMULT_FFF_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
       USE GEN_T0L_Interface
-      USE MATMULT_FFF_T_Interface
       USE GET_GRID_6X6_MASS_Interface
       USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
       USE CROSS_Interface

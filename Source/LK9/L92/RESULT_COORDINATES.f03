@@ -55,7 +55,7 @@
       USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
       USE GEN_T0L_Interface
       USE MATGET_Interface
-      USE MATMULT_FFF_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF
       USE MATPUT_Interface
 
       IMPLICIT NONE
@@ -378,7 +378,7 @@
 
       USE GEN_T0L_Interface
       USE MATGET_Interface
-      USE MATMULT_FFF_T_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF_T
       USE MATPUT_Interface
 
       IMPLICIT NONE
@@ -515,6 +515,7 @@
 
       USE PENTIUM_II_KIND, ONLY       :  DOUBLE
       USE CONSTANTS_1, ONLY           :  ZERO
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF
 
       IMPLICIT NONE
 
@@ -603,7 +604,7 @@
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  CORD, RCORD, TE
 
-      USE MATMULT_FFF_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF
 
       IMPLICIT NONE
 

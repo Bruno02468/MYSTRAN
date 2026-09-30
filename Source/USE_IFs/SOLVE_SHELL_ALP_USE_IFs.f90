@@ -27,7 +27,6 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE SOLVE_SHELL_ALP
 
-      USE INVERT_FF_MAT_Interface
-      USE MATMULT_FFF_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  INVERT_FF_MAT, MATMULT_FFF
 
       END MODULE SOLVE_SHELL_ALP_USE_IFs

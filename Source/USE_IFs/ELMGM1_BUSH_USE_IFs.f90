@@ -31,6 +31,6 @@
       USE CROSS_Interface
       USE SORTING, ONLY               :  CALC_VEC_SORT_ORDER
       USE GEN_T0L_Interface
-      USE MATMULT_FFF_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF
 
       END MODULE ELMGM1_BUSH_USE_IFs

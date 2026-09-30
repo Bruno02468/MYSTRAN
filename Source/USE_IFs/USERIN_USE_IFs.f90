@@ -36,8 +36,7 @@
       USE FILE_OPEN_Interface
       USE READ_IN4_FULL_MAT_Interface
       USE OUTA_HERE_Interface
-      USE MATMULT_FFF_Interface
-      USE MATMULT_FFF_T_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
       USE DEALLOCATE_IN4_FILES_Interface
       USE FILE_CLOSE_Interface
 

@@ -50,8 +50,7 @@
       USE MITC_INITIALIZE_Interface
       USE QUADRATURE, ONLY            :  ORDER_GAUSS
       USE OUTA_HERE_Interface
-      USE MATMULT_FFF_Interface
-      USE MATMULT_FFF_T_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
       USE MITC_DETJ_Interface
       USE MITC4_B_Interface
       USE MITC4_BMBS_Interface
@@ -59,8 +58,6 @@
       USE MITC_TRANSFORM_B_Interface
       USE PLANE_COORD_TRANS_21_Interface
       USE MATL_TRANSFORM_MATRIX_Interface
-      USE MATMULT_FFF_Interface
-      USE MATMULT_FFF_T_Interface
       USE MITC_ELASTICITY_Interface
       USE CROSS_Interface
       USE MITC_SHAPE_FUNCTIONS_Interface

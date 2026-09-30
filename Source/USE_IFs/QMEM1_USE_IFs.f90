@@ -31,9 +31,8 @@
       USE QUADRATURE, ONLY            :  ORDER_GAUSS
       USE SHP2DQ_Interface
       USE JACOBIAN, ONLY               :  JAC2D
-      USE MATMULT_FFF_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
       USE BMQMEM_Interface
-      USE MATMULT_FFF_T_Interface
       USE OUTA_HERE_Interface
       USE GET_ELEM_NUM_PLIES_Interface
       USE RESULT_COORDINATES, ONLY    :  ELMDIS, ELMDIS_PLY

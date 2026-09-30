@@ -32,7 +32,6 @@
       USE TPLT1_Interface
       USE TPLT2_Interface
       USE outa_here_Interface
-      USE MATMULT_FFF_Interface
-      USE MATMULT_FFF_T_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
 
       END MODULE TREL1_USE_IFs

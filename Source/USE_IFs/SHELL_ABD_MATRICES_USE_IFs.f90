@@ -29,7 +29,7 @@
 
       USE OURTIM_Interface
       USE IS_ELEM_PCOMP_PROPS_Interface
-      USE MATMULT_FFF_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF
       USE GET_ELEM_NUM_PLIES_Interface
       USE MATERIAL_PROPS_2D_Interface
       USE ROT_COMP_ELEM_AXES_Interface

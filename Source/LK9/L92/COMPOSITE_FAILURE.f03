@@ -256,8 +256,7 @@
       USE MODEL_STUF, ONLY            :  FAILURE_THEORY
 
       USE GET_MACHINE_PARAMS_Interface
-      USE MATMULT_FFF_Interface
-      USE MATMULT_FFF_T_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
       USE OUTA_HERE_Interface
 
       IMPLICIT NONE

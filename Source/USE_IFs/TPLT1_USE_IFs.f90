@@ -28,6 +28,6 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE TPLT1
 
       USE OURTIM_Interface
-      USE MATMULT_FFF_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF
 
       END MODULE TPLT1_USE_IFs

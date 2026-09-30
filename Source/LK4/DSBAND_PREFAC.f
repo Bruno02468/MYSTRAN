@@ -61,7 +61,7 @@ c
       USE ARPACK_LANCZOS_EIG, ONLY    :  dsaupd, dseupd, cr13_a
 
       USE OURTIM_Interface
-      USE MATMULT_SFF_Interface
+      USE SPARSE_FULL_MULTIPLICATION, ONLY: MATMULT_SFF
       USE ARPACK_INFO_MSG_Interface
       USE FBS_SUPRLU_Interface
 

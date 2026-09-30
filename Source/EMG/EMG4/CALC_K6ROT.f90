@@ -36,7 +36,7 @@
       USE JACOBIAN, ONLY               :  JAC2D
       USE QUADRATURE, ONLY            :  ORDER_GAUSS
       USE CROSS_Interface
-      USE MATMULT_FFF_T_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF_T
 
       IMPLICIT NONE
 

@@ -30,6 +30,6 @@
       USE OURTIM_Interface
       USE outa_here_Interface
       USE SHP2DQ_Interface
-      USE MATMULT_FFF_T_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF_T
 
       END MODULE PARAM_CORDS_ACT_CORDS_USE_IFs

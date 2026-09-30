@@ -83,6 +83,7 @@
       USE IOUNT1, ONLY                :  WRT_BUG
       USE MODEL_STUF, ONLY            :  XEL, ELGP
 
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF_T
       IMPLICIT NONE
 
       INTEGER(LONG)                   :: J                   ! DO loop index

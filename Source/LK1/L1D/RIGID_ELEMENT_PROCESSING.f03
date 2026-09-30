@@ -146,8 +146,7 @@
       USE READERR_Interface
       USE GET_ARRAY_ROW_NUM_Interface
       USE GEN_T0L_Interface
-      USE MATMULT_FFF_T_Interface
-      USE MATMULT_FFF_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
       USE DOF_SET_CONSTRUCTION, ONLY  :  RDOF
       USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
 
@@ -1069,8 +1068,7 @@
       USE OUTA_HERE_Interface
       USE SORTING, ONLY               :  CALC_VEC_SORT_ORDER
       USE CROSS_Interface
-      USE MATMULT_FFF_Interface
-      USE MATMULT_FFF_T_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
 
       IMPLICIT NONE
 

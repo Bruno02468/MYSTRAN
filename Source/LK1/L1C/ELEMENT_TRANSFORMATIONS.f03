@@ -56,8 +56,7 @@
       USE GET_ARRAY_ROW_NUM_Interface
       USE GEN_T0L_Interface
       USE MATGET_Interface
-      USE MATMULT_FFF_Interface
-      USE MATMULT_FFF_T_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
       USE MATPUT_Interface
       USE ELMOFF_Interface
 

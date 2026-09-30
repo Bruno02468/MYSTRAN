@@ -28,7 +28,7 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE BUSH
 
       USE OURTIM_Interface
-      USE MATMULT_FFF_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF
       USE RESULT_FORMATTING, ONLY     :  WRT_REAL_TO_CHAR_VAR
 
       END MODULE BUSH_USE_IFs

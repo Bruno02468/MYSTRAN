@@ -31,9 +31,8 @@
       USE QUADRATURE, ONLY            :  ORDER_GAUSS
       USE SHP2DQ_Interface
       USE JACOBIAN, ONLY               :  JAC2D
-      USE MATMULT_FFF_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
       USE BBMIN4_Interface
-      USE MATMULT_FFF_T_Interface
       USE MIN4SH_Interface
       USE BSMIN4_Interface
       USE CALC_PHI_SQ_Interface

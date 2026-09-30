@@ -70,7 +70,7 @@
 
       USE OUTA_HERE_Interface
       USE CROSS_Interface
-      USE MATMULT_FFF_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF
       USE SORTING, ONLY               :  SORT_INT1
 
       IMPLICIT NONE
@@ -1722,7 +1722,7 @@ big_loop:   DO J=1,NCORD                                   ! Find a CORD1 with a
 
       USE SORTING, ONLY               :  SORT_INT2, SORT_GRID_RGRID
       USE OUTA_HERE_Interface
-      USE MATMULT_FFF_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF
       USE WRITE_GRID_COORDS_Interface
 
       IMPLICIT NONE

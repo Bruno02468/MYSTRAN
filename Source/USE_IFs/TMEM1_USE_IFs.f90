@@ -29,7 +29,6 @@
 
       USE OURTIM_Interface
       USE BCHECK_2D_Interface
-      USE MATMULT_FFF_T_Interface
-      USE MATMULT_FFF_Interface
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
 
       END MODULE TMEM1_USE_IFs
