@@ -24,6 +24,16 @@
 
 ! End MIT license text.
 
+   MODULE INVERSE_POWER
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: EIG_INV_PWR
+
+   CONTAINS
+
        SUBROUTINE EIG_INV_PWR
 
 ! Solves for eigenvalues and eigenvectors when method is INV. Code is only valid for the 1st eigenval/vec. Inverse Power is an
@@ -43,7 +53,17 @@
       USE SPARSE_MATRICES, ONLY       :  SYM_KLL, SYM_KLLD, SYM_MLL
       USE DEBUG_PARAMETERS, ONLY      :  DEBUG
 
-      USE EIG_INV_PWR_USE_IFs
+      USE MATADD_SSS_NTERM_Interface
+      USE ALLOCATE_SPARSE_MAT_Interface
+      USE MATADD_SSS_Interface
+      USE ALLOCATE_EIGEN1_MAT_Interface
+      USE SYM_MAT_DECOMP_LAPACK_Interface
+      USE SYM_MAT_DECOMP_SUPRLU_Interface
+      USE OUTA_HERE_Interface
+      USE MATMULT_SFF_Interface
+      USE FBS_LAPACK_Interface
+      USE FBS_SUPRLU_Interface
+      USE DEALLOCATE_SPARSE_MAT_Interface
       USE LINK_MESSAGE_Interface
 
       IMPLICIT NONE
@@ -405,3 +425,5 @@ iters:DO
       END SUBROUTINE WRITE_ITER_RESULTS
 
       END SUBROUTINE EIG_INV_PWR
+
+   END MODULE INVERSE_POWER

@@ -37,7 +37,7 @@
       USE ALLOCATE_SPARSE_MAT_Interface
       USE CRS_SYM_TO_CRS_NONSYM_Interface
       USE EIG_GIV_MGIV_Interface
-      USE EIG_INV_PWR_Interface
+      USE INVERSE_POWER, ONLY         :  EIG_INV_PWR
       USE EIG_LANCZOS_ARPACK_Interface
       USE EIG_LANCZOS_ARPACK_ADAPTIVE_Interface
       USE DEALLOCATE_SPARSE_MAT_Interface
