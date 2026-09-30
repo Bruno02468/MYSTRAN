@@ -44,6 +44,6 @@
       USE ALLOCATE_EIGEN1_MAT_Interface
       USE DEALLOCATE_LAPACK_MAT_Interface
       USE GET_GRID_AND_COMP_Interface
-      USE INVERT_EIGENS_Interface
+      USE GIVENS, ONLY                :  INVERT_EIGENS
 
       END MODULE EIG_LANCZOS_ARPACK_USE_IFs
