@@ -24,6 +24,16 @@
 
 ! End MIT license text.
 
+   MODULE INI_FILE
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: READ_INI
+
+   CONTAINS
+
       SUBROUTINE READ_INI ( INI_EXIST )
 
 ! Processes MYSTRAN.INI file, which contains default values for things such as the default drive, directory that the input file
@@ -57,7 +67,12 @@
       USE SCONTR, ONLY                :  BLNK_SUB_NAM, ECHO, IERRFL, INI_ENTRY_LEN, JF, LINKNO_START, PRINTENV,                    &
                                          PROG_NAME
 
-      USE READ_INI_USE_IFs
+      USE OPNERR_Interface
+      USE OUTA_HERE_Interface
+      USE MKJCARD_08_Interface
+      USE FILE_CLOSE_Interface
+      USE SET_FILE_CLOSE_STAT_Interface
+      USE WRITE_FILNAM_Interface
 
       IMPLICIT NONE
 
@@ -1086,3 +1101,82 @@ j_do:       DO J=1,8                                       ! CYCLE through 8 cha
       END SUBROUTINE WRITE_INIFIL_MSG
 
       END SUBROUTINE READ_INI
+
+
+! ##################################################################################################################################
+
+      SUBROUTINE GET_INI_FILNAM  ( MYSTRAN_DIR, MYSTRAN_DIR_LEN, INIFIL_NAME_LEN )
+
+! Gets name (incl path) of the MYSTRAN.INI initialization file.
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG
+      USE IOUNT1, ONLY                :  FILE_NAM_MAXLEN, INIFIL
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM, PROG_NAME
+      USE TIMDAT, ONLY                :  TSEC
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(PROG_NAME)+4) :: FILNAM            ! File name for MYSTRAN initialization file (not including path)
+
+                                                           ! Directory where MYSTRAN executable (and INI file) exist
+      CHARACTER(FILE_NAM_MAXLEN*BYTE), INTENT(IN):: MYSTRAN_DIR
+      CHARACTER :: OS_DIR_SEP = '/'                        ! Directory separator
+
+      INTEGER(LONG), INTENT(IN)       :: MYSTRAN_DIR_LEN   ! Length of MYSTRAN_DIR (not including trailing blanks)
+      INTEGER(LONG), INTENT(OUT)      :: INIFIL_NAME_LEN   ! Length of INI file name (incl path)
+
+! **********************************************************************************************************************************
+      FILNAM( 1:LEN(PROG_NAME)) = PROG_NAME
+      FILNAM(LEN(PROG_NAME)+1:LEN(PROG_NAME)+4) = '.INI'
+
+      IF (MYSTRAN_DIR_LEN > 0) THEN
+         INIFIL(1:MYSTRAN_DIR_LEN)  = MYSTRAN_DIR
+         INIFIL(MYSTRAN_DIR_LEN+1:MYSTRAN_DIR_LEN+2)  = OS_DIR_SEP
+         INIFIL(MYSTRAN_DIR_LEN+2:) = FILNAM
+         INIFIL_NAME_LEN = MYSTRAN_DIR_LEN +1 + LEN(PROG_NAME) + 4
+      ELSE
+         INIFIL = FILNAM
+         INIFIL_NAME_LEN = LEN(PROG_NAME) + 4
+      ENDIF
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE GET_INI_FILNAM
+
+
+      SUBROUTINE GET_MYSTRAN_DIR ( MYSTRAN_DIR, MYSTRAN_DIR_LEN )
+
+! Gets the environment variable MYSTRAN_DIR that tells Windows where the MYSTRAN executable is located. The user must have set this
+! environment variable on their computer
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE IOUNT1, ONLY                :  FILE_NAM_MAXLEN
+
+      IMPLICIT NONE
+
+      CHARACTER(FILE_NAM_MAXLEN*BYTE), INTENT(OUT) :: MYSTRAN_DIR       ! Directory where executable (and INI file) exist
+
+      INTEGER(LONG), INTENT(OUT)                   :: MYSTRAN_DIR_LEN   ! Length of MYSTRAN_DIR (not including trailing blanks)
+      INTEGER(LONG)                                :: I                 ! DO loop index
+
+      INTRINSIC                                    :: GETENV
+
+! **********************************************************************************************************************************
+      CALL GETENV ( 'MYSTRAN_directory', MYSTRAN_DIR )
+      MYSTRAN_DIR_LEN = FILE_NAM_MAXLEN
+      DO I=FILE_NAM_MAXLEN,1,-1
+         IF (MYSTRAN_DIR(I:I) /= ' ') THEN
+            EXIT
+         ELSE
+            MYSTRAN_DIR_LEN = MYSTRAN_DIR_LEN - 1
+            CYCLE
+         ENDIF
+      ENDDO
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE GET_MYSTRAN_DIR
+
+
+
+   END MODULE INI_FILE

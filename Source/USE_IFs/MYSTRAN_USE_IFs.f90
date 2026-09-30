@@ -28,7 +28,7 @@
 ! USE Interface statements for all subroutines called by PROGRAM MYSTRAN
 
       USE TIME_INIT_Interface
-      USE READ_INI_Interface
+      USE INI_FILE, ONLY            :  READ_INI
       USE OURTIM_Interface
       USE OURDAT_Interface
       USE READ_INPUT_FILE_NAME_Interface
