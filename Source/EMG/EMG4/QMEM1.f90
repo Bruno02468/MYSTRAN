@@ -52,6 +52,7 @@
                                          SE1, STE1, SHELL_AALP, SHELL_A, TREF, TYPE, FCONV, STRESS, NUM_PLIES, INTL_PID, TPLY,     &
                                          EPROP, PLY_NUM
       USE DEBUG_PARAMETERS, ONLY      :  DEBUG
+      USE COMMON_ELEMENT_RECOVERY, ONLY: ELEM_STRE_STRN_ARRAYS
 
       USE QMEM1_USE_IFs
 
