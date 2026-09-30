@@ -29,7 +29,7 @@
 
       USE OURTIM_Interface
       USE ORDER_GAUSS_Interface
-      USE JAC2D_Interface
+      USE JACOBIAN, ONLY               :  JAC2D
       USE QSHEAR_Interface
       USE QMEM1_Interface
       USE outa_here_Interface

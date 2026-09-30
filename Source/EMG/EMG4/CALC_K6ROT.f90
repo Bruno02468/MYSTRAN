@@ -33,6 +33,7 @@
       USE PARAMS, ONLY                :  K6ROT
       USE CONSTANTS_1, ONLY           :  ZERO, ONE
       USE SCONTR, ONLY                :  MAX_ORDER_GAUSS
+      USE JACOBIAN, ONLY               :  JAC2D
       USE CROSS_Interface
       USE MATMULT_FFF_T_Interface
 
@@ -116,12 +117,12 @@
          DO GP=1,ELGP
 
             B = ZERO
-            
+
             ! The spring at one grid point is effectively a 3-node element with nodes and DOFs of:
             ! Node n:          tx, ty, tz, rx, ry, rz
             ! Node n+1 (next): tx, ty, tz
             ! Node n-1 (prev): tx, ty, tz
-            
+
             GP_PREV = GP - 1
             IF (GP_PREV < 1) THEN
                GP_PREV = ELGP
@@ -131,17 +132,17 @@
             IF (GP_NEXT > ELGP) THEN
                GP_NEXT = 1
             ENDIF
-            
+
             X_PREV = XEL(GP_PREV,1:3) - XEL(GP,1:3)
             X_NEXT = XEL(GP_NEXT,1:3) - XEL(GP,1:3)
-         
+
             !Contribution of previous node's displacement
             !        - n × (x_n-1 - x_n)
             !ε_n  =  ------------------- * u_n-1
             !        2 * |x_n-1 - x_n|^2
             CALL CROSS(N, X_PREV, TERM_PREV)
             TERM_PREV = TERM_PREV * 1 / (2 * (X_PREV(1)**2 + X_PREV(2)**2 + X_PREV(3)**2) )
-           
+
             B((GP_PREV - 1) * 6 + 1) = -TERM_PREV(1)
             B((GP_PREV - 1) * 6 + 2) = -TERM_PREV(2)
             B((GP_PREV - 1) * 6 + 3) = -TERM_PREV(3)
@@ -152,11 +153,11 @@
             !        2 * |x_n+1 - x_n|^2
             CALL CROSS(N, X_NEXT, TERM_NEXT)
             TERM_NEXT = TERM_NEXT * 1 / (2 * (X_NEXT(1)**2 + X_NEXT(2)**2 + X_NEXT(3)**2) )
-           
+
             B((GP_NEXT - 1) * 6 + 1) = -TERM_NEXT(1)
             B((GP_NEXT - 1) * 6 + 2) = -TERM_NEXT(2)
             B((GP_NEXT - 1) * 6 + 3) = -TERM_NEXT(3)
-         
+
             !Contribution of current node's displacement and rotation
             !          n × (x_n-1 - x_n)     n × (x_n+1 - x_n)
             !ε_n += ( ------------------- + ------------------- ) * u_n  +  n · r_n
@@ -167,17 +168,17 @@
             B((GP - 1) * 6 + 4) = N(1)
             B((GP - 1) * 6 + 5) = N(2)
             B((GP - 1) * 6 + 6) = N(3)
-                     
+
             ! stiffness * B' * B
             CALL MATMULT_FFF_T(B, B, 1, 6*ELGP, 6*ELGP, KROT)
             KROT = KROT * STIFFNESS
 
             KE(1:6*ELGP, 1:6*ELGP) = KE(1:6*ELGP, 1:6*ELGP) + KROT(1:6*ELGP, 1:6*ELGP)
-         
+
          ENDDO
 
       ENDIF
-    
+
 
 ! **********************************************************************************************************************************
 
