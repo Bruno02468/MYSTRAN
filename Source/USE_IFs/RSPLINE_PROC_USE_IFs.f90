@@ -35,7 +35,7 @@
       USE TDOF_COL_NUM_Interface
       USE RDOF_Interface
       USE OUTA_HERE_Interface
-      USE CALC_VEC_SORT_ORDER_Interface
+      USE SORTING, ONLY               :  CALC_VEC_SORT_ORDER
       USE CROSS_Interface
       USE MATMULT_FFF_Interface
       USE MATMULT_FFF_T_Interface

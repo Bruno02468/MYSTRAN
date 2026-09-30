@@ -33,7 +33,7 @@
       USE GET_GRID_NUM_COMPS_Interface
       USE ARRAY_SIZE_ERROR_1_Interface
       USE OUTA_HERE_Interface
-      USE SORT_TDOF_Interface
+      USE SORTING, ONLY               :  SORT_TDOF
       USE WRITE_TDOF_Interface
       USE COUNTER_INIT_Interface
       USE COUNTER_PROGRESS_Interface

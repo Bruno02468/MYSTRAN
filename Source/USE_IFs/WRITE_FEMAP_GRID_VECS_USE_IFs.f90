@@ -32,6 +32,6 @@
       USE GET_GRID_NUM_COMPS_Interface
       USE GEN_T0L_Interface
       USE GET_VEC_MIN_MAX_ABS_Interface
-      USE SORT_INT1_REAL1_Interface
+      USE SORTING, ONLY               :  SORT_INT1_REAL1
 
       END MODULE WRITE_FEMAP_GRID_VECS_USE_IFs

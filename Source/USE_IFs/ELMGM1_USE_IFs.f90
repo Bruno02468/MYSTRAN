@@ -29,7 +29,7 @@
 
       USE OURTIM_Interface
       USE GEN_T0L_Interface
-      USE CALC_VEC_SORT_ORDER_Interface
+      USE SORTING, ONLY               :  CALC_VEC_SORT_ORDER
       USE CROSS_Interface
 
       END MODULE ELMGM1_USE_IFs

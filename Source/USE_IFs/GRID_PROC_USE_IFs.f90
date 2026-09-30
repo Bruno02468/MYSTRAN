@@ -28,8 +28,7 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE GRID_PROC
 
       USE OURTIM_Interface
-      USE SORT_INT2_Interface
-      USE SORT_GRID_RGRID_Interface
+      USE SORTING, ONLY               :  SORT_INT2, SORT_GRID_RGRID
       USE OUTA_HERE_Interface
       USE CORD_PROC_Interface
       USE MATMULT_FFF_Interface

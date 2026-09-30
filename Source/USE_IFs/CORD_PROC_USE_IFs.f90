@@ -31,6 +31,6 @@
       USE OUTA_HERE_Interface
       USE CROSS_Interface
       USE MATMULT_FFF_Interface
-      USE SORT_INT1_Interface
+      USE SORTING, ONLY               :  SORT_INT1
 
       END MODULE CORD_PROC_USE_IFs

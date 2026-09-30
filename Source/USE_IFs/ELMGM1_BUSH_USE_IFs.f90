@@ -29,7 +29,7 @@
 
       USE OURTIM_Interface
       USE CROSS_Interface
-      USE CALC_VEC_SORT_ORDER_Interface
+      USE SORTING, ONLY               :  CALC_VEC_SORT_ORDER
       USE GEN_T0L_Interface
       USE MATMULT_FFF_Interface
 

@@ -30,6 +30,6 @@
       USE OURTIM_Interface
       USE OUTA_HERE_Interface
       USE ARRAY_SIZE_ERROR_1_Interface
-      USE SORT_INT1_REAL1_Interface
+      USE SORTING, ONLY               :  SORT_INT1_REAL1
 
       END MODULE MERGE_MAT_COLS_SSS_USE_IFs

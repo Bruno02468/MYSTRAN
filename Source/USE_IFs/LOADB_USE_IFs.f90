@@ -113,6 +113,6 @@
       USE BD_USET_Interface
       USE BD_USET1_Interface
       USE ALLOCATE_MODEL_STUF_Interface
-      USE SORT_INT1_Interface
+      USE SORTING, ONLY               :  SORT_INT1
 
       END MODULE LOADB_USE_IFs

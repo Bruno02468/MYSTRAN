@@ -2722,7 +2722,7 @@ j_do:       DO J=JSTART,NDOFG                               ! Loop over rows of 
       USE DEALLOCATE_SCR_MAT_Interface
       USE DEALLOCATE_FULL_MAT_Interface
       USE READ_MATRIX_2_Interface
-      USE SORT_INT2_REAL1_Interface
+      USE SORTING, ONLY               :  SORT_INT2_REAL1
       USE READ_MATRIX_1_Interface
       USE COUNTER_INIT_Interface
       USE COUNTER_PROGRESS_Interface

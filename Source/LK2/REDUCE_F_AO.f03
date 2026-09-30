@@ -1795,7 +1795,7 @@ FreeS:      IF (SOLLIB == 'SPARSE  ') THEN                       ! Last, free th
       USE FBS_SUPRLU_Interface
       USE ALLOCATE_SPARSE_MAT_Interface
       USE READ_MATRIX_2_Interface
-      USE SORT_INT2_REAL1_Interface
+      USE SORTING, ONLY               :  SORT_INT2_REAL1
       USE DEALLOCATE_SPARSE_MAT_Interface
       USE READ_MATRIX_1_Interface
       USE WRITE_SPARSE_CRS_Interface
