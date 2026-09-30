@@ -24,6 +24,16 @@
 
 ! End MIT license text.
 
+   MODULE GRID_RESULT_DISPATCH
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: OFP1
+
+   CONTAINS
+
       SUBROUTINE OFP1 ( JVEC, WHAT, SC_OUT_REQ, FEMAP_SET_ID, ITG, OT4_GROW, ITABLE, NEW_RESULT )
 
 ! Processes grid point accel, displ and applied force output requests for one subcase.
@@ -44,7 +54,12 @@
       USE DEBUG_PARAMETERS, ONLY      :  DEBUG
       USE GRID_OUTPUT_WRITERS, ONLY   :  WRITE_GRD_OP2_OUTPUTS
 
-      USE OFP1_USE_IFs
+      USE GET_ARRAY_ROW_NUM_Interface
+      USE GET_GRID_NUM_COMPS_Interface
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
+      USE CHK_OGEL_ZEROS_Interface
+      USE GRID_OUTPUT_WRITERS, ONLY   :  WRITE_FEMAP_GRID_VECS, WRITE_GRD_PRT_OUTPUTS
+      USE OUTA_HERE_Interface
 
       IMPLICIT NONE
 
@@ -361,3 +376,5 @@
 ! **********************************************************************************************************************************
 
       END SUBROUTINE OFP1
+
+   END MODULE GRID_RESULT_DISPATCH

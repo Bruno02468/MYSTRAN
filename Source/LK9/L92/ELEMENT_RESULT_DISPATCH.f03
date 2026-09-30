@@ -24,6 +24,16 @@
 
 ! End MIT license text.
 
+   MODULE ELEMENT_RESULT_DISPATCH
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: OFP3
+
+   CONTAINS
+
       SUBROUTINE OFP3 ( JVEC, FEMAP_SET_ID, ITE, OT4_EROW )
 
 ! Main driver routine for all element node (or engineering force) and stress and strain output requests for one subcase
@@ -36,7 +46,9 @@
       USE MODEL_STUF, ONLY            :  ANY_ELFE_OUTPUT, ANY_ELFN_OUTPUT, ANY_STRE_OUTPUT, ANY_STRN_OUTPUT
       USE LINK9_STUFF, ONLY           :  MAXREQ, OGEL
 
-      USE OFP3_USE_IFs
+      USE ELEMENT_RESULT_OUTPUT, ONLY: OFP3_ELFN, OFP3_ELFE_1D, OFP3_ELFE_2D, OFP3_STRE_NO_PCOMP, OFP3_STRN_NO_PCOMP
+      USE COMPOSITE_RESULT_OUTPUT, ONLY:  OFP3_STRE_PCOMP, OFP3_STRN_PCOMP
+      USE OUTA_HERE_Interface
 
       IMPLICIT NONE
 
@@ -111,3 +123,5 @@
 ! **********************************************************************************************************************************
 
       END SUBROUTINE OFP3
+
+   END MODULE ELEMENT_RESULT_DISPATCH

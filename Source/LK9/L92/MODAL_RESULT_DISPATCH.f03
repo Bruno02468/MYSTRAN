@@ -24,6 +24,16 @@
 
 ! End MIT license text.
 
+   MODULE MODAL_RESULT_DISPATCH
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: OFP2
+
+   CONTAINS
+
       SUBROUTINE OFP2 ( JVEC, WHAT, SC_OUT_REQ, ZERO_GEN_STIFF, FEMAP_SET_ID, ITG, OT4_GROW, ITABLE, NEW_RESULT )
 
       ! Processes SPC and MPC force output requests for 1 subcase.
@@ -56,7 +66,17 @@
       USE CC_OUTPUT_DESCRIBERS, ONLY  :  MPCF_F06, SPCF_F06
       USE GRID_OUTPUT_WRITERS, ONLY   :  WRITE_GRD_OP2_OUTPUTS
 
-      USE OFP2_USE_IFs
+      USE ALLOCATE_COL_VEC_Interface
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
+      USE MATMULT_SFF_Interface
+      USE DEALLOCATE_COL_VEC_Interface
+      USE GET_ARRAY_ROW_NUM_Interface
+      USE GET_GRID_NUM_COMPS_Interface
+      USE CHK_OGEL_ZEROS_Interface
+      USE GRID_OUTPUT_WRITERS, ONLY   :  WRITE_FEMAP_GRID_VECS, WRITE_GRD_PRT_OUTPUTS
+      USE CONVERT_VEC_COORD_SYS_Interface
+      USE MERGE_COL_VECS_Interface
+      USE OUTA_HERE_Interface
 
       IMPLICIT NONE
 
@@ -643,3 +663,5 @@
 ! **********************************************************************************************************************************
 
       END SUBROUTINE OFP2
+
+   END MODULE MODAL_RESULT_DISPATCH
