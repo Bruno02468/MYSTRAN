@@ -47,7 +47,7 @@
       USE LINK4_Interface
       USE LINK6_Interface
       USE DEALLOCATE_RBGLOBAL_Interface
-      USE LINK5_Interface
+      USE LINK5_MOD, ONLY             :  LINK5
       USE OUTA_HERE_Interface
       USE LINK9_Interface
       USE RESTART_DATA_FOR_L3_Interface

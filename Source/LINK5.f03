@@ -24,6 +24,16 @@
 
 ! End MIT license text.
 
+   MODULE LINK5_MOD
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: LINK5
+
+   CONTAINS
+
       SUBROUTINE LINK5
 
 ! LINK5 takes the L-set displacements solved for in LINK3 (statics) or LINK4 (eigenvalues) and builds it back up to the G-set.
@@ -53,7 +63,37 @@
       USE MODEL_STUF, ONLY            :  GRID, GRID_ID, INV_GRID_SEQ, EIG_COMP, EIG_GRID, EIG_NORM, MAXMIJ, MIJ_COL, MIJ_ROW,      &
                                          EIG_PARAMS, IS_BUCKLING_SUBCASE, IS_MODES_SUBCASE
 
-      USE LINK5_USE_IFs
+      USE TIME_INIT_Interface
+      USE OURDAT_Interface
+      USE OURTIM_Interface
+      USE READ_L1A_Interface
+      USE OUTA_HERE_Interface
+      USE ALLOCATE_SPARSE_MAT_Interface
+      USE ALLOCATE_COL_VEC_Interface
+      USE READ_MATRIX_1_Interface
+      USE FILE_OPEN_Interface
+      USE READERR_Interface
+      USE FILE_CLOSE_Interface
+      USE ALLOCATE_EIGEN1_MAT_Interface
+      USE READ_L1M_Interface
+      USE ALLOCATE_FULL_MAT_Interface
+      USE TDOF_COL_NUM_Interface
+      USE DEALLOCATE_COL_VEC_Interface
+      USE DEALLOCATE_MISC_MAT_Interface
+      USE ALLOCATE_MISC_MAT_Interface
+      USE GET_UG_123_IN_GRD_ORD_Interface
+      USE WRITE_L1M_Interface
+      USE DEALLOCATE_SPARSE_MAT_Interface
+      USE GET_GRID_NUM_COMPS_Interface
+      USE EIG_SUMMARY_Interface
+      USE OUTPUT4_PROC_Interface
+      USE DEALLOCATE_EIGEN1_MAT_Interface
+      USE WRITE_L1A_Interface
+      USE CHK_ARRAY_ALLOC_STAT_Interface
+      USE WRITE_ALLOC_MEM_TABLE_Interface
+      USE FILE_INQUIRE_Interface
+      USE WRITE_FILNAM_Interface
+      USE I4FLD_Interface
       USE LINK_MESSAGE_Interface
       USE READ_L5A_UG_FOR_SUBCASE_Interface
 
@@ -1048,3 +1088,593 @@ j_do: DO J = 1,NUM_SOLNS
       END SUBROUTINE READ_EIGNORM2
 
       END SUBROUTINE LINK5
+
+
+      SUBROUTINE BUILD_A_LR ( COL_NUM )
+
+! For one subcase:
+
+!   1) Merge UL and UR to get UA where UL was read into subr LINK5
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM, NDOFL, NDOFA, NDOFR, NVEC, SOL_NAME
+      USE TIMDAT, ONLY                :  TSEC
+      USE CONSTANTS_1, ONLY           :  ZERO, ONE
+      USE PARAMS, ONLY                :  PRTDISP
+      USE COL_VECS, ONLY              :  UL_COL, UA_COL, UR_COL
+
+      USE TDOF_COL_NUM_Interface
+      USE MERGE_COL_VECS_Interface
+      USE WRITE_VECTOR_Interface
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME   = 'BUILD_A_LR'
+
+      INTEGER(LONG), INTENT(IN)       :: COL_NUM
+      INTEGER(LONG)                   :: I                 ! DO loop index
+      INTEGER(LONG)                   :: A_SET_COL         ! Col no. in TDOF for A  displ set definition
+      INTEGER(LONG)                   :: L_SET_COL         ! Col no. in TDOF for L  displ set definition
+      INTEGER(LONG)                   :: R_SET_COL         ! Col no. in TDOF for R  displ set definition
+
+
+
+
+! **********************************************************************************************************************************
+! Get column numbers for various DOF sets
+
+      IF (NDOFR > 0) THEN
+                                                           ! Merge UL and UR to get UA
+         CALL TDOF_COL_NUM('A ', A_SET_COL)
+         CALL TDOF_COL_NUM('L ', L_SET_COL)
+         CALL TDOF_COL_NUM('R ', R_SET_COL)
+
+         DO I=1,NDOFR
+            UR_COL(I) = ZERO
+         ENDDO
+
+         IF ((SOL_NAME(1:12) == 'GEN CB MODEL') .AND. (COL_NUM > 0)) THEN
+            UR_COL(COL_NUM-(NDOFR+NVEC)) = ONE
+         ENDIF
+
+         CALL MERGE_COL_VECS ( L_SET_COL, NDOFL, UL_COL, R_SET_COL, NDOFR, UR_COL, A_SET_COL, NDOFA, UA_COL )
+
+      ELSE
+                                                           ! Set UA = UL if no R set DOF's
+         DO I=1,NDOFA
+            UA_COL(I) = UL_COL(I)
+         ENDDO
+
+      ENDIF
+
+! Print out displ matrices if PRTDISP says to
+
+      IF ((PRTDISP(3) == 1) .OR. (PRTDISP(3) == 3)) THEN
+         IF (NDOFL  > 0) THEN
+            CALL WRITE_VECTOR ( '   F-SET DISPL VECTOR   ', 'DISPL', NDOFL, UL_COL)
+         ENDIF
+      ENDIF
+
+      IF ((PRTDISP(3) == 2) .OR. (PRTDISP(3) == 3)) THEN
+         IF (NDOFR  > 0) THEN
+            CALL WRITE_VECTOR ( '   S-SET DISPL VECTOR   ', 'DISPL', NDOFR, UR_COL)
+         ENDIF
+      ENDIF
+
+
+
+      RETURN
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE BUILD_A_LR
+
+
+      SUBROUTINE BUILD_F_AO
+
+! For one subcase:
+
+!   1) Calcs UO displacements: UO = GOA*UA + UO0 where:
+
+!          UA  = from calculation in subr BUILD_A_LR
+!          UO0 = KOO(-1)*PO from LINK2
+
+!   2) Merge UO and UA to get UF
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM, NDOFA, NDOFF, NDOFO, NTERM_GOA, SOL_NAME
+      USE TIMDAT, ONLY                :  TSEC
+      USE CONSTANTS_1, ONLY           :  ONE
+      USE PARAMS, ONLY                :  PRTDISP
+      USE NONLINEAR_PARAMS, ONLY      :  LOAD_ISTEP
+      USE SPARSE_MATRICES, ONLY       :  I_GOA, J_GOA, GOA, SYM_GOA
+      USE COL_VECS, ONLY              :  UA_COL, UF_COL, UO_COL, UO0_COL
+
+      USE MATMULT_SFF_Interface
+      USE TDOF_COL_NUM_Interface
+      USE MERGE_COL_VECS_Interface
+      USE WRITE_VECTOR_Interface
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME   = 'BUILD_F_AO'
+
+      INTEGER(LONG)                   :: I                 ! DO loop index
+      INTEGER(LONG)                   :: F_SET_COL         ! Col no. in TDOF for F  displ set definition
+      INTEGER(LONG)                   :: A_SET_COL         ! Col no. in TDOF for A  displ set definition
+      INTEGER(LONG)                   :: O_SET_COL         ! Col no. in TDOF for O  displ set definition
+      INTEGER(LONG), PARAMETER        :: NUMCOLS     = 1   ! Variable for number of cols of an array
+
+
+
+
+! **********************************************************************************************************************************
+! Multiply GOA x UA to recover part of UO
+
+      IF (NDOFO > 0) THEN
+
+         CALL MATMULT_SFF ( 'GOA', NDOFO, NDOFA, NTERM_GOA, SYM_GOA, I_GOA, J_GOA, GOA, 'UA', NDOFA, NUMCOLS, UA_COL, 'Y',         &
+                            'UO', ONE, UO_COL )
+
+! Add UO0 (= KOO(-1) x PO) to get final UO but only if statics solution
+
+         IF ((SOL_NAME(1:7) == 'STATICS') .OR. (SOL_NAME(1:8) == 'NLSTATIC') .OR.                                                  &
+            ((SOL_NAME(1:8) == 'BUCKLING') .AND. (LOAD_ISTEP == 1))) THEN
+            DO I=1,NDOFO
+               UO_COL(I) = UO_COL(I) + UO0_COL(I)
+            ENDDO
+         ENDIF
+
+! Merge UA and UO to get UF
+
+         CALL TDOF_COL_NUM ( 'F ', F_SET_COL )
+         CALL TDOF_COL_NUM ( 'A ', A_SET_COL )
+         CALL TDOF_COL_NUM ( 'O ', O_SET_COL )
+
+         CALL MERGE_COL_VECS ( A_SET_COL, NDOFA, UA_COL, O_SET_COL, NDOFO, UO_COL, F_SET_COL, NDOFF, UF_COL )
+
+      ELSE
+
+         DO I=1,NDOFF
+            UF_COL(I) = UA_COL(I)
+         ENDDO
+
+      ENDIF
+
+! Print out displ matrices if PRTDISP says to
+
+      IF ((PRTDISP(4) == 1) .OR. (PRTDISP(4) == 3)) THEN
+         IF (NDOFA  > 0) THEN
+            CALL WRITE_VECTOR ( '   A-SET DISPL VECTOR   ', 'DISPL', NDOFA, UA_COL)
+         ENDIF
+      ENDIF
+
+      IF ((PRTDISP(4) == 2) .OR. (PRTDISP(4) == 3)) THEN
+         IF (NDOFO  > 0) THEN
+            CALL WRITE_VECTOR ( '   O-SET DISPL VECTOR   ', 'DISPL', NDOFO, UO_COL)
+         ENDIF
+      ENDIF
+
+
+
+      RETURN
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE BUILD_F_AO
+
+
+      SUBROUTINE BUILD_N_FS
+
+! For one subcase:
+
+!   1) Merge UF and US to get UN where UF is calc'd in subr BUILD_F_AO
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06
+      USE SCONTR, ONLY                :  NDOFF, NDOFN, NDOFS, NDOFSE, NDOFSZ, BLNK_SUB_NAM
+      USE TIMDAT, ONLY                :  TSEC
+      USE CONSTANTS_1, ONLY           :  ZERO
+      USE PARAMS, ONLY                :  PRTDISP
+      USE COL_VECS, ONLY              :  UF_COL, UN_COL, US_COL, YSe
+
+      USE TDOF_COL_NUM_Interface
+      USE MERGE_COL_VECS_Interface
+      USE WRITE_VECTOR_Interface
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME   = 'BUILD_N_FS'
+
+      INTEGER(LONG)                   :: I                 ! DO loop index
+      INTEGER(LONG)                   :: N_SET_COL         ! Col no. in TDOF for N  displ set definition
+      INTEGER(LONG)                   :: F_SET_COL         ! Col no. in TDOF for F  displ set definition
+      INTEGER(LONG)                   :: S_SET_COL         ! Col no. in TDOF for S  displ set definition
+      INTEGER(LONG)                   :: SZ_SET_COL        ! Col no. in TDOF for SZ displ set definition
+      INTEGER(LONG)                   :: SE_SET_COL        ! Col no. in TDOF for SE displ set definition
+
+
+      REAL(DOUBLE)                    :: USZ_COL(NDOFSZ)   ! Array of zero displs for the SZ set
+
+
+
+! **********************************************************************************************************************************
+! Get column numbers for various DOF sets
+
+      IF (NDOFS > 0) THEN
+
+         CALL TDOF_COL_NUM('N ', N_SET_COL)
+         CALL TDOF_COL_NUM('F ', F_SET_COL)
+         CALL TDOF_COL_NUM('S ', S_SET_COL)
+         CALL TDOF_COL_NUM('SZ',SZ_SET_COL)
+         CALL TDOF_COL_NUM('SE',SE_SET_COL)
+
+! Merge zeros for USZ ( the SZ-set) with YSe to get US ( the S-set)
+
+         DO I=1,NDOFSZ
+            USZ_COL(I) = ZERO
+         ENDDO
+
+         IF (NDOFSE > 0) THEN
+            CALL MERGE_COL_VECS ( SZ_SET_COL, NDOFSZ, USZ_COL, SE_SET_COL, NDOFSE, YSe, S_SET_COL, NDOFS, US_COL )
+         ELSE
+            DO I=1,NDOFS
+               US_COL(I) = ZERO
+            ENDDO
+         ENDIF
+
+! Merge UF and US to get UN
+
+         CALL MERGE_COL_VECS ( F_SET_COL, NDOFF, UF_COL, S_SET_COL, NDOFS, US_COL, N_SET_COL, NDOFN, UN_COL )
+
+      ELSE
+         DO I=1,NDOFN
+            UN_COL(I) = UF_COL(I)
+         ENDDO
+
+      ENDIF
+
+
+! Print out displ matrices if PRTDISP says to
+
+      IF ((PRTDISP(3) == 1) .OR. (PRTDISP(3) == 3)) THEN
+         IF (NDOFF  > 0) THEN
+            CALL WRITE_VECTOR ( '   F-SET DISPL VECTOR   ', 'DISPL', NDOFF, UF_COL)
+         ENDIF
+      ENDIF
+
+      IF ((PRTDISP(3) == 2) .OR. (PRTDISP(3) == 3)) THEN
+         IF (NDOFS  > 0) THEN
+            CALL WRITE_VECTOR ( '   S-SET DISPL VECTOR   ', 'DISPL', NDOFS, US_COL)
+         ENDIF
+      ENDIF
+
+
+
+      RETURN
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE BUILD_N_FS
+
+
+      SUBROUTINE BUILD_G_NM
+
+! For one subcase:
+
+!   1) Calcs UM displacements: UM = GMN*UN where:
+
+!          UN  = Displs calc'd in subr BUILD_N_FS
+
+!   2) Merge UM and UN to get UG
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06
+      USE SCONTR, ONLY                :  NDOFG, NDOFM, NDOFN, NTERM_GMN, BLNK_SUB_NAM
+      USE TIMDAT, ONLY                :  TSEC
+      USE CONSTANTS_1, ONLY           :  ONE
+      USE PARAMS, ONLY                :  PRTDISP
+      USE SPARSE_MATRICES, ONLY       :  I_GMN, J_GMN, GMN, SYM_GMN
+      USE COL_VECS, ONLY              :  UG_COL, UM_COL, UN_COL
+
+      USE MATMULT_SFF_Interface
+      USE TDOF_COL_NUM_Interface
+      USE MERGE_COL_VECS_Interface
+      USE WRITE_VECTOR_Interface
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME   = 'BUILD_G_NM'
+
+      INTEGER(LONG)                   :: I                 ! DO loop index
+      INTEGER(LONG)                   :: G_SET_COL         ! Col no. in TDOF for G  displ set definition
+      INTEGER(LONG)                   :: N_SET_COL         ! Col no. in TDOF for N  displ set definition
+      INTEGER(LONG)                   :: M_SET_COL         ! Col no. in TDOF for M  displ set definition
+      INTEGER(LONG), PARAMETER        :: NUMCOLS     = 1   ! Variable for number of cols of an array
+
+
+
+
+! **********************************************************************************************************************************
+! Recover UM from GMN x UN
+
+      IF (NDOFM > 0) THEN
+
+         CALL MATMULT_SFF ( 'GMN', NDOFM, NDOFN, NTERM_GMN, SYM_GMN, I_GMN, J_GMN, GMN, 'UN', NDOFN, NUMCOLS, UN_COL, 'Y',         &
+                            'UM', ONE, UM_COL )
+! Merge UN and UM to get UG
+
+         CALL TDOF_COL_NUM ( 'G ', G_SET_COL )
+         CALL TDOF_COL_NUM ( 'N ', N_SET_COL )
+         CALL TDOF_COL_NUM ( 'M ', M_SET_COL )
+
+         CALL MERGE_COL_VECS ( N_SET_COL, NDOFN, UN_COL, M_SET_COL, NDOFM, UM_COL,G_SET_COL, NDOFG, UG_COL )
+
+      ELSE
+
+         DO I=1,NDOFG
+            UG_COL(I) = UN_COL(I)
+         ENDDO
+
+      ENDIF
+
+
+! Print out displ matrices if PRTDISP says to
+
+      IF (PRTDISP(1) == 1) THEN
+         IF (NDOFG  > 0) THEN
+            CALL WRITE_VECTOR ( '   G-SET DISPL VECTOR   ', 'DISPL', NDOFG, UG_COL)
+         ENDIF
+      ENDIF
+
+      IF ((PRTDISP(2) == 1) .OR. (PRTDISP(2) == 3)) THEN
+         IF (NDOFN  > 0) THEN
+            CALL WRITE_VECTOR ( '   N-SET DISPL VECTOR   ', 'DISPL', NDOFN, UN_COL)
+         ENDIF
+      ENDIF
+
+      IF ((PRTDISP(2) == 2) .OR. (PRTDISP(2) == 3)) THEN
+         IF (NDOFM  > 0) THEN
+            CALL WRITE_VECTOR ( '   M-SET DISPL VECTOR   ', 'DISPL', NDOFM, UM_COL)
+         ENDIF
+      ENDIF
+
+
+
+      RETURN
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE BUILD_G_NM
+
+
+      SUBROUTINE EXPAND_PHIXA_TO_PHIXG
+
+! Expand array PHIXA (whose cols are stored in array UA_COL) to G-set columns (UG_COL). Each UG_COL is a column of matrix PHIXG.
+! The Craig-Bampton mode array PHIXA is described in the MYSTRAN User's Reference Manual, Appendix D
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE CONSTANTS_1, ONLY           :  ONE
+      USE IOUNT1, ONLY                :  ERR, F06, L5B, SC1
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM, LINKNO, NDOFA, NDOFF, NDOFG, NDOFM, NDOFN, NDOFO, NDOFR, NDOFS, NTERM_PHIXA,&
+                                         NTERM_PHIXG, NVEC, SOL_NAME
+      USE TIMDAT, ONLY                :  TSEC
+      USE COL_VECS, ONLY              :  UA_COL, UG_COL
+      USE PARAMS, ONLY                :  EPSIL, TINY
+      USE DEBUG_PARAMETERS, ONLY      :  DEBUG
+      USE SPARSE_MATRICES, ONLY       :  I_PHIXA, J_PHIXA, PHIXA, I_PHIXG, J_PHIXG, PHIXG
+      USE ALLOCATE_COL_VEC_Interface
+      USE GET_SPARSE_CRS_COL_Interface
+      USE DEALLOCATE_COL_VEC_Interface
+      USE CNT_NONZ_IN_FULL_MAT_Interface
+      USE ALLOCATE_SPARSE_MAT_Interface
+      USE FULL_TO_SPARSE_CRS_Interface
+
+      USE LINK_MESSAGE_Interface
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'EXPAND_PHIXA_TO_PHIXG'
+      CHARACTER( 1*BYTE)              :: NULL_COL          ! = 'Y' if col of PHIXA is null
+
+      INTEGER(LONG)                   :: I,J               ! DO loop indices
+
+
+      REAL(DOUBLE)                    :: PHIXG_FULL(NDOFG,NDOFR+NVEC)
+!                                                          ! Full representation of matrix PHIXG before converting to sparse matrix
+
+      REAL(DOUBLE)                    :: SMALL             ! A number used in filtering out small numbers from a full matrix
+
+
+
+! **********************************************************************************************************************************
+! Expand PHIXA (cols stored in UA_COL) to G-set columns (UG_COL). Each UG_COL is a column of matrix PHIXG
+
+      DO J=1,NDOFR+NVEC
+                                                           ! Put a col of PHIXA (A-set) into UA_COL
+         CALL ALLOCATE_COL_VEC ( 'UA_COL', NDOFA, SUBR_NAME )
+         CALL GET_SPARSE_CRS_COL ( 'PHIXA', J, NTERM_PHIXA, NDOFA, NDOFR+NVEC, I_PHIXA, J_PHIXA, PHIXA, ONE, UA_COL, NULL_COL )
+                                                           ! Build F-set from A and O-set
+         CALL ALLOCATE_COL_VEC ( 'UF_COL' , NDOFF, SUBR_NAME )
+         CALL ALLOCATE_COL_VEC ( 'UO_COL' , NDOFO, SUBR_NAME )
+         CALL LINK_MESSAGE_I('BUILD UF DISPLS FROM UA, UO:                      "', J)
+         CALL BUILD_F_AO
+         CALL DEALLOCATE_COL_VEC ( 'UA_COL' )
+         CALL DEALLOCATE_COL_VEC ( 'UO_COL' )
+                                                           ! Build N-set from F and S-set
+         CALL ALLOCATE_COL_VEC ( 'UN_COL', NDOFN, SUBR_NAME)
+         CALL ALLOCATE_COL_VEC ( 'US_COL', NDOFS, SUBR_NAME )
+         CALL LINK_MESSAGE_I('BUILD UN DISPLS FROM UF, US:                      "',J)
+         CALL BUILD_N_FS
+         CALL DEALLOCATE_COL_VEC ( 'UF_COL' )
+         CALL DEALLOCATE_COL_VEC ( 'US_COL' )
+                                                           ! Build G-set from N and M-set
+         CALL ALLOCATE_COL_VEC ( 'UG_COL', NDOFG, SUBR_NAME )
+         CALL ALLOCATE_COL_VEC ( 'UM_COL', NDOFM, SUBR_NAME )
+         CALL LINK_MESSAGE_I('BUILD UG DISPLS FROM UN, UM:                      "', J)
+         CALL BUILD_G_NM
+         CALL DEALLOCATE_COL_VEC ( 'UN_COL' )
+         CALL DEALLOCATE_COL_VEC ( 'UM_COL' )
+
+                                                           ! Write UG displs for this subcase to file LINK5A
+         CALL LINK_MESSAGE_I('WRITE PHIXG DISPLS TO FILE,                       "', J)
+   !xx   WRITE(SC1, * )                                    ! Separator between UG_COL calcs
+         DO I=1,NDOFG
+            WRITE(L5B) UG_COL(I)                           ! For CB this is a col of PHIXG (which is never processed as an array)
+         ENDDO
+
+         DO I=1,NDOFG
+            PHIXG_FULL(I,J) = UG_COL(I)
+         ENDDO
+
+         CALL DEALLOCATE_COL_VEC ( 'UG_COL' )
+
+      ENDDO
+
+! Convert full PHIXG to sparse
+
+      CALL CNT_NONZ_IN_FULL_MAT ( 'PHIZG_FULL', PHIXG_FULL, NDOFG, NDOFR+NVEC, 'N', NTERM_PHIXG, SMALL )
+      CALL ALLOCATE_SPARSE_MAT  ( 'PHIXG', NDOFG, NTERM_PHIXG, SUBR_NAME )
+      CALL FULL_TO_SPARSE_CRS   ( 'PHIXG_FULL', NDOFG, NDOFR+NVEC, PHIXG_FULL, NTERM_PHIXG, SMALL, SUBR_NAME, 'N',                 &
+                                   I_PHIXG, J_PHIXG, PHIXG )
+
+
+
+      RETURN
+
+! **********************************************************************************************************************************
+  101 FORMAT(' *INFORMATION: TERMS WHOSE ABS VALUE ARE < MACH_PREC =',1ES10.3,' ARE NOT INCLUDED IN MATRIX ',A,' IN SUBR ',A       &
+                    ,/,14X,' AS THIS FULL MATRIX IS BEING CONVERTED TO A SPARSE MATRIX')
+
+  102 FORMAT(' *INFORMATION: TERMS WHOSE ABS VALUE ARE < PARAM TINY =',1ES10.3,' ARE NOT INCLUDED IN MATRIX ',A,' IN SUBR ',A      &
+                    ,/,14X,' AS THIS FULL MATRIX IS BEING CONVERTED TO A SPARSE MATRIX')
+
+99885 FORMAT(82X,'MATRIX PHIXG',/,82X,'------------')
+
+99886 FORMAT(5X,32676(I14))
+
+99887 FORMAT(I8,'-',I1,32767(1ES14.6))
+
+99888 FORMAT(8X,'-',I1,32767(1ES14.6))
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE EXPAND_PHIXA_TO_PHIXG
+
+
+
+
+      SUBROUTINE RENORM ( VEC_NUM, NORM_GRD, NORM_COMP, NORM, NORM_GSET_DOF, GEN_MASS1, PHI_SCALE_FAC )
+
+! Renormalizes eigenves based on NORM = POINT or MAX if requested on Bulk Data entry EIGR or EIGRL
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM, NDOFG, NDOFG, NGRID, WARN_ERR
+      USE PARAMS, ONLY                :  EPSIL, SUPWARN
+      USE TIMDAT, ONLY                :  TSEC
+      USE CONSTANTS_1, ONLY           :  ZERO, ONE
+      USE COL_VECS, ONLY              :  UG_COL
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'RENORM'
+      CHARACTER( 8*BYTE), INTENT(IN)  :: NORM              ! Eigenvector renormalization methof from EIGR card (e.g. 'MAX     ')
+
+      INTEGER(LONG), INTENT(IN)       :: NORM_COMP         ! Comp. (1-6) for renormalizing eigenvectors (from EIGR card)
+      INTEGER(LONG), INTENT(IN)       :: NORM_GRD          ! Grid Point  for renormalizing eigenvectors (from EIGR card)
+      INTEGER(LONG), INTENT(IN)       :: NORM_GSET_DOF     ! G-set DOF no. for NORM_GRD/NORM_COMP
+      INTEGER(LONG), INTENT(IN)       :: VEC_NUM           ! Number used to control an output message (only want this information
+!                                                            message written if tyhis is the first call to this subr).
+      INTEGER(LONG)                   :: I                 ! DO loop index
+
+
+      REAL(DOUBLE) , INTENT(INOUT)    :: GEN_MASS1         ! Generalized mass for 1 eigenvector
+      REAL(DOUBLE) , INTENT(OUT)      :: PHI_SCALE_FAC     ! Scale factor for the eigenvector to renormalize it
+      REAL(DOUBLE)                    :: DPHI_MAX          ! Absolute value of PHI_MAX
+      REAL(DOUBLE)                    :: EPS1              ! Small number to compare variables against zero
+      REAL(DOUBLE)                    :: PHI_MAX           ! Largest DZIJ for all DOF'si for one eigenvector
+      REAL(DOUBLE)                    :: PHI_POINT         ! Variable used when normalizing gen. mass and eigenvectors
+
+      INTRINSIC DSQRT,DABS
+
+
+
+! **********************************************************************************************************************************
+! Initialize outputs
+
+      PHI_SCALE_FAC = ONE
+
+! Check for renorm = MAX or POINT and renormalize.
+
+      EPS1 = EPSIL(1)
+
+      IF (NORM == 'POINT   ') THEN                         ! Renormalize eigenvector on POINT
+
+         IF (NORM_GSET_DOF > 0) THEN                       ! If not, msg was written in LINK5 for no renorm, so return
+
+            PHI_POINT = UG_COL(NORM_GSET_DOF)
+            IF (DABS(PHI_POINT) > EPS1) THEN
+               DO I=1,NDOFG
+                  UG_COL(I) = UG_COL(I)/PHI_POINT
+               ENDDO
+               PHI_SCALE_FAC = PHI_POINT
+               GEN_MASS1 = GEN_MASS1/(PHI_SCALE_FAC * PHI_SCALE_FAC)
+            ELSE
+               PHI_SCALE_FAC = ONE
+               WARN_ERR = WARN_ERR + 1
+               WRITE(ERR,4113) VEC_NUM,NORM_GRD,NORM_COMP
+               IF (SUPWARN == 'N') THEN
+                  WRITE(F06,4113) VEC_NUM,NORM_GRD,NORM_COMP
+               ENDIF
+            ENDIF
+
+         ELSE
+
+            RETURN                                         ! No renorm if NORM_GSET_DOF undefined (msg written in LINK5)
+
+         ENDIF
+
+      ELSE                                                 ! NORM is MAX
+
+         PHI_MAX  = ZERO
+         DPHI_MAX = ZERO
+         DO I=1,NDOFG                                      ! Scan eigenvector to find largest value (+ or -)
+            IF (DABS(UG_COL(I)) > DPHI_MAX) THEN
+               PHI_MAX  = UG_COL(I)
+               DPHI_MAX = DABS(PHI_MAX)
+            ENDIF
+         ENDDO
+
+         IF (DPHI_MAX > EPS1) THEN                         ! Renormalize the eigenvector if PHI_MAX is not 0
+            DO I=1,NDOFG
+               UG_COL(I) = UG_COL(I)/PHI_MAX
+            ENDDO
+            PHI_SCALE_FAC = PHI_MAX
+            GEN_MASS1 = GEN_MASS1/(PHI_SCALE_FAC * PHI_SCALE_FAC)
+         ELSE
+            PHI_SCALE_FAC = ONE
+            WARN_ERR = WARN_ERR + 1
+            WRITE(ERR,4114) VEC_NUM
+            IF (SUPWARN == 'N') THEN
+               WRITE(F06,4114) VEC_NUM
+            ENDIF
+         ENDIF
+
+      ENDIF
+
+
+
+      RETURN
+
+! **********************************************************************************************************************************
+ 4113 FORMAT(' *WARNING    : EIGENVECTOR ',I8,' IS ZERO FOR GRID POINT-COMPONENT ',2I8,'. THIS VECTOR WILL NOT BE RENORMALIZED')
+
+ 4114 FORMAT(' *WARNING    : EIGENVECTOR ',I8,' MAX VALUE IS ZERO. THIS VECTOR CANNOT BE RENORMALIZED')
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE RENORM
+
+   END MODULE LINK5_MOD
