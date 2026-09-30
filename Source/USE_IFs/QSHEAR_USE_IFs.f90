@@ -27,7 +27,7 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE QSHEAR
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE QUADRATURE, ONLY            :  ORDER_GAUSS
       USE SHP2DQ_Interface
       USE JACOBIAN, ONLY               :  JAC2D

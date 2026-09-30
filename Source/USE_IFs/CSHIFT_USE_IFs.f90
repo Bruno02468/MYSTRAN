@@ -27,6 +27,6 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE CSHIFT
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
 
       END MODULE CSHIFT_USE_IFs

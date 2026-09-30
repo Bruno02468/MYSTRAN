@@ -49,7 +49,7 @@
       USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
       USE READERR_Interface
       USE OUTA_HERE_Interface
-      USE GET_ARRAY_ROW_NUM_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  GET_ARRAY_ROW_NUM
       USE DEALLOCATE_MODEL_STUF_Interface
 
       IMPLICIT NONE

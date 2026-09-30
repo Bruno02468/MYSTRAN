@@ -27,10 +27,10 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE YS_ARRAY
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE READERR_Interface
       USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
-      USE GET_ARRAY_ROW_NUM_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  GET_ARRAY_ROW_NUM
       USE FILERR_Interface
       USE OUTA_HERE_Interface
 

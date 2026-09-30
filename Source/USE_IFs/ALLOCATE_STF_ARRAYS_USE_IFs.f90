@@ -27,8 +27,8 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE ALLOCATE_STF_ARRAYS
 
-      USE OURTIM_Interface
-      USE ALLOCATED_MEMORY_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
+      USE DIAGNOSTICS_MEMORY_REPORTING, ONLY:  ALLOCATED_MEMORY
       USE OUTA_HERE_Interface
 
       END MODULE ALLOCATE_STF_ARRAYS_USE_IFs

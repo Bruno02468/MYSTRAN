@@ -192,8 +192,7 @@
 
       USE OUTA_HERE_Interface
       USE SPARSE_CRS_ACCESS, ONLY     :  ROW_AT_COLJ_BEGEND
-      USE COUNTER_INIT_Interface
-      USE COUNTER_PROGRESS_Interface
+      USE PROGRESS_COUNTERS, ONLY     :  COUNTER_INIT, COUNTER_PROGRESS
 
       IMPLICIT NONE
 
@@ -670,8 +669,7 @@ i_do: DO I=1,NROW_A                                        ! Matrix partition lo
       USE SPARSE_CRS_ACCESS, ONLY     :  ROW_AT_COLJ_BEGEND
       USE ALLOCATE_SPARSE_ALG_Interface
       USE DEALLOCATE_SPARSE_ALG_Interface
-      USE COUNTER_INIT_Interface
-      USE COUNTER_PROGRESS_Interface
+      USE PROGRESS_COUNTERS, ONLY     :  COUNTER_INIT, COUNTER_PROGRESS
 
       IMPLICIT NONE
 

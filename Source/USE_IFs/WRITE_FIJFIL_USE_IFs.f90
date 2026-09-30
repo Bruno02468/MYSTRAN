@@ -27,7 +27,7 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE WRITE_FIJFIL
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE FILE_INQUIRE_Interface
 
       END MODULE WRITE_FIJFIL_USE_IFs

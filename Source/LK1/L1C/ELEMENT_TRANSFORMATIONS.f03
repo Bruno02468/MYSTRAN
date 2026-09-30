@@ -53,8 +53,8 @@
 
       USE OUTA_HERE_Interface
       USE ELMTLB_Interface
-      USE GET_ARRAY_ROW_NUM_Interface
-      USE GEN_T0L_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  GET_ARRAY_ROW_NUM
+      USE VECTOR_GEOMETRY, ONLY       :  GEN_T0L
       USE MATGET_Interface
       USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
       USE MATPUT_Interface

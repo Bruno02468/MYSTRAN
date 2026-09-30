@@ -27,7 +27,7 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE FILE_INQUIRE
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE OUTA_HERE_Interface
 
       END MODULE FILE_INQUIRE_USE_IFs

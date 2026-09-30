@@ -39,6 +39,7 @@
 
       USE WRITE_MATRIX_1_USE_IFs
 
+      USE PROGRESS_COUNTERS, ONLY     :  COUNTER_INIT, COUNTER_PROGRESS
       IMPLICIT NONE
 
       CHARACTER, PARAMETER            :: CR13 = CHAR(13)   ! This causes a carriage return simulating the "+" action in a FORMAT

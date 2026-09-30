@@ -67,7 +67,7 @@
       USE TIMDAT, ONLY                :  TSEC
       USE CONSTANTS_1, ONLY           :  ZERO
 
-      USE ARRAY_SIZE_ERROR_1_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  ARRAY_SIZE_ERROR_1
 
       IMPLICIT NONE
 
@@ -167,8 +167,7 @@
       USE TIMDAT, ONLY                :  TSEC
       USE CONSTANTS_1, ONLY           :  ZERO
 
-      USE COUNTER_INIT_Interface
-      USE COUNTER_PROGRESS_Interface
+      USE PROGRESS_COUNTERS, ONLY     :  COUNTER_INIT, COUNTER_PROGRESS
 
       IMPLICIT NONE
 
@@ -286,7 +285,7 @@ i_do: DO I=1,NROW_A                                        ! Matrix multiply loo
       USE CONSTANTS_1, ONLY           :  ZERO
       USE DEBUG_PARAMETERS, ONLY      :  DEBUG
 
-      USE ARRAY_SIZE_ERROR_1_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  ARRAY_SIZE_ERROR_1
       USE OUTA_HERE_Interface
 
       IMPLICIT NONE
@@ -382,9 +381,8 @@ i_do: DO I=1,NROW_A                                        ! Matrix multiply loo
       USE CONSTANTS_1, ONLY           :  ZERO
       USE DEBUG_PARAMETERS, ONLY      :  DEBUG
 
-      USE ARRAY_SIZE_ERROR_1_Interface
-      USE COUNTER_INIT_Interface
-      USE COUNTER_PROGRESS_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  ARRAY_SIZE_ERROR_1
+      USE PROGRESS_COUNTERS, ONLY     :  COUNTER_INIT, COUNTER_PROGRESS
 
       IMPLICIT NONE
 
@@ -603,7 +601,7 @@ i_do: DO I=1,NROW_A                                        ! Matrix multiply loo
       USE SCONTR, ONLY                :  BLNK_SUB_NAM
       USE CONSTANTS_1, ONLY           :  ZERO
 
-      USE ARRAY_SIZE_ERROR_1_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  ARRAY_SIZE_ERROR_1
       USE RESULT_FORMATTING, ONLY     :  WRT_REAL_TO_CHAR_VAR
 
       IMPLICIT NONE

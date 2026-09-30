@@ -27,9 +27,9 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE WRITE_MATRIX_1
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE FILE_OPEN_Interface
-      USE ARRAY_SIZE_ERROR_1_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  ARRAY_SIZE_ERROR_1
       USE FILE_CLOSE_Interface
 
       END MODULE WRITE_MATRIX_1_USE_IFs

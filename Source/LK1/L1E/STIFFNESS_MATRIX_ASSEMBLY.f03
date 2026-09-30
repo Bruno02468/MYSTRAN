@@ -71,8 +71,7 @@
       USE EMG_Interface
       USE ELEMENT_TRANSFORMATIONS, ONLY:  ELEM_TRANSFORM_LBG
       USE OUTA_HERE_Interface
-      USE COUNTER_INIT_Interface
-      USE COUNTER_PROGRESS_Interface
+      USE PROGRESS_COUNTERS, ONLY     :  COUNTER_INIT, COUNTER_PROGRESS
 
       IMPLICIT NONE
 
@@ -523,11 +522,9 @@ kgg_cols:   DO K=KSTART,ELDOF
       USE ELEMENT_TRANSFORMATIONS, ONLY:  ELEM_TRANSFORM_LBG
 
       USE EMG_Interface
-      USE GET_ARRAY_ROW_NUM_Interface
-      USE GET_GRID_NUM_COMPS_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  GET_ARRAY_ROW_NUM, GET_GRID_NUM_COMPS
       USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
-      USE COUNTER_INIT_Interface
-      USE COUNTER_PROGRESS_Interface
+      USE PROGRESS_COUNTERS, ONLY     :  COUNTER_INIT, COUNTER_PROGRESS
 
       IMPLICIT NONE
 
@@ -742,8 +739,7 @@ stfpnt0:          DO                                       ! so, run this loop u
       USE ALLOCATE_TEMPLATE_Interface
       USE EMG_Interface
       USE WRITE_FIJFIL_Interface
-      USE GET_ARRAY_ROW_NUM_Interface
-      USE GET_GRID_NUM_COMPS_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  GET_ARRAY_ROW_NUM, GET_GRID_NUM_COMPS
       USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
       USE OUTA_HERE_Interface
       USE DEALLOCATE_TEMPLATE_Interface
@@ -752,8 +748,7 @@ stfpnt0:          DO                                       ! so, run this loop u
       USE DEALLOCATE_STF_ARRAYS_Interface
       USE ALLOCATE_STF_ARRAYS_Interface
       USE READERR_Interface
-      USE COUNTER_INIT_Interface
-      USE COUNTER_PROGRESS_Interface
+      USE PROGRESS_COUNTERS, ONLY     :  COUNTER_INIT, COUNTER_PROGRESS
 
       IMPLICIT NONE
 
@@ -1466,9 +1461,8 @@ stfpnt0:          DO                                       ! so, run this loop u
       USE MODEL_STUF, ONLY            :  GRID_ID
 
       USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
-      USE GET_ARRAY_ROW_NUM_Interface
-      USE GET_GRID_NUM_COMPS_Interface
-      USE CONVERT_INT_TO_CHAR_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  GET_ARRAY_ROW_NUM, GET_GRID_NUM_COMPS
+      USE TEXT_FIELD_UTILS, ONLY      :  CONVERT_INT_TO_CHAR
       USE OUTA_HERE_Interface
 
       IMPLICIT NONE
@@ -1889,14 +1883,12 @@ deb_17:        IF (DEBUG(17) > 0) THEN
       USE OPNERR_Interface
       USE FILERR_Interface
       USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM, TDOF_PROC
-      USE GET_ARRAY_ROW_NUM_Interface
-      USE GET_GRID_NUM_COMPS_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  GET_ARRAY_ROW_NUM, GET_GRID_NUM_COMPS
       USE SORTING, ONLY               :  SORT_INT1_REAL1
       USE WRITE_SPARSE_CRS_Interface
-      USE AUTOSPC_SUMMARY_MSGS_Interface
+      USE DIAGNOSTICS_MEMORY_REPORTING, ONLY:  AUTOSPC_SUMMARY_MSGS
       USE FILE_CLOSE_Interface
-      USE COUNTER_INIT_Interface
-      USE COUNTER_PROGRESS_Interface
+      USE PROGRESS_COUNTERS, ONLY     :  COUNTER_INIT, COUNTER_PROGRESS
 
       IMPLICIT NONE
 
@@ -2255,12 +2247,10 @@ j_do4:   DO J=1,NIND_GRDS_MPCS                           ! on MPC's since they m
       USE OUTA_HERE_Interface
       USE ALLOCATE_SPARSE_MAT_Interface
       USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
-      USE GET_ARRAY_ROW_NUM_Interface
-      USE GET_GRID_NUM_COMPS_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  GET_ARRAY_ROW_NUM, GET_GRID_NUM_COMPS
       USE SORTING, ONLY               :  SORT_INT1_REAL1
       USE WRITE_SPARSE_CRS_Interface
-      USE COUNTER_INIT_Interface
-      USE COUNTER_PROGRESS_Interface
+      USE PROGRESS_COUNTERS, ONLY     :  COUNTER_INIT, COUNTER_PROGRESS
 
       IMPLICIT NONE
 

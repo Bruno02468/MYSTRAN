@@ -39,7 +39,7 @@
       USE CONSTANTS_1, ONLY           :  ZERO, ONE, TWO
 
       USE MITC_SHAPE_FUNCTIONS_Interface
-      USE CROSS_Interface
+      USE VECTOR_GEOMETRY, ONLY       :  CROSS
 
       IMPLICIT NONE
 

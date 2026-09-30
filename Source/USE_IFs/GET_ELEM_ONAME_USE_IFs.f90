@@ -27,7 +27,7 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE GET_ELEM_ONAME
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE OUTA_HERE_Interface
 
       END MODULE GET_ELEM_ONAME_USE_IFs

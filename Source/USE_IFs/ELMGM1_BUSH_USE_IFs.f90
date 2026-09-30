@@ -27,10 +27,9 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE ELMGM1_BUSH
 
-      USE OURTIM_Interface
-      USE CROSS_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
+      USE VECTOR_GEOMETRY, ONLY       :  CROSS, GEN_T0L
       USE SORTING, ONLY               :  CALC_VEC_SORT_ORDER
-      USE GEN_T0L_Interface
       USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF
 
       END MODULE ELMGM1_BUSH_USE_IFs

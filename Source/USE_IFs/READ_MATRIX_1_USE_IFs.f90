@@ -27,13 +27,12 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE READ_MATRIX_1
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE FILE_OPEN_Interface
       USE READERR_Interface
       USE OUTA_HERE_Interface
       USE FILE_CLOSE_Interface
-      USE COUNTER_INIT_Interface
-      USE COUNTER_PROGRESS_Interface
+      USE PROGRESS_COUNTERS, ONLY     :  COUNTER_INIT, COUNTER_PROGRESS
 
 
       END MODULE READ_MATRIX_1_USE_IFs

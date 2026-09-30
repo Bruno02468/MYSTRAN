@@ -27,7 +27,7 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE SHP2DQ
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE OUTA_HERE_Interface
 
       END MODULE SHP2DQ_USE_IFs

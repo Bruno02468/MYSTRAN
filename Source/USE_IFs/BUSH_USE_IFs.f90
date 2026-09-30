@@ -27,7 +27,7 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE BUSH
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF
       USE RESULT_FORMATTING, ONLY     :  WRT_REAL_TO_CHAR_VAR
 

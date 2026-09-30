@@ -27,7 +27,7 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE OUTA_HERE
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE WRITE_FILNAM_Interface
       USE WRITE_L1A_Interface
       USE CLOSE_OUTFILES_Interface

@@ -27,7 +27,7 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE ELMDAT2
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE GET_ELGP_Interface
 
       END MODULE ELMDAT2_USE_IFs

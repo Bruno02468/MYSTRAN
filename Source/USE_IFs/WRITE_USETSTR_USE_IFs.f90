@@ -27,7 +27,7 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE WRITE_USETSTR
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE OUTA_HERE_Interface
       USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
 

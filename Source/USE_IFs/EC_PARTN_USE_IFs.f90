@@ -27,6 +27,6 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE EC_PARTN
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
 
       END MODULE EC_PARTN_USE_IFs

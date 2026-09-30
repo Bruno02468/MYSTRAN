@@ -27,10 +27,8 @@
 
 ! USE Interface statements for all subroutines called by PROGRAM MYSTRAN
 
-      USE TIME_INIT_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURDAT, OURTIM, TIME_INIT
       USE INI_FILE, ONLY            :  READ_INI
-      USE OURTIM_Interface
-      USE OURDAT_Interface
       USE READ_INPUT_FILE_NAME_Interface
       USE WRITE_FILNAM_Interface
       USE FILE_OPEN_Interface
@@ -54,7 +52,7 @@
       USE FILE_INQUIRE_Interface
       USE CLOSE_OUTFILES_Interface
       USE CLOSE_LIJFILES_Interface
-      USE VECTOR_NORM_Interface
+      USE VECTOR_METRICS, ONLY        :  VECTOR_NORM
       USE PRINT_BUILD_INFO_Interface
       USE READ_CL_Interface
       USE SET_BLAS_THREADS_Interface

@@ -40,7 +40,7 @@
                                          MIJ_COL, MIJ_ROW, NUM_FAIL_CRIT
 
       USE WRITE_L1M_USE_IFs
-      USE LINK_MESSAGE_Interface
+      USE DIAGNOSTICS_MEMORY_REPORTING, ONLY:  LINK_MESSAGE
 
       IMPLICIT NONE
 

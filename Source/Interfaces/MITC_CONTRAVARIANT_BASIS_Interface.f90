@@ -32,7 +32,7 @@
 
       USE PENTIUM_II_KIND, ONLY       :  DOUBLE
 
-      USE CROSS_Interface
+      USE VECTOR_GEOMETRY, ONLY       :  CROSS
 
       IMPLICIT NONE
 

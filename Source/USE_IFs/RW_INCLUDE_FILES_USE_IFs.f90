@@ -27,6 +27,6 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE RW_INCLUDE_FILES
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
 
       END MODULE RW_INCLUDE_FILES_USE_IFs

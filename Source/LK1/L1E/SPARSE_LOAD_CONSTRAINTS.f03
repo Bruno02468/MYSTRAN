@@ -53,8 +53,7 @@
       USE OUTA_HERE_Interface
       USE FILE_CLOSE_Interface
       USE WRITE_SPARSE_CRS_Interface
-      USE COUNTER_INIT_Interface
-      USE COUNTER_PROGRESS_Interface
+      USE PROGRESS_COUNTERS, ONLY     :  COUNTER_INIT, COUNTER_PROGRESS
 
       IMPLICIT NONE
 
@@ -196,7 +195,7 @@
       USE OUTA_HERE_Interface
       USE FILE_CLOSE_Interface
       USE ALLOCATE_SPARSE_MAT_Interface
-      USE ARRAY_SIZE_ERROR_1_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  ARRAY_SIZE_ERROR_1
       USE SORTING, ONLY               :  SORT_INT2_REAL1
 
       IMPLICIT NONE

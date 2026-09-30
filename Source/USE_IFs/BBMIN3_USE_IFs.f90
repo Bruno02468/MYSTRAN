@@ -27,7 +27,7 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE BBMIN3
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE BCHECK_2D_Interface
 
       END MODULE BBMIN3_USE_IFs

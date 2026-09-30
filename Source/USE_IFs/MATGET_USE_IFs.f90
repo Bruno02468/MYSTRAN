@@ -27,6 +27,6 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE MATGET
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
 
       END MODULE MATGET_USE_IFs

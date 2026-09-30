@@ -27,7 +27,7 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE BCHECK_2D
 
-      USE OURTIM_Interface
-      USE RIGID_BODY_DISP_MAT_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
+      USE VECTOR_GEOMETRY, ONLY       :  RIGID_BODY_DISP_MAT
 
       END MODULE BCHECK_2D_USE_IFs

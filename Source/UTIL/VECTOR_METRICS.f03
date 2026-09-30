@@ -24,6 +24,90 @@
 
 ! End MIT license text.
 
+   MODULE VECTOR_METRICS
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: GET_VEC_MIN_MAX_ABS, VECTOR_NORM
+
+   CONTAINS
+
+      SUBROUTINE GET_VEC_MIN_MAX_ABS ( NROWS, ID_LIST, VECTOR, VEC_MIN, VEC_MAX, VEC_ABS, ID_MIN, ID_MAX )
+
+! Gets the MIN, MAX and ABS values from a column vector and the grids associated with the MIN and MAX
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE IOUNT1, ONLY                :  WRT_ERR, ERR
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM
+      USE TIMDAT, ONLY                :  TSEC
+      USE CONSTANTS_1, ONLY           :  ZERO
+      USE MACHINE_PARAMS, ONLY        :  MACH_LARGE_NUM
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'GET_VEC_MIN_MAX_ABS'
+
+      INTEGER(LONG), INTENT(IN)       :: NROWS             ! Number of rows in ID_LIST and VECTOR
+      INTEGER(LONG), INTENT(IN)       :: ID_LIST(NROWS)    ! The ID (grid or elem) numbers corresponding to rows in VECTOR
+      INTEGER(LONG), INTENT(OUT)      :: ID_MAX            ! ID where vector is max
+      INTEGER(LONG), INTENT(OUT)      :: ID_MIN            ! ID where vector is min
+      INTEGER(LONG)                   :: I                 ! DO loop index
+
+
+      REAL(DOUBLE) , INTENT(IN)       :: VECTOR(NROWS)     ! Values to scan for MIN, MAX, ABS
+      REAL(DOUBLE) , INTENT(OUT)      :: VEC_ABS           ! Abs value in vector
+      REAL(DOUBLE) , INTENT(OUT)      :: VEC_MAX           ! Max value in vector
+      REAL(DOUBLE) , INTENT(OUT)      :: VEC_MIN           ! Min value in vector
+
+      INTRINSIC                       :: MAX, MIN, DABS
+
+
+
+! **********************************************************************************************************************************
+! Initialize outputs
+
+      ID_MAX  = 0
+      ID_MIN  = 0
+      VEC_MAX = -MACH_LARGE_NUM
+      VEC_MIN = ZERO
+      VEC_ABS = ZERO
+
+! Get MAX, MIN, ABS values
+
+      ID_MAX  = ID_LIST(1)
+
+      DO I=1,NROWS
+         IF (VECTOR(I) > VEC_MAX) THEN
+            VEC_MAX  = VECTOR(I)
+            ID_MAX = ID_LIST(I)
+         ENDIF
+      ENDDO
+
+      VEC_MIN = VEC_MAX
+      ID_MIN  = ID_LIST(1)
+
+      DO I=1,NROWS
+         IF (VECTOR(I) < VEC_MIN) THEN
+            VEC_MIN  = VECTOR(I)
+            ID_MIN = ID_LIST(I)
+         ENDIF
+      ENDDO
+
+      VEC_ABS = MAX( DABS(VEC_MAX), DABS(VEC_MIN) )
+
+
+
+      RETURN
+
+! **********************************************************************************************************************************
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE GET_VEC_MIN_MAX_ABS
+
+
       SUBROUTINE VECTOR_NORM ( VEC, NSIZE, WHICH, VEC_NORM, IERR )
 
 ! Calculates a particular norm (VEC_NORM) for an input vector (VEC) of extent NSIZE. The norm that is to be calculated is specified
@@ -37,8 +121,6 @@
       USE SCONTR, ONLY                :  BLNK_SUB_NAM, FATAL_ERR
       USE TIMDAT, ONLY                :  TSEC
       USE CONSTANTS_1, ONLY           :  ZERO
-
-      USE VECTOR_NORM_USE_IFs
 
       IMPLICIT NONE
 
@@ -97,3 +179,5 @@
 
       END SUBROUTINE VECTOR_NORM
 
+
+   END MODULE VECTOR_METRICS

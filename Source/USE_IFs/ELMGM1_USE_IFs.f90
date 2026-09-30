@@ -27,9 +27,8 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE ELMGM1
 
-      USE OURTIM_Interface
-      USE GEN_T0L_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
+      USE VECTOR_GEOMETRY, ONLY       :  CROSS, GEN_T0L
       USE SORTING, ONLY               :  CALC_VEC_SORT_ORDER
-      USE CROSS_Interface
 
       END MODULE ELMGM1_USE_IFs

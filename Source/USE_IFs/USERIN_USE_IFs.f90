@@ -27,11 +27,11 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE USERIN
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE GRID_POINT_WEIGHT, ONLY     :  RB_DISP_MATRIX_PROC
       USE DOF_SET_CONSTRUCTION, ONLY  :  RDOF
       USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
-      USE GET_ARRAY_ROW_NUM_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  GET_ARRAY_ROW_NUM
       USE ALLOCATE_IN4_FILES_Interface
       USE FILE_OPEN_Interface
       USE READ_IN4_FULL_MAT_Interface

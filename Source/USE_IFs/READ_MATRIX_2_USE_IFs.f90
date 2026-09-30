@@ -27,7 +27,7 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE READ_MATRIX_2
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE FILE_OPEN_Interface
       USE READERR_Interface
       USE OUTA_HERE_Interface

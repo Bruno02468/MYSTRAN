@@ -24,14 +24,51 @@
 
 ! End MIT license text.
 
+   MODULE DATE_TIME_UTILS
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: OURDAT, OURTIM, TIME_INIT
+
+   CONTAINS
+
+      SUBROUTINE OURDAT
+
+! Returns date info using Fortran DATE_AND_TIME intrinsic procedure
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG
+      USE TIMDAT, ONLY                :  YEAR, MONTH, DAY
+
+      IMPLICIT NONE
+
+      CHARACTER( 8*BYTE)              :: DATE              ! Date returned from intrinsic function DATE_AND_TIME
+      CHARACTER(10*BYTE)              :: TIME              ! Time returned from intrinsic function DATE_AND_TIME
+      CHARACTER( 5*BYTE)              :: ZONE              ! Zone returned from intrinsic function DATE_AND_TIME
+
+      INTEGER(LONG)                   :: VALUES(8)         ! Contains year, month, day from intrinsic function DATE_AND_TIME
+
+      INTRINSIC                       :: DATE_AND_TIME
+
+! **********************************************************************************************************************************
+      CALL DATE_AND_TIME(DATE,TIME,ZONE,VALUES)
+
+      YEAR  = VALUES(1)
+      MONTH = VALUES(2)
+      DAY   = VALUES(3)
+
+      RETURN
+
+      END SUBROUTINE OURDAT
+
+
       SUBROUTINE OURTIM
 
 ! Returns time using Fortran DATE_AND_TIME intrinsic procedure
 
       USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG
       USE TIMDAT, ONLY                :  HOUR, MINUTE, SEC, SFRAC, TSEC, DSEC
-
-      USE OURTIM_USE_IFs
 
       IMPLICIT NONE
 
@@ -79,3 +116,26 @@
       RETURN
 
       END SUBROUTINE OURTIM
+
+
+      SUBROUTINE TIME_INIT
+
+! Set time initializing parameters
+
+      USE TIMDAT, ONLY                :  HOUR, MINUTE, SEC, SFRAC
+
+      IMPLICIT NONE
+
+! **********************************************************************************************************************************
+! Set time initializing parameters
+
+      HOUR   = -100                                        ! Used in subr OURTIM so subr begin times start, in a LINK, at 0.
+      MINUTE =    0
+      SEC    =    0
+      SFRAC  =    0
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE TIME_INIT
+
+   END MODULE DATE_TIME_UTILS

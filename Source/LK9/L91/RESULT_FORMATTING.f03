@@ -45,7 +45,7 @@
       USE SCONTR, ONLY                :  FATAL_ERR
       USE CONSTANTS_1, ONLY           :  ZERO
 
-      USE FMT_ES14_6_Interface
+      USE TEXT_FIELD_UTILS, ONLY      :  FMT_ES14_6
 
       IMPLICIT NONE
 

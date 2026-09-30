@@ -27,7 +27,7 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE SHELL_ABD_MATRICES
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE IS_ELEM_PCOMP_PROPS_Interface
       USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF
       USE GET_ELEM_NUM_PLIES_Interface

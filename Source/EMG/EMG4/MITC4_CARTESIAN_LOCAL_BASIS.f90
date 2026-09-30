@@ -35,7 +35,7 @@
       USE PENTIUM_II_KIND, ONLY       :  DOUBLE
 
       USE MITC_COVARIANT_BASIS_Interface
-      USE CROSS_Interface
+      USE VECTOR_GEOMETRY, ONLY       :  CROSS
 
       IMPLICIT NONE
 

@@ -27,6 +27,6 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE GET_PCOMP_SECT_PROPS
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
 
       END MODULE GET_PCOMP_SECT_PROPS_USE_IFs

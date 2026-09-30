@@ -35,7 +35,7 @@
       USE SCONTR, ONLY                :  MAX_ORDER_GAUSS
       USE JACOBIAN, ONLY               :  JAC2D
       USE QUADRATURE, ONLY            :  ORDER_GAUSS
-      USE CROSS_Interface
+      USE VECTOR_GEOMETRY, ONLY       :  CROSS
       USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF_T
 
       IMPLICIT NONE

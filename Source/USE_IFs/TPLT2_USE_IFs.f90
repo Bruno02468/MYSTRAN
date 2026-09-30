@@ -27,8 +27,8 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE TPLT2
 
-      USE OURTIM_Interface
-      USE PLANE_COORD_TRANS_21_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
+      USE VECTOR_GEOMETRY, ONLY       :  PLANE_COORD_TRANS_21
       USE MATL_TRANSFORM_MATRIX_Interface
       USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
       USE BBMIN3_Interface

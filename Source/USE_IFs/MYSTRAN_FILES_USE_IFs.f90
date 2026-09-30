@@ -29,6 +29,6 @@
 
       USE FILE_OPEN_Interface
       USE FILE_CLOSE_Interface
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
 
       END MODULE MYSTRAN_FILES_USE_IFs

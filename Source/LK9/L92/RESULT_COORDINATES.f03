@@ -50,10 +50,9 @@
       USE DEBUG_PARAMETERS, ONLY      :  DEBUG
       USE MODEL_STUF, ONLY            :  EID, AGRID
 
-      USE GET_ARRAY_ROW_NUM_Interface
-      USE GET_GRID_NUM_COMPS_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  GET_ARRAY_ROW_NUM, GET_GRID_NUM_COMPS
       USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
-      USE GEN_T0L_Interface
+      USE VECTOR_GEOMETRY, ONLY       :  GEN_T0L
       USE MATGET_Interface
       USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF
       USE MATPUT_Interface
@@ -376,7 +375,7 @@
       USE MODEL_STUF, ONLY            :  CAN_ELEM_TYPE_OFFSET, GRID, CORD, BGRID, ELDOF, ELGP, OFFDIS, OFFSET, PEB, PEG, PEL, TE,  &
                                          TYPE
 
-      USE GEN_T0L_Interface
+      USE VECTOR_GEOMETRY, ONLY       :  GEN_T0L
       USE MATGET_Interface
       USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF_T
       USE MATPUT_Interface

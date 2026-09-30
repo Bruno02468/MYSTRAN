@@ -27,7 +27,7 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE FFIELD2
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE BDF_CARD_CONTINUATIONS, ONLY:  MKCARD
 
       END MODULE FFIELD2_USE_IFs

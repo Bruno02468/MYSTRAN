@@ -37,7 +37,7 @@
       USE SCONTR, ONLY                :  FATAL_ERR
 
       USE SHP2DQ_Interface
-      USE CROSS_Interface
+      USE VECTOR_GEOMETRY, ONLY       :  CROSS
       USE OUTA_HERE_Interface
 
       IMPLICIT NONE

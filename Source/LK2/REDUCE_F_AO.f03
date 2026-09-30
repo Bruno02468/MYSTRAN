@@ -59,13 +59,13 @@
       USE SCRATCH_MATRICES
       USE SuperLU_STUF, ONLY          :  SLU_FACTORS, SLU_INFO
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE MATRIX_PARTITIONING, ONLY   :  PARTITION_VEC
       USE ALLOCATE_SPARSE_MAT_Interface
       USE DEALLOCATE_SPARSE_MAT_Interface
       USE DEALLOCATE_LAPACK_MAT_Interface
       USE WRITE_SPARSE_CRS_Interface
-      USE GET_MATRIX_DIAG_STATS_Interface
+      USE DIAGNOSTICS_MEMORY_REPORTING, ONLY:  GET_MATRIX_DIAG_STATS
       USE ALLOCATE_RBGLOBAL_Interface
       USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
       USE REDUCTION_CHECKS, ONLY      :  STIFF_MAT_EQUIL_CHK
@@ -733,7 +733,7 @@ FreeS:      IF (SOLLIB == 'SPARSE  ') THEN                       ! Last, free th
       USE ALLOCATE_FULL_MAT_Interface
       USE FULL_MATRIX_ALGEBRA, ONLY   :  MATADD_FFF, MATMULT_FFF
       USE DEALLOCATE_FULL_MAT_Interface
-      USE CNT_NONZ_IN_FULL_MAT_Interface
+      USE DIAGNOSTICS_MEMORY_REPORTING, ONLY:  CNT_NONZ_IN_FULL_MAT
 
       IMPLICIT NONE
 
@@ -1092,7 +1092,7 @@ FreeS:      IF (SOLLIB == 'SPARSE  ') THEN                       ! Last, free th
       USE ALLOCATE_FULL_MAT_Interface
       USE FULL_MATRIX_ALGEBRA, ONLY   :  MATADD_FFF, MATMULT_FFF, MATMULT_FFF_T
       USE DEALLOCATE_FULL_MAT_Interface
-      USE CNT_NONZ_IN_FULL_MAT_Interface
+      USE DIAGNOSTICS_MEMORY_REPORTING, ONLY:  CNT_NONZ_IN_FULL_MAT
 
       IMPLICIT NONE
 
@@ -1525,7 +1525,7 @@ FreeS:      IF (SOLLIB == 'SPARSE  ') THEN                       ! Last, free th
       USE ALLOCATE_FULL_MAT_Interface
       USE FULL_MATRIX_ALGEBRA, ONLY   :  MATADD_FFF, MATMULT_FFF_T
       USE DEALLOCATE_FULL_MAT_Interface
-      USE CNT_NONZ_IN_FULL_MAT_Interface
+      USE DIAGNOSTICS_MEMORY_REPORTING, ONLY:  CNT_NONZ_IN_FULL_MAT
       USE OUTA_HERE_Interface
 
       IMPLICIT NONE
@@ -1758,7 +1758,7 @@ FreeS:      IF (SOLLIB == 'SPARSE  ') THEN                       ! Last, free th
 ! Interface module not needed for subr's DPBTRF and DPBTRS. These are "CONTAIN'ed" in module LAPACK_LIN_EQN_DPB, which
 ! is "USE'd" above
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE OUTA_HERE_Interface
       USE OPNERR_Interface
       USE FILE_CLOSE_Interface
@@ -1992,7 +1992,7 @@ FreeS:      IF (SOLLIB == 'SPARSE  ') THEN                       ! Last, free th
 
 ! Interface module not needed for subr DPBTRS. This is "CONTAIN'ed" in module LAPACK_LIN_EQN_DPB, which is "USE'd" above
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE OUTA_HERE_Interface
       USE FILE_OPEN_Interface
       USE ALLOCATE_COL_VEC_Interface
@@ -2159,7 +2159,7 @@ FreeS:      IF (SOLLIB == 'SPARSE  ') THEN                       ! Last, free th
       USE SPARSE_MATRICES, ONLY       :  I2_GOA
 
       USE OUTA_HERE_Interface
-      USE ALLOCATED_MEMORY_Interface
+      USE DIAGNOSTICS_MEMORY_REPORTING, ONLY:  ALLOCATED_MEMORY
 
       IMPLICIT NONE
 
@@ -2257,7 +2257,7 @@ FreeS:      IF (SOLLIB == 'SPARSE  ') THEN                       ! Last, free th
       USE SPARSE_MATRICES, ONLY       :  I2_GOA
 
       USE OUTA_HERE_Interface
-      USE ALLOCATED_MEMORY_Interface
+      USE DIAGNOSTICS_MEMORY_REPORTING, ONLY:  ALLOCATED_MEMORY
 
       IMPLICIT NONE
 

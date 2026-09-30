@@ -27,7 +27,7 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE WRITE_ENF_TO_L1O
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE FILE_OPEN_Interface
       USE READ_CHK_Interface
       USE FILE_CLOSE_Interface

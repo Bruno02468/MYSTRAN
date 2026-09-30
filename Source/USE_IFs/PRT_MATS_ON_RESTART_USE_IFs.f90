@@ -27,7 +27,7 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE PRT_MATS_ON_RESTART
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE ALLOCATE_SPARSE_MAT_Interface
       USE READ_MATRIX_1_Interface
       USE WRITE_SPARSE_CRS_Interface
@@ -39,6 +39,6 @@
       USE WRITE_VECTOR_Interface
       USE FILE_CLOSE_Interface
       USE DEALLOCATE_COL_VEC_Interface
-      USE GET_MATRIX_DIAG_STATS_Interface
+      USE DIAGNOSTICS_MEMORY_REPORTING, ONLY:  GET_MATRIX_DIAG_STATS
 
       END MODULE PRT_MATS_ON_RESTART_USE_IFs

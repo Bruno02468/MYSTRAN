@@ -27,8 +27,8 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE ALLOCATE_NL_PARAMS
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE OUTA_HERE_Interface
-      USE ALLOCATED_MEMORY_Interface
+      USE DIAGNOSTICS_MEMORY_REPORTING, ONLY:  ALLOCATED_MEMORY
 
       END MODULE ALLOCATE_NL_PARAMS_USE_IFs

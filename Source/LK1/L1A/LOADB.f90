@@ -1117,7 +1117,7 @@ j_do2:            DO J=2,LMPCADDC
 
       USE IOUNT1, ONLY                :  ERR, INFILE, F06 !
       USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG
-      USE TO_UPPER_Interface
+      USE TEXT_FIELD_UTILS, ONLY      :  TO_UPPER
 
       IMPLICIT NONE
 

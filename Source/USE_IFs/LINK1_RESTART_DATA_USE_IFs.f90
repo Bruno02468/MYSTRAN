@@ -27,11 +27,10 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE LINK1_RESTART_DATA
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE FILE_OPEN_Interface
       USE READ_CHK_Interface
-      USE DATA_SET_NAME_ERROR_Interface
-      USE DATA_SET_SIZE_ERROR_Interface
+      USE DIAGNOSTICS_MEMORY_REPORTING, ONLY:  DATA_SET_NAME_ERROR, DATA_SET_SIZE_ERROR
       USE FILE_CLOSE_Interface
 
       END MODULE LINK1_RESTART_DATA_USE_IFs

@@ -28,6 +28,6 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE WRITE_PCOMP_EQUIV
 
       USE SOLVE_SHELL_ALP_Interface
-      USE REAL_DATA_TO_C8FLD_Interface
+      USE TEXT_FIELD_UTILS, ONLY      :  REAL_DATA_TO_C8FLD
 
       END MODULE WRITE_PCOMP_EQUIV_USE_IFs

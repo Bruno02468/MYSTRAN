@@ -61,11 +61,12 @@
 ! Interface module not needed for subr's DPBTRF and DPBTRS. These are "CONTAIN'ed" in module LAPACK_LIN_EQN_DPB,
 ! which is "USE'd" above
 
-      USE LINK_MESSAGE_Interface
+      USE DIAGNOSTICS_MEMORY_REPORTING, ONLY:  CHK_ARRAY_ALLOC_STAT, LINK_MESSAGE, LINK_MESSAGE_I, WRITE_ALLOC_MEM_TABLE
 
       USE SPARSE_CRS_ACCESS, ONLY     :  GET_SPARSE_CRS_COL
       USE LAPACK_ADAPTERS, ONLY       :  FBS_LAPACK, SYM_MAT_DECOMP_LAPACK
       USE SUPERLU_ADAPTERS, ONLY      :  FBS_SUPRLU, SYM_MAT_DECOMP_SUPRLU
+      USE DATE_TIME_UTILS, ONLY       :  OURDAT, OURTIM, TIME_INIT
       IMPLICIT NONE
 
       CHARACTER, PARAMETER            :: CR13 = CHAR(13)   ! This causes a carriage return simulating the "+" action in a FORMAT

@@ -469,7 +469,7 @@ k_do:       DO K=1,NTERM_AROW                              ! The following 2 loo
       USE DEBUG_PARAMETERS, ONLY      :  DEBUG
 
       USE SPARSE_CRS_ACCESS, ONLY     :  ROW_AT_COLJ_BEGEND
-      USE ARRAY_SIZE_ERROR_1_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  ARRAY_SIZE_ERROR_1
 
       IMPLICIT NONE
 

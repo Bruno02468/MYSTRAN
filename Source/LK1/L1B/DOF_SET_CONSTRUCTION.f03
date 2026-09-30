@@ -88,7 +88,7 @@
       USE DOF_TABLES, ONLY            :  TSET
       USE MODEL_STUF, ONLY            :  GRID
 
-      USE GET_GRID_NUM_COMPS_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  GET_GRID_NUM_COMPS
       USE OUTA_HERE_Interface
       USE WRITE_TSET_Interface
 
@@ -242,11 +242,10 @@
       USE DOF_TABLES, ONLY            :  TSET_CHR_LEN, TSET
       USE MODEL_STUF, ONLY            :  GRID_ID, MPC_IND_GRIDS, MPCSET, MPCSIDS
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE READERR_Interface
       USE OUTA_HERE_Interface
-      USE GET_ARRAY_ROW_NUM_Interface
-      USE ARRAY_SIZE_ERROR_1_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  ARRAY_SIZE_ERROR_1, GET_ARRAY_ROW_NUM
 
       IMPLICIT NONE
 
@@ -436,11 +435,10 @@ j_do3:   DO J=1,NUM_MPCSIDS                                ! NUM_MPCSIDS will be
       USE DOF_TABLES, ONLY            :  TSET_CHR_LEN, TSET
       USE MODEL_STUF, ONLY            :  GRID, GRID_ID
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE READERR_Interface
       USE OUTA_HERE_Interface
-      USE GET_ARRAY_ROW_NUM_Interface
-      USE GET_GRID_NUM_COMPS_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  GET_ARRAY_ROW_NUM, GET_GRID_NUM_COMPS
 
       IMPLICIT NONE
 
@@ -610,11 +608,10 @@ j_do3:   DO J=1,NUM_MPCSIDS                                ! NUM_MPCSIDS will be
       USE DOF_TABLES, ONLY            :  TSET_CHR_LEN, TSET
       USE MODEL_STUF, ONLY            :  GRID, GRID_ID, MPC_IND_GRIDS
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE READERR_Interface
       USE OUTA_HERE_Interface
-      USE GET_ARRAY_ROW_NUM_Interface
-      USE ARRAY_SIZE_ERROR_1_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  ARRAY_SIZE_ERROR_1, GET_ARRAY_ROW_NUM
 
       IMPLICIT NONE
 
@@ -1065,12 +1062,11 @@ j_do3:   DO J=1,NUM_MPCSIDS                                ! NUM_MPCSIDS will be
       USE DOF_TABLES, ONLY            :  TSET_CHR_LEN, TSET
       USE MODEL_STUF, ONLY            :  GRID, GRID_ID, SPCADD_SIDS, SPCSET, SPCSIDS
 
-      USE OURTIM_Interface
-      USE GET_GRID_NUM_COMPS_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
+      USE DOF_ARRAY_INDEXING, ONLY    :  GET_ARRAY_ROW_NUM, GET_GRID_NUM_COMPS
       USE ALLOCATE_MODEL_STUF_Interface
       USE READERR_Interface
       USE OUTA_HERE_Interface
-      USE GET_ARRAY_ROW_NUM_Interface
       USE DEALLOCATE_MODEL_STUF_Interface
 
       IMPLICIT NONE
@@ -1318,10 +1314,10 @@ j_do6:   DO J=1,NUM_SPCSIDS
       USE DOF_TABLES, ONLY            :  TSET_CHR_LEN, TSET
       USE MODEL_STUF, ONLY            :  GRID, GRID_ID
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE READERR_Interface
       USE OUTA_HERE_Interface
-      USE GET_ARRAY_ROW_NUM_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  GET_ARRAY_ROW_NUM
 
       IMPLICIT NONE
 

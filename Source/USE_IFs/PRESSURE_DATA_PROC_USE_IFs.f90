@@ -27,13 +27,13 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE PRESSURE_DATA_PROC
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE READERR_Interface
       USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD
       USE OUTA_HERE_Interface
       USE BDF_SET_SYNTAX, ONLY        :  TOKCHK
       USE FILE_CLOSE_Interface
       USE FILE_OPEN_Interface
-      USE GET_ARRAY_ROW_NUM_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  GET_ARRAY_ROW_NUM
 
       END MODULE PRESSURE_DATA_PROC_USE_IFs

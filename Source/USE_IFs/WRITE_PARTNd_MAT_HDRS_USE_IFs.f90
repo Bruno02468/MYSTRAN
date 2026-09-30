@@ -27,6 +27,6 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE WRITE_PARTNd_MAT_HDRS
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
 
       END MODULE WRITE_PARTNd_MAT_HDRS_USE_IFs

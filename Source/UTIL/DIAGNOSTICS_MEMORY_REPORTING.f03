@@ -24,6 +24,354 @@
 
 ! End MIT license text.
 
+   MODULE DIAGNOSTICS_MEMORY_REPORTING
+
+   USE PROGRESS_COUNTERS, ONLY :  COUNTER_INIT, COUNTER_PROGRESS
+   USE DATE_TIME_UTILS, ONLY :  OURTIM
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: ALLOCATED_MEMORY, AUTOSPC_SUMMARY_MSGS, BAILOUT_CHECK, CHK_ARRAY_ALLOC_STAT, CHK_OGEL_ZEROS, CNT_NONZ_IN_FULL_MAT, COND_NUM, DATA_SET_NAME_ERROR, DATA_SET_SIZE_ERROR, GET_GRID_AND_COMP, GET_MACHINE_PARAMS, GET_MATRIX_DIAG_STATS, GET_OU4_MAT_STATS, LINK_MESSAGE, LINK_MESSAGE_I, WRITE_ALLOC_MEM_TABLE
+
+   CONTAINS
+
+      SUBROUTINE ALLOCATED_MEMORY ( ARRAY_NAME, MB_ALLOCATED, WHAT, WRITE_TABLE, CURRENT_MB_ALLOCATED, CALLING_SUBR )
+
+! Keeps track of memory allocated to every ALLOCATABLE array. Array ALLOCATED_ARRAY_MEM, after this subr has run, will have the
+! amount of memory that is currently allocated to ARRAY_NAME. The output CURRENT_MB_ALLOCATED is what was allocated to
+! ARRAY_NAME when this subr started
+
+! (1) When this subr is called following a ALLOCATE   statement in some subr, the INTENT(IN) arg MB_ALLOCATED is expected to be
+!     the amount of memory that the ALLOCATE action allocated.
+
+! (2) When this subr is called following a DEALLOCATE statement in some subr, the INTENT(IN) arg MB_ALLOCATED is expected to be
+!     ZERO (that is, the DEALLOCATE statement is expected to deallocate all memory allocated to the array
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM, FATAL_ERR, TOT_MB_MEM_ALLOC
+      USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06
+      USE CONSTANTS_1, ONLY           :  ZERO
+      USE DEBUG_PARAMETERS, ONLY      :  DEBUG
+      USE PARAMS, ONLY                :  SUPINFO
+      USE ALLOCATED_ARRAY_DATA, ONLY  :  ALLOCATED_ARRAY_NAMES, ALLOCATED_ARRAY_MEM, NUM_ALLOC_ARRAYS
+
+      USE OUTA_HERE_Interface
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'ALLOCATED_MEMORY'
+      CHARACTER(LEN=*),INTENT(IN)     :: ARRAY_NAME           ! Name of allocatable array
+      CHARACTER(LEN=*),INTENT(IN)     :: CALLING_SUBR         ! Name of subr that called this one
+      CHARACTER(LEN=*),INTENT(IN)     :: WHAT                 ! 'ALLOC or 'DEALLOC'. Used for output message purpose
+      CHARACTER(LEN=*),INTENT(IN)     :: WRITE_TABLE          ! If 'Y' and DEBUG says to, write out the memory table
+      CHARACTER( 1*BYTE)              :: NAME_MATCH           ! 'Y' if ARRAY_NAME matches a name in array ALLOCATED_ARRAY_NAMES
+
+      INTEGER(LONG)                   :: I,J                  ! DO loop indices
+      INTEGER(LONG)                   :: INDEX                ! Index in array ALLOCATED_ARRAY_NAMES
+
+      REAL(DOUBLE)    ,INTENT(OUT)    :: CURRENT_MB_ALLOCATED ! MB of memory that is allocated to ARRAY_NAME when this subr starts
+      REAL(DOUBLE)    ,INTENT(IN)     :: MB_ALLOCATED       ! MB of memory to enter into array ALLOCATED_ARRAY_MEM for ARRAY_NAME
+!                                                               when this subr returns
+
+! **********************************************************************************************************************************
+! Make sure WHAT is correct
+
+      IF ((WHAT /= 'ALLOC') .AND. (WHAT /= 'DEALLOC')) THEN
+         FATAL_ERR = FATAL_ERR + 1
+         WRITE(ERR,971) SUBR_NAME, WHAT
+         WRITE(ERR,971) SUBR_NAME, WHAT
+         CALL OUTA_HERE ( 'Y' )
+      ENDIF
+
+! Initialize outputs
+
+      CURRENT_MB_ALLOCATED = 0
+
+      IF (LEN(ARRAY_NAME) > LEN(ALLOCATED_ARRAY_NAMES)) THEN
+         WRITE(ERR,922) SUBR_NAME, ARRAY_NAME, LEN(ARRAY_NAME),LEN(ALLOCATED_ARRAY_NAMES), CALLING_SUBR
+         WRITE(F06,922) SUBR_NAME, ARRAY_NAME, LEN(ARRAY_NAME),LEN(ALLOCATED_ARRAY_NAMES), CALLING_SUBR
+         CALL OUTA_HERE ( 'Y' )
+      ENDIF
+
+      INDEX = 0
+i_do: DO I=1,NUM_ALLOC_ARRAYS
+
+j_do:    DO J=1,LEN(ARRAY_NAME)
+            IF (ARRAY_NAME(J:J) == ALLOCATED_ARRAY_NAMES(I)(J:J)) THEN
+               NAME_MATCH = 'Y'
+            ELSE
+               NAME_MATCH = 'N'
+               EXIT j_do
+            ENDIF
+         ENDDO j_do
+
+         IF (NAME_MATCH == 'Y') THEN
+            INDEX = I
+            EXIT i_do
+         ELSE
+            CYCLE i_do
+         ENDIF
+
+      ENDDO i_do
+
+      IF (INDEX > 0) THEN
+         CURRENT_MB_ALLOCATED       = ALLOCATED_ARRAY_MEM(INDEX)
+         ALLOCATED_ARRAY_MEM(INDEX) = MB_ALLOCATED
+      ELSE
+         CURRENT_MB_ALLOCATED = ZERO
+         WRITE(ERR,101) ARRAY_NAME, SUBR_NAME
+         IF (SUPINFO == 'N') THEN
+            WRITE(F06,101) ARRAY_NAME, SUBR_NAME
+         ENDIF
+      ENDIF
+
+      IF (WHAT == 'ALLOC') THEN
+         TOT_MB_MEM_ALLOC = TOT_MB_MEM_ALLOC + MB_ALLOCATED
+      ELSE
+         TOT_MB_MEM_ALLOC = TOT_MB_MEM_ALLOC - CURRENT_MB_ALLOCATED
+      ENDIF
+
+      IF ((DEBUG(100) > 2) .AND. (WRITE_TABLE == 'Y')) THEN
+         IF (WHAT == 'ALLOC') THEN
+            WRITE(F06,*) ' MEMORY ALLOCATION TABLE AFTER ALLOCATING ARRAY ',ARRAY_NAME
+         ELSE
+            WRITE(F06,*) ' MEMORY ALLOCATION TABLE AFTER DEALLOCATING ARRAY ',ARRAY_NAME
+         ENDIF
+         CALL WRITE_ALLOC_MEM_TABLE ( '' )
+      ENDIF
+
+! **********************************************************************************************************************************
+  101 FORMAT(' *INFORMATION: ARRAY ',A,' IS NOT IN THE LIST OF NAMES IN ARRAY "ALLOCATED_ARRAY_DATA" SO THAT SUBR,'                &
+                    ,/,15X,A,' CANNOT CALC DATA FOR ARRAY "ALLOCATED_ARRAY_MEM".'                                                  &
+                    ,/,14X,' THIS IS NOT A PROBLEM WITH THIS RUN, ONLY SOMETHING NEEDING ATTENTION BY THE AUTHOR')
+
+  922 FORMAT(' *ERROR   922: PROGRAMMING ERROR IN SUBROUTINE ',A                                                                   &
+                    ,/,14X,' ARRAY "',A,'" HAS LEN(ARRAY_NAME) = ',I4,' CANNOT BE GREATER THAN LEN(ALLOCATED_ARRAY_NAMES) = ',I4   &
+                    ,/,14X,' THIS SUBR WAS CALLED BY ',A)
+
+  971 FORMAT(' *ERROR   971: PROGRAMMING ERROR IN SUBROUTINE ',A                                                                   &
+                    ,/,14X,' INPUT ARG "WHAT" MUST BE EITHER "ALLOC" OR "DEALLOC" BUT IS = "',A,'"')
+
+99887 FORMAT(' In ALLOCATED_MEMORY: I, ARRAY_NAME, LEN(ARRAY_NAME) = ',I4,'"',A31,'"',I4)
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE ALLOCATED_MEMORY
+
+
+
+      SUBROUTINE AUTOSPC_SUMMARY_MSGS ( ASPC_SUM_MSG1, ASPC_SUM_MSG2, ASPC_SUM_MSG3, WRT_AUTOSPC_RAT, NUM_ASPC_BY_COMP )
+
+! Write summary of AUTOSPC action at several times in an execution
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE IOUNT1, ONLY                :  WRT_ERR, F06
+      USE PARAMS, ONLY                :  AUTOSPC_RAT
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=*), INTENT(IN)    :: ASPC_SUM_MSG1      ! Message to be printed out in the AUTOSPC summary table
+      CHARACTER(LEN=*), INTENT(IN)    :: ASPC_SUM_MSG2      ! Message to be printed out in the AUTOSPC summary table
+      CHARACTER(LEN=*), INTENT(IN)    :: ASPC_SUM_MSG3      ! Message to be printed out in the AUTOSPC summary table
+      CHARACTER(LEN=*), INTENT(IN)    :: WRT_AUTOSPC_RAT    ! 'Y'/'N' indicator of whether to write AUTOSPC_RAT
+
+      INTEGER(LONG), INTENT(IN)       :: NUM_ASPC_BY_COMP(6)! The number of SPC1's for each displ component
+      INTEGER(LONG)                   :: I                  ! DO loop index
+      INTEGER(LONG)                   :: TOT_NUM_ASPC       ! The sum of the NUM_ASPC_BY_COMP(I)
+
+! **********************************************************************************************************************************
+      TOT_NUM_ASPC = 0
+      DO I=1,6
+         TOT_NUM_ASPC =  TOT_NUM_ASPC + NUM_ASPC_BY_COMP(I)
+      ENDDO
+
+      WRITE(F06,*)
+      WRITE(F06,101) ASPC_SUM_MSG1,ASPC_SUM_MSG2
+      IF (WRT_AUTOSPC_RAT == 'Y') THEN
+         WRITE(F06,102) AUTOSPC_RAT
+      ENDIF
+      DO I=1,6
+         WRITE(F06,103) I, NUM_ASPC_BY_COMP(I)
+      ENDDO
+      WRITE(F06,104)
+      WRITE(F06,105) ASPC_SUM_MSG3,TOT_NUM_ASPC
+
+! **********************************************************************************************************************************
+  101 FORMAT(' *INFORMATION: AUTOSPC Summary, ',A,1X,A,/)
+
+  102 FORMAT(37X,'AUTOSPC_RAT =',1ES13.6,/)
+
+  103 FORMAT(23X,'Number of DOF''s identified for AUTOSPC in component ',I2,'         = ',I12)
+
+  104 FORMAT(88X,'------------')
+
+  105 FORMAT(23X,'Total number of DOF''s identified ',A,'                 = ',I12/)
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE AUTOSPC_SUMMARY_MSGS
+
+
+
+      FUNCTION BAILOUT_CHECK ( CALLING_SUBR, MATIN_NAME, MATIN_SET, NROWS, NTERMS, I_MATIN, MATIN, PRT_ERRS, FACTOR_DIAG )
+
+! Performs two checks on the factorization of a matrix stored in Compressed Row Storage (CRS) format:
+! 1. Non-positive definite if any of the diagonals of the factor are ~zero or negative.
+! 2. Nearly singular if the ratio of any value on the diagonal of the matrix to its corresponding value on the diagonal of the factor
+!    is greater than MAXRATIO.
+! Returns TRUE if it's either non-positive definite or nearly singular.
+! Writes messages to F06 and ERR.
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE IOUNT1, ONLY                :  ERR, F06, SC1
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM, LINKNO
+      USE CONSTANTS_1, ONLY           :  ZERO
+      USE PARAMS, ONLY                :  EPSIL, MAXRATIO
+      USE MACHINE_PARAMS, ONLY        :  MACH_LARGE_NUM
+
+
+      IMPLICIT NONE
+
+      LOGICAL                         :: BAILOUT_CHECK
+
+      CHARACTER, PARAMETER            :: CR13 = CHAR(13)   ! This causes a carriage return simulating the "+" action in a FORMAT
+      CHARACTER(LEN=*) , INTENT(IN)   :: CALLING_SUBR      ! The subr that called this subr (used for output error purposes)
+      CHARACTER(LEN=*) , INTENT(IN)   :: MATIN_NAME        ! Name of matrix to be decomposed
+      CHARACTER(LEN=*) , INTENT(IN)   :: MATIN_SET         ! Set designator for the input matrix. If it corresponds to a MYSTRAN
+!                                                            displ set (e.g. 'L ' set) then error messages about singulatities
+!                                                            can reference the grid/comp that is singular (otherwise the row/col
+!                                                            where the singularity occurs is referenced). If it is not a MYSTRAN
+!                                                            set designator it should be blank
+      CHARACTER(LEN=*) , INTENT(IN)   :: PRT_ERRS          ! If not 'N', print singularity errors
+      CHARACTER( 1*BYTE)              :: NONPOS_DEF        ! Indicates matrix was nonpositive definite
+
+      INTEGER(LONG), INTENT(IN)       :: NROWS             ! Number of rows in sparse matrix MATIN
+      INTEGER(LONG), INTENT(IN)       :: NTERMS            ! Number of nonzeros in sparse matrix MATIN
+      INTEGER(LONG), INTENT(IN)       :: I_MATIN(NROWS+1)  ! Indicators of number of nonzero terms in rows of matrix MATIN
+      INTEGER(LONG)                   :: COMPV             ! Component number (1-6) of a grid DOF
+      INTEGER(LONG)                   :: GRIDV             ! Grid number
+      INTEGER(LONG)                   :: I                 ! DO loop index
+      INTEGER(LONG)                   :: IIMAX             ! Row/Col in MATIN where max diagonal term occurs
+
+      REAL(DOUBLE) , INTENT(IN)       :: MATIN(NTERMS)     ! Matrix values
+      REAL(DOUBLE)                    :: MATIN_DIAG(NROWS) ! Diagonal terms from MATIN matrix
+      REAL(DOUBLE) , INTENT(IN)       :: FACTOR_DIAG(NROWS)! The diagonal of the factor
+      REAL(DOUBLE)                    :: EPS1              ! A small number to compare real zero
+      REAL(DOUBLE)                    :: FAC_DIAG          ! Diagonal term in the tringular factor of MATIN
+      REAL(DOUBLE)                    :: MAXIMAX_RATIO     ! Largest of the ratios of matrix diagonal to factor diagonal
+      REAL(DOUBLE)                    :: RATIO             ! Ratio of matrix diagonal to factor diagonal
+
+
+! **********************************************************************************************************************************
+
+      EPS1 = EPSIL(1)
+
+! Calculate and print ratios of diag to factor diag (if they are zero or negative or > MAXRATIO).
+
+      CALL LINK_MESSAGE('CALC MAX RATIO OF MATRIX DIAGONAL TO FACTOR DIAGONAL')
+
+      CALL COUNTER_INIT("     Getting diagonal of matrix, row", NROWS)
+      DO I=1,NROWS                                         ! First, get diagonal terms from MATIN
+         IF (I_MATIN(I) == I_MATIN(I+1)) THEN
+            MATIN_DIAG(I) = ZERO
+         ELSE
+            MATIN_DIAG(I) = MATIN(I_MATIN(I))
+         ENDIF
+         CALL COUNTER_PROGRESS(I)
+      ENDDO
+      WRITE(SC1,*) CR13
+
+      MAXIMAX_RATIO = -MACH_LARGE_NUM                                  ! Calc ratio of MATIN diag to factor diag
+      NONPOS_DEF    = 'N'
+      CALL COUNTER_INIT("     Calc ratios of matrix diag to factor diag: row", NROWS)
+      DO I=1,NROWS
+
+         CALL GET_GRID_AND_COMP ( MATIN_SET, I, GRIDV, COMPV  )
+
+         FAC_DIAG = FACTOR_DIAG(I)
+
+         IF (FAC_DIAG <= EPS1) THEN                        ! Zero or negative factor diagonal. (MATIN is nonpositive definite)
+
+            NONPOS_DEF = 'Y'
+            IF (PRT_ERRS /= 'N') THEN
+               WRITE(ERR,982) MATIN_NAME, FAC_DIAG
+               WRITE(F06,982) MATIN_NAME, FAC_DIAG
+               IF ((GRIDV > 0) .AND. (COMPV > 0)) THEN
+                  WRITE(ERR,9811) GRIDV, COMPV, CALLING_SUBR
+                  WRITE(F06,9811) GRIDV, COMPV, CALLING_SUBR
+               ELSE
+                  WRITE(ERR,9812) I, CALLING_SUBR
+                  WRITE(F06,9812) I, CALLING_SUBR
+               ENDIF
+            ENDIF
+
+         ELSE
+
+            RATIO = MATIN_DIAG(I)/FAC_DIAG
+!                                                          Ratio is greater than param MAXRATIO
+            IF ((DABS(RATIO) > MAXRATIO) .AND. (PRT_ERRS /= 'N')) THEN
+               WRITE(ERR,983) MATIN_NAME, RATIO, MAXRATIO
+               WRITE(F06,983) MATIN_NAME, RATIO, MAXRATIO
+               IF ((GRIDV > 0) .AND. (COMPV > 0)) THEN
+                  WRITE(ERR,9811) GRIDV, COMPV, CALLING_SUBR
+                  WRITE(F06,9811) GRIDV, COMPV, CALLING_SUBR
+               ELSE
+                  WRITE(ERR,9812) I, CALLING_SUBR
+                  WRITE(F06,9812) I, CALLING_SUBR
+               ENDIF
+            ENDIF
+
+            IF (RATIO > MAXIMAX_RATIO) THEN                ! This is the largest of the ratios
+               MAXIMAX_RATIO = RATIO
+               IIMAX = I
+            ENDIF
+
+         ENDIF
+         CALL COUNTER_PROGRESS(I)
+      ENDDO
+      WRITE(SC1,*) CR13
+
+      IF (NONPOS_DEF == 'N') THEN
+
+         WRITE(ERR,984) MATIN_NAME, MAXIMAX_RATIO
+         WRITE(F06,984) MATIN_NAME, MAXIMAX_RATIO
+         CALL GET_GRID_AND_COMP ( MATIN_SET, IIMAX, GRIDV, COMPV  )
+         IF ((GRIDV > 0) .AND. (COMPV > 0)) THEN
+            WRITE(ERR,9811) GRIDV, COMPV, CALLING_SUBR
+            WRITE(F06,9811) GRIDV, COMPV, CALLING_SUBR
+         ELSE
+            WRITE(ERR,9812) IIMAX, CALLING_SUBR
+            WRITE(F06,9812) IIMAX, CALLING_SUBR
+         ENDIF
+
+      ENDIF
+
+      BAILOUT_CHECK = (DABS(MAXIMAX_RATIO) > MAXRATIO) .OR. (NONPOS_DEF == 'Y')
+
+
+!***********************************************************************************************************************************
+
+  982 FORMAT(' *ERROR   982: MATRIX ',A,' IS NONPOSITIVE DEFINITE. A DIAGONAL TERM IS ZERO OR NEGATIVE = ',1ES14.6)
+
+  983 FORMAT(' *ERROR   983: MATRIX ',A,' HAS AN ABSOLUTE VALUE OF THE RATIO OF MATRIX DIAG TO FACTOR DIAG = ',1ES10.2,            &
+                           ' (GREATER THAN BULK DATA PARAM MAXRATIO = ',1ES10.2,')'                                                &
+                    ,/,14X,' THIS WILL ONLY BE A FATAL ERROR IF PARAM BAILOUT >= 0')
+
+  984 FORMAT(' *INFORMATION: THE MAXIMUM ABSOLUTE VALUE OF THE RATIO OF MATRIX DIAGONAL TO FACTOR DIAG FOR MATRIX ',A,' = ',1ES14.6)
+
+ 9811 FORMAT('               THIS IS FOR ROW AND COL IN THE MATRIX FOR GRID POINT ',I8,' COMP ',I3,'. THE CALLING SUBR WAS: ',A,/)
+
+ 9812 FORMAT('               THIS IS FOR ROW AND COL ',I8,' IN THE MATRIX. THE CALLING SUBR WAS: ',A,/)
+
+      RETURN
+
+!***********************************************************************************************************************************
+
+      END FUNCTION BAILOUT_CHECK
+
+
       SUBROUTINE CHK_ARRAY_ALLOC_STAT
 
 ! Checks allocation status of all allocatable arrays. User has to include a Bulk Data DEBUG entry (see module DEBUG_PARAMS for
@@ -50,8 +398,6 @@
       USE STF_ARRAYS
       USE STF_TEMPLATE_ARRAYS
       USE OUTPUT4_MATRICES
-
-      USE CHK_ARRAY_ALLOC_STAT_USE_IFs                     ! Added 2019/07/14
 
       IMPLICIT NONE
 
@@ -675,3 +1021,1076 @@
 
       END SUBROUTINE CHK_ARRAY_ALLOC_STAT
 
+
+
+      SUBROUTINE CHK_OGEL_ZEROS ( NUM )
+
+! If a value in OGEL is -0.0, change it to +0.0
+
+      USE PENTIUM_II_KIND, ONLY       :  LONG
+      USE SCONTR, ONLY                :  MOGEL
+      USE CONSTANTS_1, ONLY           :  ZERO
+      USE LINK9_STUFF, ONLY           :  OGEL
+
+      IMPLICIT NONE
+
+      INTEGER(LONG)                   :: I, J              ! DO loop indices
+      INTEGER(LONG), INTENT(IN)       :: NUM               ! The number of rows in OGEL to check
+
+! *********************************************************************************************************************************
+
+      DO I=1,NUM
+         DO J=1,MOGEL
+            IF (OGEL(I,J) == -ZERO) THEN
+               OGEL(I,J) = ZERO
+            ENDIF
+         ENDDO
+      ENDDO
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE CHK_OGEL_ZEROS
+
+
+
+      SUBROUTINE CNT_NONZ_IN_FULL_MAT ( MATIN_NAME, MATIN, NROWS, NCOLS, SYM, NTERM_NONZERO, SMALL )
+
+! Counts the number of significant (abs val larger than variable SMALL) numbers that are in a portion of full matrix:
+!  If SYM = 'N' then all  terms in MATIN are used in the count
+!  If SYM = 'Y' then only terms in MATIN upper triangle are used in the count
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE IOUNT1, ONLY                :  ERR, F06
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM
+      USE TIMDAT, ONLY                :  TSEC
+      USE PARAMS, ONLY                :  EPSIL, SUPINFO, TINY
+      USE DEBUG_PARAMETERS, ONLY      :  DEBUG
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'CNT_NONZ_IN_FULL_MAT'
+      CHARACTER(LEN=*), INTENT(IN)    :: MATIN_NAME        ! Name of the matrix
+      CHARACTER(LEN=*), INTENT(IN)    :: SYM               ! See above ('ALL' or 'UTR')
+
+      INTEGER(LONG), INTENT(IN)       :: NCOLS             ! Number of cols in the matrix
+      INTEGER(LONG), INTENT(IN)       :: NROWS             ! Number of rows in the matrix
+      INTEGER(LONG), INTENT(OUT)      :: NTERM_NONZERO     ! Number of nonzero (or significant) values in the matrix
+      INTEGER(LONG)                   :: I,J               ! DO loop indices
+      INTEGER(LONG)                   :: JSTART            ! A computed DO loop index
+
+
+      REAL(DOUBLE) , INTENT(IN)       :: MATIN(NROWS,NCOLS)! Input full matrix
+      REAL(DOUBLE) , INTENT(OUT)      :: SMALL             ! Filter for small terms
+
+
+
+! **********************************************************************************************************************************
+      IF (DEBUG(196) == 0) THEN
+         SMALL = EPSIL(1)
+         WRITE(ERR,101) SMALL, MATIN_NAME, SUBR_NAME
+         IF (SUPINFO == 'N') THEN
+            WRITE(F06,101) SMALL, MATIN_NAME, SUBR_NAME
+         ENDIF
+      ELSE
+         SMALL = TINY
+         WRITE(ERR,102) SMALL, MATIN_NAME, SUBR_NAME
+         IF (SUPINFO == 'N') THEN
+            WRITE(F06,102) SMALL, MATIN_NAME, SUBR_NAME
+         ENDIF
+      ENDIF
+
+      NTERM_NONZERO = 0
+
+      DO I=1,NROWS
+         IF      (SYM == 'N') THEN
+            JSTART = 1
+         ELSE IF (SYM == 'Y') THEN
+            JSTART = I
+         ENDIF
+         DO J=JSTART,NCOLS
+            IF (DABS(MATIN(I,J)) > SMALL) THEN
+               NTERM_NONZERO = NTERM_NONZERO + 1
+            ENDIF
+         ENDDO
+      ENDDO
+
+
+
+      RETURN
+
+! **********************************************************************************************************************************
+  101 FORMAT(' *INFORMATION: TERMS WHOSE ABS VALUE ARE < MACH_PREC =',1ES10.3,' ARE NOT INCLUDED IN MATRIX ',A,' IN SUBR ',A       &
+                    ,/,14X,' AS THIS FULL MATRIX IS BEING CONVERTED TO A SPARSE MATRIX')
+
+  102 FORMAT(' *INFORMATION: TERMS WHOSE ABS VALUE ARE < PARAM TINY =',1ES10.3,' ARE NOT INCLUDED IN MATRIX ',A,' IN SUBR ',A      &
+                    ,/,14X,' AS THIS FULL MATRIX IS BEING CONVERTED TO A SPARSE MATRIX')
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE CNT_NONZ_IN_FULL_MAT
+
+
+      SUBROUTINE COND_NUM ( MATIN_NAME, N, KD, K_INORM, MATIN_FAC, RCOND )
+
+! Calculatess the reciprocal of the LAPACK cond number, RCOND, of a square matrix stored in LAPACK band form.
+! Uses the triangular factor of the matrix, which is called MATIN_FAC.
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM, FATAL_ERR
+      USE CONSTANTS_1, ONLY           :  ZERO
+      USE PARAMS, ONLY                :  ITMAX
+      USE TIMDAT, ONLY                :  TSEC
+
+! Interface module not needed for subr DPBCON. This is "CONTAIN'ed" in module LAPACK_LIN_EQN_DPB, which is "USE'd" above
+
+      USE OUTA_HERE_Interface
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'COND_NUM'
+      CHARACTER(LEN=*), INTENT(IN)    :: MATIN_NAME        ! Name of the matrix whose triang factor is input to this subr
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: CALLED_SUBR = ' ' ! Name of a called subr (for output error purposes)
+      CHARACTER( 1*BYTE), PARAMETER   :: UPLO      = 'U'   ! Indicates if matrix MATIN_FAC is an upper triangular factor
+
+      INTEGER(LONG), INTENT(IN)       :: N                 ! No. cols in array MATIN_FAC
+      INTEGER(LONG), INTENT(IN)       :: KD                ! No. of superdiagonals of KAA
+      INTEGER(LONG)                   :: IWORK(N)          ! Workspace array
+      INTEGER(LONG)                   :: INFO      = 0     ! Output from subr DPBCON, which calc's RCOND
+                                                           ! = 0:  successful exit
+                                                           ! < 0:  if INFO = -i, the i-th arg had an illegal value
+
+
+
+      REAL(DOUBLE),  INTENT(IN)       :: K_INORM           ! The infinity-norm of the matrix whose name is MATIN_NAME
+      REAL(DOUBLE),  INTENT(IN)       :: MATIN_FAC(KD+1,N) ! The upper triangular factor of the matrix whose name is MATIN_NAME
+      REAL(DOUBLE),  INTENT(OUT)      :: RCOND             ! The recip of the condition number of matrix whose name is MATIN_NAME
+      REAL(DOUBLE)                    :: WORK(3*N)         ! Workspace array
+
+
+
+! **********************************************************************************************************************************
+! Initialize outputs
+
+      RCOND = ZERO
+
+! Calculate recriprocal of the condition number of the stiffness matrix. Note: LAPACK subr XERBLA wrote message on illegal argument
+! in a call to a LAPACK subr.
+
+!xx   WRITE(SC1, * )
+      CALL DPBCON( UPLO, N, KD, MATIN_FAC, KD+1, K_INORM, RCOND, WORK, IWORK, INFO )
+
+      CALLED_SUBR = 'DPBCON  '
+      IF      (INFO < 0) THEN                              ! LAPACK subr XERBLA should have reported error on an illegal argument
+!                                                            in a call to a LAPACK subr, so we should not have gotten here
+         WRITE(ERR,993) SUBR_NAME, CALLED_SUBR
+         WRITE(F06,993) SUBR_NAME, CALLED_SUBR
+         FATAL_ERR = FATAL_ERR + 1
+         CALL OUTA_HERE ( 'Y' )                            ! Coding error, so quit
+
+      ENDIF
+
+
+
+      RETURN
+
+! **********************************************************************************************************************************
+ 3501 FORMAT(' *INFORMATION: RECIPROCAL OF THE CONDITION NUMBER OF THE ',A,' MATRIX IS RCOND   = ',1ES13.6,                        &
+                           ' Used for LAPACK error estimate, below',/)
+
+  993 FORMAT(' *ERROR   993: PROGRAMMING ERROR IN SUBROUTINE ',A                                                                   &
+                    ,/,14X,' LAPACK SUBR XERBLA SHOULD HAVE REPORTED AN ERROR ON AN ILLEGAL ARGUMENT IN A CALL TO LAPACK SUBR '    &
+                    ,/,15X,A,' (OR A SUBR CALLED BY IT) AND THEN ABORTED')
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE COND_NUM
+
+
+      SUBROUTINE DATA_SET_NAME_ERROR ( DATA_NAME_ShouldBe, FILNAM, DATA_NAME_Is )
+
+! Writes message indicating that the name of a data set about to be read from an unformatted file is not what was expected
+! and then aborts
+
+      USE PENTIUM_II_KIND, ONLY       :  LONG
+      USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06
+      USE SCONTR, ONLY                :  FATAL_ERR
+
+      USE WRITE_FILNAM_Interface
+      USE OUTA_HERE_Interface
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=*), INTENT(IN)    :: DATA_NAME_Is      ! Data set name actual
+      CHARACTER(LEN=*), INTENT(IN)    :: DATA_NAME_ShouldBe! Data set name that should be
+      CHARACTER(LEN=*), INTENT(IN)    :: FILNAM            ! name of file data set was read from
+
+      INTEGER(LONG)                   :: I                 ! DO loop index
+      INTEGER(LONG)                   :: NAME_Is_LEN       ! Length of DATA_NAME_Is       without trailing blanks
+      INTEGER(LONG)                   :: NAME_ShouldBe_LEN ! Length of DATA_NAME_ShouldBe without trailing blanks
+
+! **********************************************************************************************************************************
+      DO I=LEN(DATA_NAME_Is),1,-1
+         IF (DATA_NAME_Is(I:I) == ' ') THEN
+            CYCLE
+         ELSE
+            NAME_Is_LEN = I
+            EXIT
+         ENDIF
+      ENDDO
+
+      DO I=LEN(DATA_NAME_ShouldBe),1,-1
+         IF (DATA_NAME_ShouldBe(I:I) == ' ') THEN
+            CYCLE
+         ELSE
+            NAME_ShouldBe_LEN = I
+            EXIT
+         ENDIF
+      ENDDO
+
+      WRITE(ERR,9001) DATA_NAME_ShouldBe(1:NAME_ShouldBe_LEN)
+      CALL WRITE_FILNAM ( FILNAM, ERR, 15 )
+      WRITE(ERR,9002) DATA_NAME_Is(1:NAME_Is_LEN)
+
+      WRITE(F06,9001) DATA_NAME_ShouldBe(1:NAME_Is_LEN)
+      CALL WRITE_FILNAM ( FILNAM, F06, 15 )
+      WRITE(F06,9002) DATA_NAME_Is(1:NAME_Is_LEN)
+
+      FATAL_ERR = FATAL_ERR + 1
+      CALL OUTA_HERE ( 'Y' )
+      WRITE(F06,9002) DATA_NAME_Is
+
+
+! **********************************************************************************************************************************
+ 9001 FORMAT(' *ERROR   900: SHOULD BE READING DATA SET: "',A,'" FROM FILE:')
+
+ 9002 FORMAT('               BUT DATA IS NAMED "',A,'"')
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE DATA_SET_NAME_ERROR
+
+
+      SUBROUTINE DATA_SET_SIZE_ERROR ( FILNAM, DATA_SET_NAME, DATA_NAME, INT1, INT2 )
+
+! Writes message indicating that a dimension of a data set about to be read from an unformatted file is not what was expected
+! and then aborts
+
+      USE PENTIUM_II_KIND, ONLY       :  LONG
+      USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06, LINK1A
+      USE SCONTR, ONLY                :  FATAL_ERR
+
+      USE OUTA_HERE_Interface
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=*), INTENT(IN)    :: DATA_SET_NAME     ! Name of data set read from FILNAM
+      CHARACTER(LEN=*), INTENT(IN)    :: DATA_NAME         ! Name of data variable that should have been read
+      CHARACTER(LEN=*), INTENT(IN)    :: FILNAM            ! Nmae of file data was read from
+
+      INTEGER(LONG)   , INTENT(IN)    :: INT1              ! Size of data variable that should have been read
+      INTEGER(LONG)   , INTENT(IN)    :: INT2              ! Size of data variable read
+      INTEGER(LONG)                   :: I                 ! DO loop Index
+      INTEGER(LONG)                   :: IEND1             ! Index
+      INTEGER(LONG)                   :: IEND2             ! Index
+
+! **********************************************************************************************************************************
+      DO I=LEN(FILNAM),1,-1
+         IF (FILNAM(I:I) /= ' ') THEN
+            IEND1 = I
+            EXIT
+         ENDIF
+      ENDDO
+
+      DO I=LEN(DATA_SET_NAME),1,-1
+         IF (DATA_SET_NAME(I:I) /= ' ') THEN
+            IEND2 = I
+            EXIT
+         ENDIF
+      ENDDO
+
+      WRITE(ERR,925) FILNAM(1:IEND1), DATA_SET_NAME(1:IEND2), DATA_NAME, INT1, INT2
+      WRITE(F06,925) FILNAM(1:IEND1), DATA_SET_NAME(1:IEND2), DATA_NAME, INT1, INT2
+      FATAL_ERR = FATAL_ERR + 1
+      CALL OUTA_HERE ( 'Y' )
+
+! **********************************************************************************************************************************
+  925 FORMAT(' *ERROR   925: ERROR READING FILE: '                                                                                 &
+                    ,/,15X,A                                                                                                       &
+                    ,/,14X,' DIMENSION OF DATA SET: "',A,'"'                                                                       &
+                    ,/,14x,' SHOULD BE ',A,' = ',I8,' BUT IS ',I8,'.'                                                              &
+                    ,/,15X,A)
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE DATA_SET_SIZE_ERROR
+
+
+      SUBROUTINE GET_GRID_AND_COMP ( X_SET, DOF_NUM, GRIDV, COMPV )
+
+! Gets the grid and displ component (1-6) numbers for a DOF listed in array TDOFI.
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM, FATAL_ERR, NDOFG
+      USE TIMDAT, ONLY                :  TSEC
+      USE DOF_TABLES, ONLY            :  TDOFI
+
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'GET_GRID_AND_COMP'
+      CHARACTER(LEN=*), INTENT(IN)    :: X_SET             ! Displ set designator (if one exists) for the col in TDOFI
+
+      INTEGER(LONG), INTENT(IN)       :: DOF_NUM           ! DOF number in TDOF
+      INTEGER(LONG), INTENT(OUT)      :: COMPV             ! Comp. num corresponding to DOF_NUM in array TDOFI, col X_SET_COL_NUM
+      INTEGER(LONG), INTENT(OUT)      :: GRIDV             ! Grid num corresponding to DOF_NUM in array TDOFI, col X_SET_COL_NUM
+      INTEGER(LONG)                   :: I                 ! DO loop index
+      INTEGER(LONG)                   :: X_SET_COL_NUM     ! Col number, in TDOFI array, of the X-set DOF list
+
+
+
+
+! **********************************************************************************************************************************
+! Initialize outputs
+
+      GRIDV = 0
+      COMPV = 0
+
+! Calc outputs
+
+      CALL TDOF_COL_NUM ( X_SET, X_SET_COL_NUM )
+      DO I=1,NDOFG
+         IF (TDOFI(I, X_SET_COL_NUM) == DOF_NUM) THEN
+            GRIDV = TDOFI(I,1)
+            COMPV = TDOFI(I,2)
+            EXIT
+         ENDIF
+      ENDDO
+
+
+
+      RETURN
+
+! **********************************************************************************************************************************
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE GET_GRID_AND_COMP
+
+
+      SUBROUTINE GET_MACHINE_PARAMS
+
+! Use LAPACK function DLAMCH to get machine parameters for the users' computer
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE IOUNT1, ONLY                :  WRT_ERR, F06
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM
+      USE TIMDAT, ONLY                :  TSEC
+      USE CONSTANTS_1, ONLY           :  ONE
+      USE MACHINE_PARAMS, ONLY        :  MACH_BASE, MACH_EMAX, MACH_EMIN, MACH_EPS, MACH_PREC, MACH_RMAX, MACH_RMIN, MACH_RND,     &
+                                         MACH_SFMIN, MACH_T, MACH_LARGE_NUM
+      USE DEBUG_PARAMETERS, ONLY      :  DEBUG
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'GET_MACHINE_PARAMS'
+
+
+
+      REAL(DOUBLE)                    :: DLAMCH
+      EXTERNAL                        :: DLAMCH
+
+
+
+! **********************************************************************************************************************************
+      MACH_EPS       = DLAMCH ('E')
+      MACH_SFMIN     = DLAMCH ('S')
+      MACH_BASE      = DLAMCH ('B')
+      MACH_PREC      = DLAMCH ('P')
+      MACH_T         = DLAMCH ('N')
+      MACH_RND       = DLAMCH ('R')
+      MACH_EMIN      = DLAMCH ('M')
+      MACH_RMIN      = DLAMCH ('U')
+      MACH_EMAX      = DLAMCH ('L')
+      MACH_RMAX      = DLAMCH ('O')
+
+      MACH_LARGE_NUM = ONE/MACH_SFMIN
+
+! Write parameters to output file if requested
+
+      IF (DEBUG(3) > 0) THEN
+         WRITE(F06,2000)
+         WRITE(F06,1000)
+         WRITE(F06,1001) MACH_EPS
+         WRITE(F06,1002) MACH_SFMIN
+         WRITE(F06,1003) MACH_BASE
+         WRITE(F06,1004) MACH_PREC
+         WRITE(F06,1005) MACH_T
+         WRITE(F06,1006) MACH_RND
+         WRITE(F06,1007) MACH_EMIN
+         WRITE(F06,1008) MACH_RMIN
+         WRITE(F06,1009) MACH_EMAX
+         WRITE(F06,1010) MACH_RMAX
+         WRITE(F06,1011) MACH_LARGE_NUM
+         WRITE(F06,2000)
+         WRITE(F06,*)
+      ENDIF
+
+
+
+      RETURN
+
+! **********************************************************************************************************************************
+ 1000 FORMAT(' *INFORMATION: Machine parameters from LAPACK function DLAMCH:',/)
+
+ 1001 FORMAT(' LAPACK PARAMETER EPS        = ',1ES13.6,' = relative machine precision')
+
+ 1002 FORMAT(' LAPACK PARAMETER SFMIN      = ',1ES13.6,' = safe minimum, such that 1/SFMIN does not overflow')
+
+ 1003 FORMAT(' LAPACK PARAMETER BASE       = ',1ES13.6,' = base of the machine')
+
+ 1004 FORMAT(' LAPACK PARAMETER PREC       = ',1ES13.6,' = eps*base')
+
+ 1005 FORMAT(' LAPACK PARAMETER T          = ',1ES13.6,' = number of (base) digits in the mantissa')
+
+ 1006 FORMAT(' LAPACK PARAMETER RND        = ',1ES13.6,' = 1.0 when rounding occurs in addition, 0.0 otherwise')
+
+ 1007 FORMAT(' LAPACK PARAMETER EMIN       = ',1ES13.6,' = minimum exponent before (gradual) underflow')
+
+ 1008 FORMAT(' LAPACK PARAMETER RMIN       = ',1ES13.6,' = underflow threshold = base**(emin-1)')
+
+ 1009 FORMAT(' LAPACK PARAMETER EMAX       = ',1ES13.6,' = largest exponent before overflow')
+
+ 1010 FORMAT(' LAPACK PARAMETER RMAX       = ',1ES13.6,' = overflow threshold  = (base**emax)*(1-eps)')
+
+ 1011 FORMAT('        PARAMETER LARGE_NUM  = ',1ES13.6,' = 1./SFMIN')
+
+ 2000 FORMAT(' --------------------------------------------------------------------------------------------------')
+! **********************************************************************************************************************************
+
+      END SUBROUTINE GET_MACHINE_PARAMS
+
+
+      SUBROUTINE GET_MATRIX_DIAG_STATS ( MAT_NAME, INPUT_SET, NROWS, NTERM, I_KIN, J_KIN, KIN, WRITE_WHAT, KIN_DIAG,               &
+                                         MAX_OA_DIAG_TERM )
+
+! (1) Gets the diagonal terms from an input stiffness matrix that is in sparse compressed row storage format
+! (2) Returns the diagonal in a column matrix
+! (3) If requested, prints the diagonal with summary on stats: max, mins, etc
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM, FATAL_ERR, NDOFG, NGRID
+      USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06
+      USE TIMDAT, ONLY                :  TSEC
+      USE CONSTANTS_1, ONLY           :  ZERO
+      USE PARAMS, ONLY                :  AUTOSPC_RAT, EPSIL
+      USE DOF_TABLES, ONLY            :  TDOFI
+      USE DEBUG_PARAMETERS, ONLY      :  DEBUG
+
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'GET_MATRIX_DIAG_STATS'
+      CHARACTER(LEN=*), INTENT(IN )   :: INPUT_SET         ! Char description of MYSTRAN displ set (e.g. 'A ' or 'SG')
+      CHARACTER(LEN=*), INTENT(IN )   :: MAT_NAME          ! Name of the input matrix
+
+      INTEGER(LONG), INTENT(IN)       :: NROWS             ! Number of rows in the input matrix
+      INTEGER(LONG), INTENT(IN)       :: NTERM             ! Number of nonzero terms in the input matrix
+      INTEGER(LONG), INTENT(IN)       :: I_KIN(NROWS+1)    ! Indices that are used to determine where in KIN the next column begins
+      INTEGER(LONG), INTENT(IN)       :: J_KIN(NTERM)      ! Col numbers of terms in KIN
+      INTEGER(LONG), INTENT(IN)       :: WRITE_WHAT        ! 1 write diagonal, 2 write summary stats, 3 write both
+      INTEGER(LONG)                   :: AGRID             ! Actual grid number
+      INTEGER(LONG)                   :: AGRID_OLD         ! Actual grid number (used to add blank line bet grids when write diags)
+      INTEGER(LONG)                   :: COMP              ! DOF component number
+      INTEGER(LONG)                   :: COMPS_TO_CHECK(6) ! DOF component number numbers to check in the statistical summary:
+!                                                              for OA stats             : COMPS_TO_CHECK(I) = 1,1,1,1,1,1
+!                                                              for translation DOF stats: COMPS_TO_CHECK(I) = 1,1,1,0,0,0
+!                                                              for rotation    DOF stats: COMPS_TO_CHECK(I) = 0,0,0,1,1,1
+
+      INTEGER(LONG)                   :: INPUT_SET_COL     ! Col no. in array TDOF where the  INPUT_SET is (from subr TDOF_COL_NUM)
+      INTEGER(LONG)                   :: I,J,L             ! DO loop indices
+      INTEGER(LONG)                   :: K                 ! Index
+      INTEGER(LONG)                   :: KIN_ROW_MAX       ! Row/Col in KIN where max diagonal term occurs
+      INTEGER(LONG)                   :: KIN_ROW_OA_MAX    ! Row/Col in KIN where max OA diagonal term occurs
+      INTEGER(LONG)                   :: KIN_ROW_MIN       ! Row/Col in KIN where min diagonal term occurs
+      INTEGER(LONG)                   :: KIN_ROW_MINP      ! Row/Col in KIN where min diagonal term > 0 occurs
+      INTEGER(LONG)                   :: NUM_DOF(3)        ! Number of rows in this matrix (overall, translation and rotation)
+      INTEGER(LONG)                   :: NUM_IN_ROW        ! Number of terms in a row of KIN
+      INTEGER(LONG)                   :: NUM_NEG_DIAG_TERMS! Number of negative terms on the diagonal
+      INTEGER(LONG)                   :: NUM_NULL_ROWS     ! Number of null rows
+      INTEGER(LONG)                   :: NUM_SMALL_TERMS   ! Number of zero terms on the diagonal
+      INTEGER(LONG)                   :: TDOFI_ROW_MAX     ! Row/Col in TDOFI where MAX_DIAG_TERM is
+      INTEGER(LONG)                   :: TDOFI_ROW_OA_MAX  ! Row/Col in TDOFI where MAX_OA_DIAG_TERM is
+      INTEGER(LONG)                   :: TDOFI_ROW_MIN     ! Row/Col in TDOFI where MIN_DIAG_TERM is
+      INTEGER(LONG)                   :: TDOFI_ROW_MINP    ! Row/Col in TDOFI where MINP_DIAG_TERM is
+
+
+      REAL(DOUBLE) , INTENT(IN)       :: KIN(NTERM)        ! Nonzero terms in the stiffness matrix
+      REAL(DOUBLE) , INTENT(OUT)      :: KIN_DIAG(NROWS)   ! Diagonal terms from KIN
+      REAL(DOUBLE) , INTENT(OUT)      :: MAX_OA_DIAG_TERM  ! Maximum diagonal term in the stiffness matrix for the COMPS_TO_CHECK
+      REAL(DOUBLE)                    :: EPS1              ! Small number to compare against zero
+      REAL(DOUBLE)                    :: MAX_DIAG_TERM     ! Maximum diagonal term in the stiffness matrix
+      REAL(DOUBLE)                    :: MIN_DIAG_TERM     ! Minimum diagonal term in the stiffness matrix
+      REAL(DOUBLE)                    :: MINP_DIAG_TERM    ! Minimum diagonal term > 0 in the stiffness matrix
+      REAL(DOUBLE)                    :: MAX_MAX_OA_RATIO  ! Ratio: MAX_DIAG_TERM/MAX_OA_DIAG_TERM
+      REAL(DOUBLE)                    :: MIN_MAX_OA_RATIO  ! Ratio: MIN_DIAG_TERM/MAX_OA_DIAG_TERM
+      REAL(DOUBLE)                    :: MINP_MAX_OA_RATIO ! Ratio: MINP_DIAG_TERM/MAX_OA_DIAG_TERM
+      REAL(DOUBLE)                    :: RATIO             ! Ratio of a diagonal term in KIN to the max diag term in KIN
+
+      INTRINSIC                       :: DABS
+
+
+
+! **********************************************************************************************************************************
+      EPS1 = EPSIL(1)
+
+! Initialize outputs
+
+      MAX_OA_DIAG_TERM = ZERO
+
+      DO I=1,NROWS
+         KIN_DIAG(I) = ZERO
+      ENDDO
+
+      CALL TDOF_COL_NUM ( INPUT_SET, INPUT_SET_COL )
+
+! Get diagonal terms
+
+      K = 0
+      DO I=1,NROWS
+         NUM_IN_ROW = I_KIN(I+1) - I_KIN(I)
+         IF (I_KIN(I) == I_KIN(I+1)) THEN
+            KIN_DIAG(I) = ZERO
+         ELSE
+            DO J=1,NUM_IN_ROW
+               K = K + 1
+               IF (J_KIN(K) == I) THEN
+                  KIN_DIAG(I) = KIN(K)
+               ENDIF
+            ENDDO
+         ENDIF
+      ENDDO
+
+! Determine max OA positive diagonal term
+
+      KIN_ROW_OA_MAX   = 0
+      DO I=1,NROWS
+         IF (KIN_DIAG(I) > MAX_OA_DIAG_TERM) THEN
+            MAX_OA_DIAG_TERM = KIN_DIAG(I)
+            KIN_ROW_OA_MAX  = I
+         ENDIF
+      ENDDO
+      IF (DABS(MAX_OA_DIAG_TERM) < EPS1) THEN
+         WRITE(F06,100) MAT_NAME, MAX_OA_DIAG_TERM, SUBR_NAME
+         RETURN
+      ENDIF
+
+! Calc row where max OA occurs
+
+         K = 0
+         TDOFI_ROW_OA_MAX = 0
+         DO I=1,NDOFG
+            IF (TDOFI(I,INPUT_SET_COL) /= 0) THEN
+               K = K + 1
+               IF (K == KIN_ROW_OA_MAX) THEN
+                  TDOFI_ROW_OA_MAX = I
+                  EXIT
+               ENDIF
+            ENDIF
+         ENDDO
+
+! Print diagonal terms (with ratio to max term), if requested
+
+      IF ((WRITE_WHAT == 1) .OR. (WRITE_WHAT == 3)) THEN
+
+         WRITE(F06,*)
+         WRITE(F06,1001) MAT_NAME
+         WRITE(F06,1002)
+
+         AGRID_OLD = 0
+         K = 0
+         DO I=1,NDOFG
+            IF (TDOFI(I,INPUT_SET_COL) /= 0) THEN
+               K = K + 1
+               AGRID = TDOFI(I,1)
+               IF (DEBUG(88) == 0) THEN                    ! Write separator line between each set of grid outputs
+                  IF (AGRID /= AGRID_OLD) THEN
+                     AGRID_OLD = AGRID
+                     WRITE(F06,*)
+                  ENDIF
+               ENDIF
+               COMP  = TDOFI(I,2)
+               RATIO = KIN_DIAG(K)/MAX_OA_DIAG_TERM
+               WRITE(F06,1003) K, AGRID, COMP ,KIN_DIAG(K), RATIO
+            ENDIF
+         ENDDO
+         WRITE(F06,*)
+
+      ENDIF
+
+! Determine statistics, if requested
+
+      IF (WRITE_WHAT == 2) THEN
+         WRITE(F06,1004) MAT_NAME
+         WRITE(F06,1002)
+      ENDIF
+
+      IF ((WRITE_WHAT == 2) .OR. (WRITE_WHAT == 3)) THEN
+
+         DO L=1,3                                          ! L=1 is for all COMPS, L=2 is for COMPS 1,2,3 and L=3 is for COMPS 4,5,6
+
+            DO I = 1,6
+               COMPS_TO_CHECK(I) = 0
+            ENDDO
+
+            NUM_DOF(L) = 0
+
+            IF      (L == 1) THEN
+               DO I = 1,6
+                  COMPS_TO_CHECK(I) = 1
+               ENDDO
+            ELSE IF (L == 2) THEN
+               DO I = 1,3
+                  COMPS_TO_CHECK(I) = 1
+               ENDDO
+            ELSE IF (L == 3) THEN
+               DO I = 4,6
+                  COMPS_TO_CHECK(I) = 1
+               ENDDO
+            ENDIF
+
+            K = 0
+            MAX_DIAG_TERM = -1.0D0                         ! Determine max positive diagonal term for the COMPS_TO_CHECK
+            KIN_ROW_MAX   = 0
+            DO I=1,NDOFG
+               IF(TDOFI(I,INPUT_SET_COL) /= 0) THEN
+                  K = K + 1
+                  IF(COMPS_TO_CHECK(TDOFI(I,2)) > 0) THEN
+                     NUM_DOF(L) = NUM_DOF(L) + 1
+                     IF (KIN_DIAG(K) >= MAX_DIAG_TERM) THEN
+                        MAX_DIAG_TERM = KIN_DIAG(K)
+                        KIN_ROW_MAX  = K
+                     ENDIF
+                  ENDIF
+               ENDIF
+            ENDDO
+
+            K = 0
+            MINP_DIAG_TERM = MAX_DIAG_TERM                 ! Determine min positive diagonal term for the COMPS_TO_CHECK
+            KIN_ROW_MINP   = KIN_ROW_MAX
+            DO I=1,NDOFG
+               IF(TDOFI(I,INPUT_SET_COL) /= 0) THEN
+                  K = K + 1
+                  IF(COMPS_TO_CHECK(TDOFI(I,2)) > 0) THEN
+                     IF ((KIN_DIAG(K) <= MINP_DIAG_TERM) .AND. (KIN_DIAG(K) > ZERO)) THEN
+                        MINP_DIAG_TERM = KIN_DIAG(K)
+                        KIN_ROW_MINP   = K
+                     ENDIF
+                  ENDIF
+               ENDIF
+            ENDDO
+
+            K = 0
+            MIN_DIAG_TERM = MAX_DIAG_TERM                  ! Determine min diagonal term for the COMPS_TO_CHECK
+            KIN_ROW_MIN   = KIN_ROW_MAX
+            DO I=1,NDOFG
+               IF(TDOFI(I,INPUT_SET_COL) /= 0) THEN
+                  K = K + 1
+                  IF(COMPS_TO_CHECK(TDOFI(I,2)) > 0) THEN
+                     IF (KIN_DIAG(K) <= MIN_DIAG_TERM) THEN
+                        MIN_DIAG_TERM = KIN_DIAG(K)
+                        KIN_ROW_MIN   = K
+                     ENDIF
+                  ENDIF
+               ENDIF
+            ENDDO
+                                                           ! Calc ratios of max and mins to overall max term
+            MAX_MAX_OA_RATIO  = MAX_DIAG_TERM/MAX_OA_DIAG_TERM
+            MIN_MAX_OA_RATIO  = MIN_DIAG_TERM/MAX_OA_DIAG_TERM
+            MINP_MAX_OA_RATIO = MINP_DIAG_TERM/MAX_OA_DIAG_TERM
+
+            K = 0
+            NUM_NEG_DIAG_TERMS = 0                         ! Determine number of neg terms, null rows and negligible terms
+            NUM_NULL_ROWS      = 0
+            NUM_SMALL_TERMS    = 0
+            DO I=1,NDOFG
+               IF(TDOFI(I,INPUT_SET_COL) /= 0) THEN
+                  K = K + 1
+                  IF(COMPS_TO_CHECK(TDOFI(I,2)) > 0) THEN
+                     IF (I_KIN(K) == I_KIN(K+1)) THEN
+                        KIN_DIAG(K) = ZERO
+                        NUM_NULL_ROWS = NUM_NULL_ROWS + 1
+                     ENDIF
+                     IF (KIN_DIAG(K) < ZERO) THEN
+                        NUM_NEG_DIAG_TERMS = NUM_NEG_DIAG_TERMS + 1
+                     ENDIF
+                     IF (DABS(KIN_DIAG(K)) < AUTOSPC_RAT*MAX_OA_DIAG_TERM) THEN
+                        NUM_SMALL_TERMS = NUM_SMALL_TERMS + 1
+                     ENDIF
+                  ENDIF
+               ENDIF
+            ENDDO
+
+            K = 0                                          ! Calc row where max occurs
+            TDOFI_ROW_MAX = 0
+            DO I=1,NDOFG
+               IF (TDOFI(I,INPUT_SET_COL) /= 0) THEN
+                  K = K + 1
+                  IF (K == KIN_ROW_MAX) THEN
+                     TDOFI_ROW_MAX = I
+                     EXIT
+                  ENDIF
+               ENDIF
+            ENDDO
+
+            K = 0                                          ! Calc row where min positive occurs
+            TDOFI_ROW_MINP = 0
+            DO I=1,NDOFG
+               IF (TDOFI(I,INPUT_SET_COL) /= 0) THEN
+                  K = K + 1
+                  IF (K == KIN_ROW_MINP) THEN
+                     TDOFI_ROW_MINP = I
+                     EXIT
+                  ENDIF
+               ENDIF
+            ENDDO
+
+            K = 0                                          ! Calc row where min occurs
+            TDOFI_ROW_MIN = 0
+            DO I=1,NDOFG
+               IF (TDOFI(I,INPUT_SET_COL) /= 0) THEN
+                  K = K + 1
+                  IF (K == KIN_ROW_MIN) THEN
+                     TDOFI_ROW_MIN = I
+                     EXIT
+                  ENDIF
+               ENDIF
+            ENDDO
+
+            IF      (L == 1) THEN
+               WRITE(F06,1005) NUM_DOF(L), INPUT_SET
+            ELSE IF (L == 2) THEN
+               WRITE(F06,5005) NUM_DOF(L), INPUT_SET
+            ELSE IF (L == 3) THEN
+               WRITE(F06,6005) NUM_DOF(L), INPUT_SET
+            ENDIF
+
+            IF (L == 1) THEN
+               IF (TDOFI_ROW_OA_MAX /= 0) THEN
+                  WRITE(F06,1006) KIN_ROW_MAX    , TDOFI(TDOFI_ROW_OA_MAX,1), TDOFI(TDOFI_ROW_OA_MAX,2), MAX_OA_DIAG_TERM
+               ELSE
+                  WRITE(F06,2006)
+               ENDIF
+            ELSE
+               IF (TDOFI_ROW_MAX /= 0) THEN
+                  WRITE(F06,3006) KIN_ROW_MAX    , TDOFI(TDOFI_ROW_MAX,1), TDOFI(TDOFI_ROW_MAX,2), MAX_DIAG_TERM, MAX_MAX_OA_RATIO
+               ELSE
+                  WRITE(F06,4006)
+               ENDIF
+            ENDIF
+
+            IF (TDOFI_ROW_MINP /= 0) THEN
+               WRITE(F06,1007) KIN_ROW_MINP, TDOFI(TDOFI_ROW_MINP,1), TDOFI(TDOFI_ROW_MINP,2), MINP_DIAG_TERM,         &
+                               MINP_MAX_OA_RATIO
+            ELSE
+               WRITE(F06,2007)
+            ENDIF
+
+            IF (TDOFI_ROW_MIN /= 0) THEN
+               WRITE(F06,1008) KIN_ROW_MIN    , TDOFI(TDOFI_ROW_MIN,1), TDOFI(TDOFI_ROW_MIN,2), MIN_DIAG_TERM    , MIN_MAX_OA_RATIO
+            ELSE
+               WRITE(F06,2008)
+            ENDIF
+
+            WRITE(F06,1009) NUM_NEG_DIAG_TERMS
+            WRITE(F06,1010) NUM_NULL_ROWS
+                                                           ! NUM_SMALL_TERMS does not include NUM_NEG_TERMS so don't subtract it off
+            WRITE(F06,1011) AUTOSPC_RAT, NUM_SMALL_TERMS - NUM_NULL_ROWS
+            WRITE(F06,*)
+
+         ENDDO
+
+         WRITE(F06,1012) AUTOSPC_RAT
+
+      ENDIF
+
+
+
+      RETURN
+
+! **********************************************************************************************************************************
+  100 FORMAT(' *INFORMATION: MAX DIAGONAL TERM IN THE ',A,' MATRIX IS = ',1ES9.2,' WHICH IS TOO SMALL FOR CALCULATION OF MATRIX',  &
+                         ' STATS',/,14X,' IN SUBR ',A)
+
+ 1001 FORMAT(1X,/,37X,'OUTPUT OF DIAGONALS OF ',A,' MATRIX AND THEIR RATIOS TO MAX DIAGONAL TERM',/)
+
+ 1002 FORMAT(45X,'DOF NO     GRID  COMP      DIAGONAL      DIAG/MAXDIAG')
+
+ 1003 FORMAT(43X,I8,1X,I8,I6,2(1ES16.6))
+
+ 1004 FORMAT(1X,/,47X,'STATISTICS ON THE DIAGONAL TERMS OF THE ',A,' MATRIX',/)
+
+ 1005 FORMAT(' Overall stats for ',I6,1X,A,'set DOF''s',6X,'-------- --------     -   -------------   -------------',/,1X,         &
+             '------------------------------------')
+
+ 5005 FORMAT(' Stats for ',I6,1X,A,'set translation DOF''s',/,1X,'----------------------------------------')
+
+ 6005 FORMAT(' Stats for ',I6,1X,A,'set rotation DOF''s',/,1X,'-------------------------------------')
+
+ 1006 FORMAT(' Max positive diag term (OA max)         : ',I8,1X,I8,I6,2(1ES16.6))
+
+ 3006 FORMAT(' Max positive diag term & ratio to OA max: ',I8,1X,I8,I6,2(1ES16.6))
+
+ 1007 FORMAT(' Min positive diag term & ratio to OA max: ',I8,1X,I8,I6,2(1ES16.6))
+
+ 1008 FORMAT(' Min (any)    diag term & ratio to OA max: ',I8,1X,I8,I6,2(1ES16.6))
+
+ 1009 FORMAT(' Num of negative terms on the diagonal   : ',I8)
+
+ 1010 FORMAT(' Num of null rows                        : ',I8)
+
+ 1011 FORMAT(' Num of diag terms <',1ES9.2,'*(OA max)** : ',I8)
+
+ 1012 FORMAT(' ** Ratio of diag term to OA max is less than AUOTSPC_RAT = ',1ES13.6,' (defined on PARAM AUTOSPC by user or as',    &
+                ' default value)',/,'    (excluding null rows and negative terms)',/)
+
+ 2006 FORMAT(' Max positive diag term (OA max)         : ')
+
+ 4006 FORMAT(' Max positive diag term (OA max)         : ')
+
+ 2007 FORMAT(' Min positive diag term & ratio to OA max: ')
+
+ 2008 FORMAT(' Min (any)    diag term & ratio to OA max: ')
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE GET_MATRIX_DIAG_STATS
+
+
+      SUBROUTINE GET_OU4_MAT_STATS ( MAT, NROWS, NCOLS, FORM, SYM )
+
+! Gets the number of rows and columns and the SYM definition for a specific OUTPUT4 matrix given the matrix name.
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM, FATAL_ERR, NDOFA, NDOFG, NDOFL, NDOFR, NUM_CB_DOFS, NSUB, NVEC
+      USE IOUNT1, ONLY                :  ERR, F06
+      USE MODEL_STUF, ONLY            :  MCG
+      USE PARAMS, ONLY                :  MPFOUT
+      USE OUTPUT4_MATRICES
+
+      USE OUTA_HERE_Interface
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'GET_OU4_MAT_STATS'
+      CHARACTER(LEN=*) , INTENT(IN)   :: MAT               ! Name of matrix to get row, col size for
+      CHARACTER(1*BYTE), INTENT(OUT)  :: SYM               ! Y if matrix stored symmetrically
+
+      INTEGER(LONG)   , INTENT(OUT)   :: FORM              ! Matrix format
+      INTEGER(LONG)   , INTENT(OUT)   :: NCOLS             ! Number of cols in MAT_NAME
+      INTEGER(LONG)   , INTENT(OUT)   :: NROWS             ! Number of rows in MAT_NAME
+
+! **********************************************************************************************************************************
+! Initialize
+
+      NROWS =  0
+      NCOLS =  0
+      FORM  =  0
+      SYM   = '?'
+
+! Set output values for NROWS, NCOLS, FORM and SYM
+
+      IF      (MAT =='CG_LTM          ')  THEN; NROWS = 6         ; NCOLS = NUM_CB_DOFS; FORM=2 ; SYM='N' ! 1
+      ELSE IF (MAT =='DLR             ')  THEN; NROWS = NDOFL     ; NCOLS = NDOFR      ; FORM=2 ; SYM='N' ! 2
+      ELSE IF (MAT =='EIGEN_VAL       ')  THEN; NROWS = NVEC      ; NCOLS = 1          ; FORM=2 ; SYM='N' ! 3
+      ELSE IF (MAT =='EIGEN_VEC       ')  THEN; NROWS = NDOFG     ; NCOLS = NVEC       ; FORM=2 ; SYM='N' ! 4
+      ELSE IF (MAT =='GEN_MASS        ')  THEN; NROWS = NVEC      ; NCOLS = 1          ; FORM=2 ; SYM='N' ! 5
+      ELSE IF (MAT =='IF_LTM          ')  THEN; NROWS = NDOFR     ; NCOLS = NUM_CB_DOFS; FORM=2 ; SYM='N' ! 6
+      ELSE IF (MAT =='KAA             ')  THEN; NROWS = NDOFA     ; NCOLS = NDOFA      ; FORM=1 ; SYM='Y' ! 7
+      ELSE IF (MAT =='KGG             ')  THEN; NROWS = NDOFG     ; NCOLS = NDOFG      ; FORM=1 ; SYM='Y' ! 8
+      ELSE IF (MAT =='KLL             ')  THEN; NROWS = NDOFL     ; NCOLS = NDOFL      ; FORM=1 ; SYM='Y' ! 9
+      ELSE IF (MAT =='KRL             ')  THEN; NROWS = NDOFR     ; NCOLS = NDOFL      ; FORM=2 ; SYM='N' !10
+      ELSE IF (MAT =='KRR             ')  THEN; NROWS = NDOFR     ; NCOLS = NDOFR      ; FORM=1 ; SYM='Y' !11
+      ELSE IF (MAT =='KRRcb           ')  THEN; NROWS = NDOFR     ; NCOLS = NDOFR      ; FORM=1 ; SYM='Y' !12
+      ELSE IF (MAT =='KXX             ')  THEN; NROWS = NDOFR+NVEC; NCOLS = NDOFR+NVEC ; FORM=1 ; SYM='Y' !13
+      ELSE IF (MAT =='LTM             ')  THEN; NROWS = 6+NDOFR   ; NCOLS = NUM_CB_DOFS; FORM=2 ; SYM='N' !14
+      ELSE IF (MAT =='MCG             ')  THEN; NROWS = 6         ; NCOLS = 6          ; FORM=2 ; SYM='N' !15
+      ELSE IF (MAT =='MEFFMASS        ')  THEN; NROWS = NVEC      ; NCOLS = 6          ; FORM=2 ; SYM='N' !16
+      ELSE IF (MAT =='MPFACTOR_N6     ')  THEN; NROWS = NVEC      ; NCOLS = 6          ; FORM=2 ; SYM='N' !17a
+      ELSE IF (MAT =='MPFACTOR_NR     ')  THEN; NROWS = NVEC      ; NCOLS = NDOFR      ; FORM=2 ; SYM='N' !17b
+      ELSE IF (MAT =='MAA             ')  THEN; NROWS = NDOFA     ; NCOLS = NDOFA      ; FORM=1 ; SYM='Y' !18
+      ELSE IF (MAT =='MGG             ')  THEN; NROWS = NDOFG     ; NCOLS = NDOFG      ; FORM=1 ; SYM='Y' !19
+      ELSE IF (MAT =='MLL             ')  THEN; NROWS = NDOFL     ; NCOLS = NDOFL      ; FORM=1 ; SYM='Y' !20
+      ELSE IF (MAT =='MRL             ')  THEN; NROWS = NDOFR     ; NCOLS = NDOFL      ; FORM=2 ; SYM='N' !21
+      ELSE IF (MAT =='MRN             ')  THEN; NROWS = NDOFR     ; NCOLS = NVEC       ; FORM=2 ; SYM='N' !22
+      ELSE IF (MAT =='MRR             ')  THEN; NROWS = NDOFR     ; NCOLS = NDOFR      ; FORM=1 ; SYM='Y' !23
+      ELSE IF (MAT =='MRRcb           ')  THEN; NROWS = NDOFR     ; NCOLS = NDOFR      ; FORM=1 ; SYM='Y' !24
+      ELSE IF (MAT =='MXX             ')  THEN; NROWS = NDOFR+NVEC; NCOLS = NDOFR+NVEC ; FORM=1 ; SYM='Y' !25
+      ELSE IF (MAT =='PA              ')  THEN; NROWS = NDOFA     ; NCOLS = NSUB       ; FORM=1 ; SYM='Y' !26
+      ELSE IF (MAT =='PG              ')  THEN; NROWS = NDOFG     ; NCOLS = NSUB       ; FORM=1 ; SYM='Y' !27
+      ELSE IF (MAT =='PL              ')  THEN; NROWS = NDOFL     ; NCOLS = NSUB       ; FORM=1 ; SYM='Y' !28
+      ELSE IF (MAT =='PHIXG           ')  THEN; NROWS = NDOFG     ; NCOLS = NDOFR+NVEC ; FORM=2 ; SYM='N' !29
+      ELSE IF (MAT =='PHIZG           ')  THEN; NROWS = NDOFG     ; NCOLS = NUM_CB_DOFS; FORM=2 ; SYM='N' !30
+      ELSE IF (MAT =='RBM0            ')  THEN; NROWS = 6         ; NCOLS = 6          ; FORM=2 ; SYM='N' !31
+      ELSE IF (MAT =='TR6_0           ')  THEN; NROWS = NDOFR     ; NCOLS = 6          ; FORM=2 ; SYM='N' !32
+      ELSE IF (MAT =='TR6_CG          ')  THEN; NROWS = NDOFR     ; NCOLS = 6          ; FORM=2 ; SYM='N' !33
+      ENDIF
+
+      IF ((NROWS == 0) .OR. (NCOLS == 0) .OR. (FORM == 0) .OR. (SYM == '?')) THEN
+         FATAL_ERR = FATAL_ERR + 1
+         WRITE(ERR,946) SUBR_NAME, MAT
+         WRITE(F06,946) SUBR_NAME, MAT
+         CALL OUTA_HERE ( 'Y' )
+      ENDIF
+
+! **********************************************************************************************************************************
+  946 FORMAT(' *ERROR   946: PROGRAMMING ERROR IN SUBROUTINE ',A                                                                   &
+                    ,/,14X,' EITHER (1) INVALID VALUE = "',A,'" FOR INPUT ARGUMENT "MAT" OR,'                                      &
+                    ,/,14X,'        (2) INCORRECT OUTPUT VALUE FOR "NROWS", "NCOLS", "FORM" OR "SYM"')
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE GET_OU4_MAT_STATS
+
+
+
+
+      SUBROUTINE LINK_MESSAGE(MODNAM)
+
+      USE IOUNT1, ONLY                :  SC1
+      USE SCONTR, ONLY                :  LINKNO
+      USE TIMDAT, ONLY                :  HOUR, MINUTE, SEC, SFRAC
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=*), INTENT(IN)    :: MODNAM            ! Name to write to screen to describe module being run
+
+! **********************************************************************************************************************************
+
+      CALL OURTIM
+
+      WRITE(SC1,1096) LINKNO,MODNAM,HOUR,MINUTE,SEC,SFRAC
+
+      RETURN
+
+! **********************************************************************************************************************************
+
+ 1096 FORMAT(1X,I2,'/',A,T69,I2,':',I2,':',I2,'.',I3)
+
+
+      END SUBROUTINE LINK_MESSAGE
+
+
+
+
+
+
+
+
+
+      SUBROUTINE LINK_MESSAGE_I(MODNAM, I)
+
+      USE PENTIUM_II_KIND, ONLY       :  LONG
+      USE IOUNT1, ONLY                :  SC1
+      USE SCONTR, ONLY                :  LINKNO
+      USE TIMDAT, ONLY                :  HOUR, MINUTE, SEC, SFRAC
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=*), INTENT(IN)    :: MODNAM            ! Name to write to screen to describe module being run
+      INTEGER(LONG), INTENT(IN)       :: I                 ! A number displayed after the string
+
+
+! **********************************************************************************************************************************
+
+      CALL OURTIM
+
+      WRITE(SC1,1097) LINKNO,MODNAM,I,HOUR,MINUTE,SEC,SFRAC
+
+      RETURN
+
+! **********************************************************************************************************************************
+
+ 1097 FORMAT(1X,I2,'/',A,T59,I8,2X,I2,':',I2,':',I2,'.',I3)
+
+
+      END SUBROUTINE LINK_MESSAGE_I
+
+
+      SUBROUTINE WRITE_ALLOC_MEM_TABLE ( MESSAGE )
+
+! Writes memory allocation table based on user supplied Bulk Data DEBUG entry (see module DEBUG_PARAMS). The memory allocation table
+! is written to the F06 file and shows the amount of memory allocated to all arrays that are currently allocated.
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM
+      USE IOUNT1, ONLY                :  WRT_ERR, F06
+      USE CONSTANTS_1, ONLY           :  ZERO
+      USE DEBUG_PARAMETERS, ONLY      :  DEBUG
+      USE ALLOCATED_ARRAY_DATA, ONLY  :  ALLOCATED_ARRAY_NAMES, ALLOCATED_ARRAY_MEM, NUM_ALLOC_ARRAYS
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'WRITE_ALLOC_MEM_TABLE'
+      CHARACTER(LEN=*), INTENT(IN)    :: MESSAGE           ! Name of subr that called this subr
+      CHARACTER(2*BYTE)               :: ASTERISK
+
+      INTEGER(LONG)                   :: I                 ! DO loop index
+      INTEGER(LONG)                   :: NUM_ARRAYS_ALLOCTD! Number of arrays that have mem allocated to them
+
+      REAL(DOUBLE)                    :: TOTAL             ! Sum of all rows of ALLOCATED_ARRAY_MEM (this should be the same as
+!                                                            TOT_MB_MEM_ALLOC in module SCONTR but I wan't an independent calc.
+
+! **********************************************************************************************************************************
+! Write memory allocation table, if requested
+
+      WRITE(F06,*)
+      WRITE(F06,200) MESSAGE
+
+      NUM_ARRAYS_ALLOCTD = 0
+      TOTAL = ZERO
+      ASTERISK = '  '
+      DO I=1,NUM_ALLOC_ARRAYS
+
+         TOTAL = TOTAL + ALLOCATED_ARRAY_MEM(I)
+
+         IF (DEBUG(106) > 0) THEN                          ! Write info for all arrays (even ones that have no memory allocated
+
+            IF (ALLOCATED_ARRAY_MEM(I) > ZERO) THEN
+               NUM_ARRAYS_ALLOCTD = NUM_ARRAYS_ALLOCTD + 1
+               ASTERISK = ' *'
+            ENDIF
+            WRITE(F06,201) I, ALLOCATED_ARRAY_NAMES(I), ALLOCATED_ARRAY_MEM(I), ASTERISK
+            ASTERISK = '  '
+
+         ELSE                                              ! Write info on only those arrays that have memory alocated
+
+            IF (ALLOCATED_ARRAY_MEM(I) > ZERO) THEN
+               ASTERISK = '  '
+               NUM_ARRAYS_ALLOCTD = NUM_ARRAYS_ALLOCTD + 1
+               WRITE(F06,201) NUM_ARRAYS_ALLOCTD, ALLOCATED_ARRAY_NAMES(I), ALLOCATED_ARRAY_MEM(I), MESSAGE, ASTERISK
+            ENDIF
+
+         ENDIF
+
+      ENDDO
+
+      WRITE(F06,203) TOTAL, NUM_ARRAYS_ALLOCTD
+      WRITE(F06,*)
+
+! **********************************************************************************************************************************
+  200 FORMAT(40X,'Memory allocation table - ',A,/)
+
+  201 FORMAT(10X,'(',I3,') allocatable array ',A,' has ',F13.6,' MB of memory allocated to ',A,A)
+
+  203 FORMAT(70X,'----------',/,42X,'Total MB memory allocated = ',F13.6,' to ',I3,' different arrays')
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE WRITE_ALLOC_MEM_TABLE
+
+
+   END MODULE DIAGNOSTICS_MEMORY_REPORTING

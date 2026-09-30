@@ -209,7 +209,7 @@
       USE CONSTANTS_1, ONLY           :  ZERO
 
       USE OUTA_HERE_Interface
-      USE ARRAY_SIZE_ERROR_1_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  ARRAY_SIZE_ERROR_1
 
       IMPLICIT NONE
 
@@ -289,7 +289,7 @@
       USE SCONTR, ONLY                :  BLNK_SUB_NAM
       USE TIMDAT, ONLY                :  TSEC
 
-      USE ARRAY_SIZE_ERROR_1_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  ARRAY_SIZE_ERROR_1
 
       IMPLICIT NONE
 

@@ -50,14 +50,12 @@
                                          MODEL_MASS, MODEL_IXX, MODEL_IYY, MODEL_IZZ, MODEL_XCG, MODEL_YCG, MODEL_ZCG,             &
                                          OFFDIS, OFFSET, PLY_NUM, RCONM2, RGRID, TYPE, USERIN_RBM0
 
-      USE GET_ARRAY_ROW_NUM_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  GET_ARRAY_ROW_NUM, GET_GRID_NUM_COMPS
       USE EMG_Interface
-      USE GEN_T0L_Interface
+      USE VECTOR_GEOMETRY, ONLY       :  GEN_T0L
       USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF
-      USE GET_GRID_NUM_COMPS_Interface
       USE OUTA_HERE_Interface
-      USE COUNTER_INIT_Interface
-      USE COUNTER_PROGRESS_Interface
+      USE PROGRESS_COUNTERS, ONLY     :  COUNTER_INIT, COUNTER_PROGRESS
 
       IMPLICIT NONE
 
@@ -837,7 +835,7 @@ userin:        IF ((WHICH(1:8) == 'OA MODEL') .OR. (WHICH(1:6) == 'USERIN')) THE
       USE MODEL_STUF, ONLY            :  NUM_EMG_FATAL_ERRS, EID, GRID_ID, ME, PLY_NUM, RGRID, USERIN_RBM0
 
 
-      USE GET_ARRAY_ROW_NUM_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  GET_ARRAY_ROW_NUM
       USE EMG_Interface
       USE OUTA_HERE_Interface
 
@@ -1132,10 +1130,9 @@ userin:        IF ((WHICH(1:8) == 'OA MODEL') .OR. (WHICH(1:6) == 'USERIN')) THE
       USE DEBUG_PARAMETERS, ONLY      :  DEBUG
 
       USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
-      USE GET_ARRAY_ROW_NUM_Interface
+      USE DOF_ARRAY_INDEXING, ONLY    :  GET_ARRAY_ROW_NUM, GET_GRID_NUM_COMPS
       USE OUTA_HERE_Interface
-      USE GET_GRID_NUM_COMPS_Interface
-      USE GEN_T0L_Interface
+      USE VECTOR_GEOMETRY, ONLY       :  GEN_T0L
       USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
 
       IMPLICIT NONE

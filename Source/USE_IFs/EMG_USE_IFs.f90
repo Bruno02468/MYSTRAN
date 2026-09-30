@@ -28,7 +28,7 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE EMG
 
       USE IS_ELEM_PCOMP_PROPS_Interface
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE ELMDAT1_Interface
       USE OUTA_HERE_Interface
       USE ELMGM1_Interface

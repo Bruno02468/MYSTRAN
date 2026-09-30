@@ -27,9 +27,8 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE ELMGM2
 
-      USE OURTIM_Interface
-      USE CROSS_Interface
-      USE PLANE_COORD_TRANS_21_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
+      USE VECTOR_GEOMETRY, ONLY       :  CROSS, PLANE_COORD_TRANS_21
       USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF
       USE CHECK_TE_MATRIX_Interface
 

@@ -28,7 +28,7 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE WRITE_L1M
 
       USE FILE_OPEN_Interface
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE FILE_CLOSE_Interface
 
       END MODULE WRITE_L1M_USE_IFs

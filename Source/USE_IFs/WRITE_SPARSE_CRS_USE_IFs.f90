@@ -27,7 +27,7 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE WRITE_SPARSE_CRS
 
-      USE OURTIM_Interface
-      USE GET_GRID_AND_COMP_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
+      USE DIAGNOSTICS_MEMORY_REPORTING, ONLY:  GET_GRID_AND_COMP
 
       END MODULE WRITE_SPARSE_CRS_USE_IFs

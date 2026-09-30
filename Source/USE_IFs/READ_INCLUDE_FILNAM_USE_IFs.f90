@@ -27,7 +27,7 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE READ_INCLUDE_FILNAM
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE CSHIFT_Interface
       USE OPNERR_Interface
 

@@ -462,7 +462,7 @@
       USE PARAMS, ONLY                :  SUPWARN
 
       USE CSHIFT_Interface
-      USE GET_CHAR_STRING_END_Interface
+      USE TEXT_FIELD_UTILS, ONLY      :  GET_CHAR_STRING_END
 
       IMPLICIT NONE
 
@@ -803,7 +803,7 @@
       USE TIMDAT, ONLY                :  TSEC
 
       USE BDF_SET_SYNTAX, ONLY        :  GET_ANSID
-      USE PARSE_CHAR_STRING_Interface
+      USE TEXT_FIELD_UTILS, ONLY      :  PARSE_CHAR_STRING
 
       IMPLICIT NONE
 

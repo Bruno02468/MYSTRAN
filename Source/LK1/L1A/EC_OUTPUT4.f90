@@ -46,7 +46,7 @@
       USE TIMDAT, ONLY                :  TSEC
 
       USE EC_OUTPUT4_USE_IFs                               ! Added 2019/07/14
-      USE TO_UPPER_Interface
+      USE TEXT_FIELD_UTILS, ONLY      :  TO_UPPER
 
       IMPLICIT NONE
 

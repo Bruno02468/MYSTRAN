@@ -27,7 +27,7 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE PROCESS_INCLUDE_FILES
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE CSHIFT_Interface
       USE READ_INCLUDE_FILNAM_Interface
       USE RW_INCLUDE_FILES_Interface

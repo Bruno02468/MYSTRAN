@@ -27,7 +27,7 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE QPLT3
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE FULL_MATRIX_ALGEBRA, ONLY   :  CHECK_MAT_INVERSE, MATADD_FFF, MATMULT_FFF, MATMULT_FFF_T
       USE OUTA_HERE_Interface
       USE TPLT2_Interface

@@ -27,8 +27,8 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE DEALLOCATE_EIGEN1_MAT
 
-      USE OURTIM_Interface
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE OUTA_HERE_Interface
-      USE ALLOCATED_MEMORY_Interface
+      USE DIAGNOSTICS_MEMORY_REPORTING, ONLY:  ALLOCATED_MEMORY
 
       END MODULE DEALLOCATE_EIGEN1_MAT_USE_IFs
