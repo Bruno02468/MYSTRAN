@@ -113,7 +113,7 @@
       USE PARTITION_SS_NTERM_Interface
       USE PARTITION_SS_Interface
       USE ALLOCATE_COL_VEC_Interface
-      USE GET_SPARSE_CRS_COL_Interface
+      USE SPARSE_CRS_ACCESS, ONLY     :  GET_SPARSE_CRS_COL
       USE MATTRNSP_SS_Interface
       USE ALLOCATE_EIGEN1_MAT_Interface
       USE READ_L1M_Interface

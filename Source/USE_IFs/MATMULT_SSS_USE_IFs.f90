@@ -29,7 +29,7 @@
 
       USE OURTIM_Interface
       USE OUTA_HERE_Interface
-      USE ROW_AT_COLJ_BEGEND_Interface
+      USE SPARSE_CRS_ACCESS, ONLY     :  ROW_AT_COLJ_BEGEND
       USE ARRAY_SIZE_ERROR_1_Interface
 
       END MODULE MATMULT_SSS_USE_IFs

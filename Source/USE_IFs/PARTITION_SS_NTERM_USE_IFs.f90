@@ -29,7 +29,7 @@
 
       USE OURTIM_Interface
       USE OUTA_HERE_Interface
-      USE ROW_AT_COLJ_BEGEND_Interface
+      USE SPARSE_CRS_ACCESS, ONLY     :  ROW_AT_COLJ_BEGEND
       USE ALLOCATE_SPARSE_ALG_Interface
       USE DEALLOCATE_SPARSE_ALG_Interface
       USE COUNTER_INIT_Interface

@@ -68,7 +68,7 @@
       USE ALLOCATE_SPARSE_MAT_Interface
       USE MATTRNSP_SS_Interface
       USE ALLOCATE_SCR_CCS_MAT_Interface
-      USE SPARSE_CRS_SPARSE_CCS_Interface
+      USE SPARSE_FORMAT_CONVERSION, ONLY:  FULL_TO_SPARSE_CRS, SPARSE_CRS_SPARSE_CCS
       USE MATMULT_SSS_NTERM_Interface
       USE ALLOCATE_SCR_CRS_MAT_Interface
       USE MATMULT_SSS_Interface
@@ -76,7 +76,6 @@
       USE MATADD_SSS_NTERM_Interface
       USE MATADD_SSS_Interface
       USE CNT_NONZ_IN_FULL_MAT_Interface
-      USE FULL_TO_SPARSE_CRS_Interface
       USE MERGE_MAT_COLS_SSS_Interface
       USE WRITE_SPARSE_CRS_Interface
       USE DEALLOCATE_SPARSE_MAT_Interface
@@ -268,7 +267,7 @@
       USE OPNERR_Interface
       USE FILE_CLOSE_Interface
       USE OUTA_HERE_Interface
-      USE GET_SPARSE_CRS_COL_Interface
+      USE SPARSE_CRS_ACCESS, ONLY     :  GET_SPARSE_CRS_COL
       USE FBS_LAPACK_Interface
       USE FBS_SUPRLU_Interface
       USE deallocate_sparse_mat_Interface

@@ -505,13 +505,12 @@ FreeS:      IF (SOLLIB == 'SPARSE  ') THEN                       ! Last, free th
       USE READ_MATRIX_1_Interface
       USE PARTITION_SS_Interface
       USE ALLOCATE_SCR_CCS_MAT_Interface
-      USE SPARSE_CRS_SPARSE_CCS_Interface
+      USE SPARSE_FORMAT_CONVERSION, ONLY:  CRS_NONSYM_TO_CRS_SYM, SPARSE_CRS_SPARSE_CCS
       USE MATMULT_SSS_NTERM_Interface
       USE ALLOCATE_SCR_CRS_MAT_Interface
       USE MATMULT_SSS_Interface
       USE DEALLOCATE_SCR_MAT_Interface
-      USE SPARSE_CRS_TERM_COUNT_Interface
-      USE CRS_NONSYM_TO_CRS_SYM_Interface
+      USE SPARSE_CRS_ACCESS, ONLY     :  SPARSE_CRS_TERM_COUNT
       USE OUTA_HERE_Interface
       USE MATADD_SSS_NTERM_Interface
       USE MATADD_SSS_Interface
@@ -730,18 +729,16 @@ FreeS:      IF (SOLLIB == 'SPARSE  ') THEN                       ! Last, free th
       USE OUTA_HERE_Interface
       USE WRITE_MATRIX_1_Interface
       USE ALLOCATE_SCR_CCS_MAT_Interface
-      USE SPARSE_CRS_SPARSE_CCS_Interface
+      USE SPARSE_FORMAT_CONVERSION, ONLY:  CRS_NONSYM_TO_CRS_SYM, SPARSE_CRS_SPARSE_CCS, SPARSE_CRS_TO_FULL
       USE MATMULT_SSS_NTERM_Interface
       USE ALLOCATE_SCR_CRS_MAT_Interface
       USE MATMULT_SSS_Interface
       USE DEALLOCATE_SCR_MAT_Interface
-      USE SPARSE_CRS_TERM_COUNT_Interface
-      USE CRS_NONSYM_TO_CRS_SYM_Interface
+      USE SPARSE_CRS_ACCESS, ONLY     :  SPARSE_CRS_TERM_COUNT
       USE MATADD_SSS_NTERM_Interface
       USE MATADD_SSS_Interface
       USE DEALLOCATE_SPARSE_MAT_Interface
       USE ALLOCATE_FULL_MAT_Interface
-      USE SPARSE_CRS_TO_FULL_Interface
       USE MATMULT_FFF_Interface
       USE DEALLOCATE_FULL_MAT_Interface
       USE MATADD_FFF_Interface
@@ -1096,19 +1093,17 @@ FreeS:      IF (SOLLIB == 'SPARSE  ') THEN                       ! Last, free th
       USE PARTITION_SS_Interface
       USE MATTRNSP_SS_Interface
       USE ALLOCATE_SCR_CCS_MAT_Interface
-      USE SPARSE_CRS_SPARSE_CCS_Interface
+      USE SPARSE_FORMAT_CONVERSION, ONLY:  CRS_NONSYM_TO_CRS_SYM, SPARSE_CRS_SPARSE_CCS, SPARSE_CRS_TO_FULL
       USE MATMULT_SSS_NTERM_Interface
       USE ALLOCATE_SCR_CRS_MAT_Interface
       USE MATMULT_SSS_Interface
       USE MATADD_SSS_NTERM_Interface
       USE MATADD_SSS_Interface
       USE DEALLOCATE_SCR_MAT_Interface
-      USE SPARSE_CRS_TERM_COUNT_Interface
-      USE CRS_NONSYM_TO_CRS_SYM_Interface
+      USE SPARSE_CRS_ACCESS, ONLY     :  SPARSE_CRS_TERM_COUNT
       USE OUTA_HERE_Interface
       USE DEALLOCATE_SPARSE_MAT_Interface
       USE ALLOCATE_FULL_MAT_Interface
-      USE SPARSE_CRS_TO_FULL_Interface
       USE MATMULT_FFF_Interface
       USE DEALLOCATE_FULL_MAT_Interface
       USE MATADD_FFF_Interface
@@ -1540,7 +1535,7 @@ FreeS:      IF (SOLLIB == 'SPARSE  ') THEN                       ! Last, free th
       USE PARTITION_SS_Interface
       USE MATTRNSP_SS_Interface
       USE ALLOCATE_SCR_CCS_MAT_Interface
-      USE SPARSE_CRS_SPARSE_CCS_Interface
+      USE SPARSE_FORMAT_CONVERSION, ONLY:  SPARSE_CRS_SPARSE_CCS, SPARSE_CRS_TO_FULL
       USE MATMULT_SSS_NTERM_Interface
       USE ALLOCATE_SCR_CRS_MAT_Interface
       USE MATMULT_SSS_Interface
@@ -1549,7 +1544,6 @@ FreeS:      IF (SOLLIB == 'SPARSE  ') THEN                       ! Last, free th
       USE MATADD_SSS_Interface
       USE DEALLOCATE_SPARSE_MAT_Interface
       USE ALLOCATE_FULL_MAT_Interface
-      USE SPARSE_CRS_TO_FULL_Interface
       USE MATMULT_FFF_T_Interface
       USE DEALLOCATE_FULL_MAT_Interface
       USE MATADD_FFF_Interface
@@ -1790,7 +1784,7 @@ FreeS:      IF (SOLLIB == 'SPARSE  ') THEN                       ! Last, free th
       USE OUTA_HERE_Interface
       USE OPNERR_Interface
       USE FILE_CLOSE_Interface
-      USE GET_SPARSE_CRS_ROW_Interface
+      USE SPARSE_CRS_ACCESS, ONLY     :  GET_SPARSE_CRS_ROW
       USE FBS_LAPACK_Interface
       USE FBS_SUPRLU_Interface
       USE ALLOCATE_SPARSE_MAT_Interface
@@ -2024,7 +2018,7 @@ FreeS:      IF (SOLLIB == 'SPARSE  ') THEN                       ! Last, free th
       USE OUTA_HERE_Interface
       USE FILE_OPEN_Interface
       USE ALLOCATE_COL_VEC_Interface
-      USE GET_SPARSE_CRS_COL_Interface
+      USE SPARSE_CRS_ACCESS, ONLY     :  GET_SPARSE_CRS_COL
       USE FBS_LAPACK_Interface
       USE FBS_SUPRLU_Interface
       USE WRITE_VECTOR_Interface

@@ -71,6 +71,7 @@
       USE REDUCTION_CHECKS, ONLY      :  STIFF_MAT_EQUIL_CHK
       USE DEALLOCATE_RBGLOBAL_Interface
 
+      USE SPARSE_FORMAT_CONVERSION, ONLY:  SPARSE_CRS_TO_FULL
       IMPLICIT NONE
 
       CHARACTER, PARAMETER            :: CR13 = CHAR(13)   ! This causes a carriage return simulating the "+" action in a FORMAT

@@ -996,20 +996,18 @@ j_do:       DO J=JSTART,NDOFG                               ! Loop over rows of 
       USE PARTITION_SS_Interface
       USE MATTRNSP_SS_Interface
       USE ALLOCATE_SCR_CCS_MAT_Interface
-      USE SPARSE_CRS_SPARSE_CCS_Interface
+      USE SPARSE_FORMAT_CONVERSION, ONLY:  CRS_NONSYM_TO_CRS_SYM, SPARSE_CRS_SPARSE_CCS, SPARSE_CRS_TO_FULL
       USE MATMULT_SSS_NTERM_Interface
       USE ALLOCATE_SCR_CRS_MAT_Interface
       USE MATMULT_SSS_Interface
       USE MATADD_SSS_NTERM_Interface
       USE MATADD_SSS_Interface
       USE DEALLOCATE_SCR_MAT_Interface
-      USE SPARSE_CRS_TERM_COUNT_Interface
-      USE CRS_NONSYM_TO_CRS_SYM_Interface
+      USE SPARSE_CRS_ACCESS, ONLY     :  SPARSE_CRS_TERM_COUNT
       USE OUTA_HERE_Interface
       USE DEALLOCATE_SPARSE_MAT_Interface
       USE WRITE_MATRIX_1_Interface
       USE ALLOCATE_FULL_MAT_Interface
-      USE SPARSE_CRS_TO_FULL_Interface
       USE MATMULT_FFF_Interface
       USE DEALLOCATE_FULL_MAT_Interface
       USE MATADD_FFF_Interface
@@ -1505,15 +1503,14 @@ j_do:       DO J=JSTART,NDOFG                               ! Loop over rows of 
       USE PARTITION_SS_Interface
       USE MATTRNSP_SS_Interface
       USE ALLOCATE_SCR_CCS_MAT_Interface
-      USE SPARSE_CRS_SPARSE_CCS_Interface
+      USE SPARSE_FORMAT_CONVERSION, ONLY:  CRS_NONSYM_TO_CRS_SYM, SPARSE_CRS_SPARSE_CCS
       USE MATMULT_SSS_NTERM_Interface
       USE ALLOCATE_SCR_CRS_MAT_Interface
       USE MATMULT_SSS_Interface
       USE MATADD_SSS_NTERM_Interface
       USE MATADD_SSS_Interface
       USE DEALLOCATE_SCR_MAT_Interface
-      USE SPARSE_CRS_TERM_COUNT_Interface
-      USE CRS_NONSYM_TO_CRS_SYM_Interface
+      USE SPARSE_CRS_ACCESS, ONLY     :  SPARSE_CRS_TERM_COUNT
       USE OUTA_HERE_Interface
       USE DEALLOCATE_SPARSE_MAT_Interface
       USE WRITE_MATRIX_1_Interface
@@ -1931,20 +1928,18 @@ j_do:       DO J=JSTART,NDOFG                               ! Loop over rows of 
       USE PARTITION_SS_Interface
       USE MATTRNSP_SS_Interface
       USE ALLOCATE_SCR_CCS_MAT_Interface
-      USE SPARSE_CRS_SPARSE_CCS_Interface
+      USE SPARSE_FORMAT_CONVERSION, ONLY:  CRS_NONSYM_TO_CRS_SYM, SPARSE_CRS_SPARSE_CCS, SPARSE_CRS_TO_FULL
       USE MATMULT_SSS_NTERM_Interface
       USE ALLOCATE_SCR_CRS_MAT_Interface
       USE MATMULT_SSS_Interface
       USE MATADD_SSS_NTERM_Interface
       USE MATADD_SSS_Interface
       USE DEALLOCATE_SCR_MAT_Interface
-      USE SPARSE_CRS_TERM_COUNT_Interface
-      USE CRS_NONSYM_TO_CRS_SYM_Interface
+      USE SPARSE_CRS_ACCESS, ONLY     :  SPARSE_CRS_TERM_COUNT
       USE OUTA_HERE_Interface
       USE DEALLOCATE_SPARSE_MAT_Interface
       USE WRITE_MATRIX_1_Interface
       USE ALLOCATE_FULL_MAT_Interface
-      USE SPARSE_CRS_TO_FULL_Interface
       USE MATMULT_FFF_Interface
       USE DEALLOCATE_FULL_MAT_Interface
       USE MATADD_FFF_Interface
@@ -2456,7 +2451,7 @@ j_do:       DO J=JSTART,NDOFG                               ! Loop over rows of 
       USE PARTITION_SS_Interface
       USE MATTRNSP_SS_Interface
       USE ALLOCATE_SCR_CCS_MAT_Interface
-      USE SPARSE_CRS_SPARSE_CCS_Interface
+      USE SPARSE_FORMAT_CONVERSION, ONLY:  SPARSE_CRS_SPARSE_CCS, SPARSE_CRS_TO_FULL
       USE MATMULT_SSS_NTERM_Interface
       USE ALLOCATE_SCR_CRS_MAT_Interface
       USE MATMULT_SSS_Interface
@@ -2465,7 +2460,6 @@ j_do:       DO J=JSTART,NDOFG                               ! Loop over rows of 
       USE MATADD_SSS_Interface
       USE DEALLOCATE_SPARSE_MAT_Interface
       USE ALLOCATE_FULL_MAT_Interface
-      USE SPARSE_CRS_TO_FULL_Interface
       USE MATMULT_FFF_T_Interface
       USE DEALLOCATE_FULL_MAT_Interface
       USE MATADD_FFF_Interface
@@ -2709,14 +2703,13 @@ j_do:       DO J=JSTART,NDOFG                               ! Loop over rows of 
       USE WRITE_MATRIX_1_Interface
       USE DEALLOCATE_SPARSE_MAT_Interface
       USE ALLOCATE_FULL_MAT_Interface
-      USE SPARSE_CRS_TO_FULL_Interface
+      USE SPARSE_FORMAT_CONVERSION, ONLY:  SPARSE_CRS_SPARSE_CCS, SPARSE_CRS_TO_FULL
       USE GET_GRID_AND_COMP_Interface
       USE ALLOCATE_SCR_CCS_MAT_Interface
-      USE SPARSE_CRS_SPARSE_CCS_Interface
       USE SYM_MAT_DECOMP_SUPRLU_Interface
       USE OPNERR_Interface
       USE FILE_CLOSE_Interface
-      USE GET_SPARSE_CRS_COL_Interface
+      USE SPARSE_CRS_ACCESS, ONLY     :  GET_SPARSE_CRS_COL
       USE FBS_SUPRLU_Interface
       USE DEALLOCATE_SCR_MAT_Interface
       USE DEALLOCATE_FULL_MAT_Interface

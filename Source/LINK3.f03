@@ -63,6 +63,7 @@
 
       USE LINK_MESSAGE_Interface
 
+      USE SPARSE_CRS_ACCESS, ONLY     :  GET_SPARSE_CRS_COL
       IMPLICIT NONE
 
       CHARACTER, PARAMETER            :: CR13 = CHAR(13)   ! This causes a carriage return simulating the "+" action in a FORMAT
