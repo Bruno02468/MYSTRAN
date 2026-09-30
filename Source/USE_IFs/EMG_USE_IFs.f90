@@ -42,7 +42,7 @@
       USE SHELL_ABD_MATRICES_Interface
       USE ELMDAT2_Interface
       USE ELAS1_Interface
-      USE BREL1_Interface
+      USE LINE_ELEMENTS, ONLY         :  BREL1
       USE BUSH_Interface
       USE TREL1_Interface
       USE QDEL1_Interface
