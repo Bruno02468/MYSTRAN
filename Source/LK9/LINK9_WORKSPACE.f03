@@ -24,6 +24,16 @@
 
 ! End MIT license text.
 
+   MODULE LINK9_WORKSPACE
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: ALLOCATE_FEMAP_DATA, DEALLOCATE_FEMAP_DATA
+
+   CONTAINS
+
       SUBROUTINE ALLOCATE_FEMAP_DATA ( NAME_IN, NROWS, NCOLS, CALLING_SUBR )
 
 ! Allocate arrays for FEMAP neutral file
@@ -35,7 +45,8 @@
       USE TIMDAT, ONLY                :  TSEC
       USE FEMAP_ARRAYS, ONLY          :  FEMAP_EL_VECS, FEMAP_EL_NUMS
 
-      USE ALLOCATE_FEMAP_DATA_USE_IFs
+      USE OUTA_HERE_Interface
+      USE ALLOCATED_MEMORY_Interface
 
       IMPLICIT NONE
 
@@ -159,3 +170,79 @@
 ! **********************************************************************************************************************************
 
       END SUBROUTINE ALLOCATE_FEMAP_DATA
+
+
+      SUBROUTINE DEALLOCATE_FEMAP_DATA
+
+! Deallocate arrays for FEMAP neutral file
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM, FATAL_ERR, TOT_MB_MEM_ALLOC
+      USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06
+      USE TIMDAT, ONLY                :  TSEC
+      USE CONSTANTS_1, ONLY           :  ZERO
+      USE FEMAP_ARRAYS, ONLY          :  FEMAP_EL_VECS, FEMAP_EL_NUMS
+
+      USE ALLOCATED_MEMORY_Interface
+      USE OUTA_HERE_Interface
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'DEALLOCATE_FEMAP_DATA'
+      CHARACTER(24*BYTE)              :: NAME              ! Array name (used for output error message)
+
+      INTEGER(LONG)                   :: IERR              ! STAT from DEALLOCATE
+      INTEGER(LONG)                   :: JERR              ! Local error indicator
+
+
+      REAL(DOUBLE)                    :: CUR_MB_ALLOCATED  ! MB of memory that is currently allocated to ARRAY_NAME when subr
+!                                                            ALLOCATED_MEMORY is called (before entering MB_ALLOCATED into array
+!                                                            ALLOCATED_ARRAY_MEM
+
+
+
+! **********************************************************************************************************************************
+      JERR = 0
+
+! Deallocate array FEMAP_EL_DATA
+
+      IF (ALLOCATED(FEMAP_EL_NUMS)) THEN
+         DEALLOCATE (FEMAP_EL_NUMS,STAT=IERR)
+         NAME = 'FEMAP_EL_NUMS'
+         CALL ALLOCATED_MEMORY ( NAME, ZERO, 'DEALLOC', 'Y', CUR_MB_ALLOCATED, SUBR_NAME )
+         IF (IERR /= 0) THEN
+            WRITE(ERR,992) NAME,SUBR_NAME
+            WRITE(F06,992) NAME,SUBR_NAME
+            JERR = JERR + 1
+         ENDIF
+      ENDIF
+
+      IF (ALLOCATED(FEMAP_EL_VECS)) THEN
+         DEALLOCATE (FEMAP_EL_VECS,STAT=IERR)
+         NAME = 'FEMAP_EL_VECS'
+         CALL ALLOCATED_MEMORY ( NAME, ZERO, 'DEALLOC', 'Y', CUR_MB_ALLOCATED, SUBR_NAME )
+         IF (IERR /= 0) THEN
+            WRITE(ERR,992) NAME,SUBR_NAME
+            WRITE(F06,992) NAME,SUBR_NAME
+            JERR = JERR + 1
+         ENDIF
+      ENDIF
+
+! Quit if there were errors
+
+      IF (JERR /= 0) THEN
+         CALL OUTA_HERE ( 'Y' )
+      ENDIF
+
+
+
+      RETURN
+
+! **********************************************************************************************************************************
+  992 FORMAT(' *ERROR   992: CANNOT DEALLOCATE MEMORY FROM ARRAY ',A,' IN SUBROUTINE ',A)
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE DEALLOCATE_FEMAP_DATA
+
+   END MODULE LINK9_WORKSPACE
