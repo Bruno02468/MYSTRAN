@@ -36,7 +36,7 @@
       USE STIFF_MAT_EQUIL_CHK_Interface
       USE REDUCE_G_NM_Interface
       USE REDUCTION_N_TO_F, ONLY      :  REDUCE_N_FS
-      USE REDUCE_F_AO_Interface
+      USE REDUCTION_F_TO_A, ONLY      :  REDUCE_F_AO
       USE WRITE_MATRIX_1_Interface
       USE REDUCTION_A_TO_L, ONLY      :  REDUCE_A_LR
       USE DEALLOCATE_RBGLOBAL_Interface
