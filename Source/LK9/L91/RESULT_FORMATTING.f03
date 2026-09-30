@@ -24,6 +24,16 @@
 
 ! End MIT license text.
 
+   MODULE RESULT_FORMATTING
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: WRT_REAL_TO_CHAR_VAR
+
+   CONTAINS
+
       SUBROUTINE WRT_REAL_TO_CHAR_VAR ( REAL_VAR, NROWS, NCOLS, ROW_NUM, CHAR_VAR )
 
 ! Writes real values in one row of array REAL_VAR to a character variable, CHAR_VAR. This is done so that we can change real
@@ -35,7 +45,7 @@
       USE SCONTR, ONLY                :  FATAL_ERR
       USE CONSTANTS_1, ONLY           :  ZERO
 
-      USE WRT_REAL_TO_CHAR_VAR_USE_IFs                        ! Added 2019/07/14
+      USE FMT_ES14_6_Interface
 
       IMPLICIT NONE
 
@@ -65,3 +75,5 @@
 ! **********************************************************************************************************************************
 
       END SUBROUTINE WRT_REAL_TO_CHAR_VAR
+
+   END MODULE RESULT_FORMATTING

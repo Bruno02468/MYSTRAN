@@ -657,7 +657,7 @@ userin:        IF ((WHICH(1:8) == 'OA MODEL') .OR. (WHICH(1:6) == 'USERIN')) THE
      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
       USE IOUNT1, ONLY               :  ERR, F06, OP2
 
-      USE WRITE_ROD_USE_IFs
+      USE ROD_BAR_OUTPUT, ONLY       :  WRITE_ROD
 
       IMPLICIT NONE
 

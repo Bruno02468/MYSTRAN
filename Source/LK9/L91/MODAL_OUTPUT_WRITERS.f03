@@ -24,6 +24,16 @@
 
 ! End MIT license text.
 
+   MODULE MODAL_OUTPUT_WRITERS
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: WRITE_MEFFMASS, WRITE_MPFACTOR, WRITE_SUBCASE_EIGENVEC_HEADER
+
+   CONTAINS
+
       SUBROUTINE WRITE_MEFFMASS
 
       ! Writes output for modal effective mass
@@ -36,8 +46,6 @@
       USE EIGEN_MATRICES_1, ONLY      :  EIGEN_VAL, MEFFMASS
       USE MODEL_STUF, ONLY            :  MEFM_RB_MASS, LABEL, STITLE, TITLE
       USE PARAMS, ONLY                :  EPSIL, GRDPNT, MEFMCORD, MEFMGRID, MEFMLOC, SUPINFO, WTMASS
-
-      USE WRITE_MEFFMASS_USE_IFs
 
       IMPLICIT NONE
 
@@ -287,3 +295,261 @@
 ! **********************************************************************************************************************************
 
       END SUBROUTINE WRITE_MEFFMASS
+
+
+      SUBROUTINE WRITE_MPFACTOR                ! ( IHDR )
+
+      ! Writes output for modal participation factors
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE IOUNT1, ONLY                :  WRT_ERR, F06
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM, NDOFG, NDOFR, NVEC, SOL_NAME
+      USE TIMDAT, ONLY                :  TSEC
+      USE CONSTANTS_1, ONLY           :  ZERO, TWO, PI
+      USE DEBUG_PARAMETERS, ONLY      :  DEBUG
+      USE EIGEN_MATRICES_1, ONLY      :  EIGEN_VAL, MPFACTOR_NR, MPFACTOR_N6
+      USE MODEL_STUF, ONLY            :  LABEL, STITLE, TITLE
+      USE PARAMS, ONLY                :  GRDPNT, MEFMCORD, MEFMGRID, MEFMLOC, MPFOUT
+      USE DOF_TABLES, ONLY            :  TDOFI
+
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'WRITE_MPFACTOR'
+!xx   CHARACTER(LEN=*) , INTENT(IN)   :: IHDR              ! Indicator of whether to write an output header
+      CHARACTER(1*BYTE)               :: IHDR   = 'Y'      ! Indicator of whether to write an output header
+
+      INTEGER(LONG)                   :: I,J               ! DO loop indices
+      INTEGER(LONG)                   :: K                 ! Counter
+      INTEGER(LONG)                   :: R_SET_GRIDS(NDOFR)! Array of grids for the R-set
+      INTEGER(LONG)                   :: R_SET_COMPS(NDOFR)! Array of displ components for the R-set
+      INTEGER(LONG)                   :: R_SET_COL         ! Col in TDOFI array where R-set exists
+
+
+      REAL(DOUBLE)                    :: CYCLES            ! Circular frequency of a mode
+      !LOGICAL                        :: WRITE_F06  ! flag
+      !LOGICAL                        :: WRITE_OP2  ! flag
+      LOGICAL                         :: IS_LOW_PRECISION  ! Print MPFACTOR, MEFFMASS values with 2 decimal places of accuracy rather than 6
+
+
+
+! **********************************************************************************************************************************
+      IS_LOW_PRECISION = (DEBUG(174) == 0)
+      !--------------------------------------------------
+
+      CALL TDOF_COL_NUM ( 'R ', R_SET_COL )
+      K = 0
+      DO I=1,NDOFG
+         IF (TDOFI(I,R_SET_COL) /= 0) THEN
+            K = K + 1
+            R_SET_GRIDS(K) = TDOFI(I,1)
+            R_SET_COMPS(K) = TDOFI(I,2)
+         ENDIF
+      ENDDO
+
+      WRITE(F06,*)
+      ! Write output headers.
+      IF (IHDR == 'Y') THEN
+         WRITE(F06,9000)
+         ! There is always a TITLE(1), etc (even if they are blank)
+         WRITE(F06,9003) TITLE(1)
+         WRITE(F06,9003) STITLE(1)
+         WRITE(F06,9003) LABEL(1)
+         WRITE(F06,*)
+      ENDIF
+                                                           ! Write modal participation factors for CB analyses
+      IF ((SOL_NAME(1:12) == 'GEN CB MODEL') .AND. (MPFOUT == 'R')) THEN
+
+         WRITE(F06,9004) MEFMCORD
+
+         IF (IS_LOW_PRECISION) THEN
+            WRITE(F06,9101) (I,I=1,NDOFR)
+            WRITE(F06,9102) (R_SET_GRIDS(I), R_SET_COMPS(I),I=1,NDOFR)
+            WRITE(F06,9103)
+         ELSE
+            WRITE(F06,9201) (I,I=1,NDOFR)
+            WRITE(F06,9202) (R_SET_GRIDS(I), R_SET_COMPS(I),I=1,NDOFR)
+            WRITE(F06,9203)
+         ENDIF
+
+         DO I=1,NVEC
+
+            CYCLES = DSQRT(DABS(EIGEN_VAL(I)))/(TWO*PI)
+
+            IF (IS_LOW_PRECISION) THEN
+               WRITE(F06,9301) I, CYCLES, (MPFACTOR_NR(I,J),J=1,NDOFR)
+            ELSE
+               WRITE(F06,9302) I, CYCLES, (MPFACTOR_NR(I,J),J=1,NDOFR)
+            ENDIF
+
+         ENDDO
+
+      ELSE
+
+         WRITE(F06,9005) MEFMCORD
+         IF      (MEFMLOC == 'GRDPNT') THEN
+            IF (MEFMGRID == 0) THEN
+               WRITE(F06,9006)
+            ELSE
+               WRITE(F06,9007) GRDPNT
+            ENDIF
+         ELSE IF (MEFMLOC == 'CG    ') THEN
+            WRITE(F06,9008)
+         ELSE IF (MEFMLOC == 'GRID  ') THEN
+            WRITE(F06,9009) MEFMGRID
+         ENDIF
+
+         IF (IS_LOW_PRECISION) THEN
+            WRITE(F06,9501)
+         ELSE
+            WRITE(F06,9502)
+         ENDIF
+
+         DO I=1,NVEC
+
+            CYCLES = DSQRT(DABS(EIGEN_VAL(I)))/(TWO*PI)
+
+            IF (IS_LOW_PRECISION) THEN
+               WRITE(F06,9503) I, CYCLES, (MPFACTOR_N6(I,J),J=1,6)
+            ELSE
+               WRITE(F06,9504) I, CYCLES, (MPFACTOR_N6(I,J),J=1,6)
+            ENDIF
+
+         ENDDO
+
+      ENDIF
+
+      WRITE(F06,*)
+
+
+
+      RETURN
+
+! **********************************************************************************************************************************
+ 9000 FORMAT('--------------------------------------------------------------------------------------------------------------------'&
+            ,'----------------')
+
+ 9003 FORMAT(1X,A)
+
+ 9004 FORMAT(13X,'                           M O D A L   P A R T I C I P A T I O N   F A C T O R S',/,                             &
+             13X,'              (dimensionless, in coordinate sys ',I8,' with cols marked by R-set grid/comp)',/)
+
+ 9005 FORMAT(13X,'                           M O D A L   P A R T I C I P A T I O N   F A C T O R S',/,                             &
+             13X,'                                (dimensionless, in coordinate sys ',I8,')')
+
+ 9006 FORMAT(14X,'                          Reference point is the basic coordinate system origin',/)
+
+ 9007 FORMAT(14X,'                            Reference point is the PARAM GRDPNT grid: ',I8,/)
+
+ 9008 FORMAT(14X,'                              Reference point is the model center of gravity',/)
+
+ 9009 FORMAT(14X,'                                    Reference point is grid ',I8,/)
+
+ 9101 FORMAT(32X,32767(I8,6X))
+
+ 9102 FORMAT(13X,'MODE     CYCLES  ',32767(2X,I8,'-',I1,2X))
+
+ 9103 FORMAT(13X,' NUM')
+
+ 9201 FORMAT(34X,32767(I8,6X))
+
+ 9202 FORMAT(13X,'MODE       CYCLES  ',32767(2X,I8,'-',I1,2X))
+
+ 9203 FORMAT(13X,' NUM')
+
+ 9301 FORMAT(9X,I8,32767(1ES14.6))
+
+ 9302 FORMAT(9X,I8,32767(1ES14.2))
+
+ 9501 FORMAT(13X,'MODE     CYCLES          T1            T2            T3            R1            R2            R3',/,            &
+             13X,' NUM')
+
+ 9502 FORMAT(13X,'MODE       CYCLES          T1            T2            T3            R1            R2            R3',/,          &
+             13X,' NUM')
+
+ 9503 FORMAT(9X,I8,7(1ES14.6))
+
+ 9504 FORMAT(9X,I8,7(1ES14.2))
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE WRITE_MPFACTOR
+
+
+      SUBROUTINE WRITE_SUBCASE_EIGENVEC_HEADER ( JSUB, WRITE_F06 )
+
+! Writes the complete per-vector block header to F06 for all LINK9 WRITE_* subroutines:
+!   - Two blank separator lines
+!   - "OUTPUT FOR SUBCASE x"         (all except GEN CB MODEL)
+!   - "OUTPUT FOR EIGENVECTOR y"     (MODES and BUCKLING step 2 only)
+!   - TITLE / SUBTITLE / LABEL lines  (each written only if non-blank)
+!   - One trailing blank line
+!
+! This is the central single point for the per-vector F06 header emitted by all LINK9 WRITE_* subroutines.
+! For GEN CB MODEL the SUBCASE/EIGENVECTOR lines are skipped; the caller writes the CB DOF line after returning.
+!
+! JSUB  = global solution-vector index (subcase number for STATICS, or global eigenvector index for MODES/BUCKLING)
+!
+! Module variables consumed (set by LINK9 before each call into the WRITE_* routines):
+!   INT_SC_NUM  - owning internal subcase index (for TITLE/STITLE/LABEL lookup in the caller)
+!   INT_EIG_NUM - per-subcase local eigenvector counter (1-based, reset per subcase); 0 for non-eigen solutions
+!
+! Craig-Bampton: the two blank lines are written here; the caller is responsible for the CB DOF line itself,
+! since that requires grid/component lookup data not available here.
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE IOUNT1, ONLY                :  F06
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM, INT_EIG_NUM, INT_SC_NUM, NDOFR, NUM_CB_DOFS, NVEC, SOL_NAME
+      USE NONLINEAR_PARAMS, ONLY      :  LOAD_ISTEP
+      USE MODEL_STUF, ONLY            :  LABEL, SCNUM, STITLE, TITLE
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'WRITE_SUBCASE_EIGENVEC_HEADER'
+
+      INTEGER(LONG), INTENT(IN)       :: JSUB              ! Global solution-vector index passed in by the caller
+      LOGICAL,       INTENT(IN)       :: WRITE_F06         ! If .FALSE., suppress all F06 output (mirrors caller guard)
+
+! **********************************************************************************************************************************
+
+      IF (.NOT. WRITE_F06) RETURN
+
+      WRITE(F06,*)
+      WRITE(F06,*)
+
+      IF    ((SOL_NAME(1:7) == 'STATICS') .OR. (SOL_NAME(1:8) == 'NLSTATIC')) THEN
+
+         WRITE(F06,9011) SCNUM(JSUB)
+
+      ELSE IF ((SOL_NAME(1:8) == 'BUCKLING') .AND. (LOAD_ISTEP == 1)) THEN
+
+         WRITE(F06,9011) SCNUM(JSUB)
+
+      ELSE IF ((SOL_NAME(1:8) == 'BUCKLING') .AND. (LOAD_ISTEP == 2)) THEN
+
+         WRITE(F06,9011) SCNUM(INT_SC_NUM)
+         WRITE(F06,9012) INT_EIG_NUM
+
+      ELSE IF (SOL_NAME(1:5) == 'MODES') THEN
+
+         WRITE(F06,9011) SCNUM(INT_SC_NUM)
+         WRITE(F06,9012) INT_EIG_NUM
+
+      ! GEN CB MODEL: caller must write the CB DOF line -- just emit the blank lines (done above) and return
+      ENDIF
+
+      IF (TITLE(INT_SC_NUM)(1:)   /= ' ') WRITE(F06,9013) TITLE(INT_SC_NUM)
+      IF (STITLE(INT_SC_NUM)(1:)  /= ' ') WRITE(F06,9013) STITLE(INT_SC_NUM)
+      IF (LABEL(INT_SC_NUM)(1:)   /= ' ') WRITE(F06,9013) LABEL(INT_SC_NUM)
+      WRITE(F06,*)
+
+      RETURN
+
+! **********************************************************************************************************************************
+ 9011 FORMAT(' OUTPUT FOR SUBCASE ',I8)
+ 9012 FORMAT(' OUTPUT FOR EIGENVECTOR ',I8)
+ 9013 FORMAT(1X,A)
+
+      END SUBROUTINE WRITE_SUBCASE_EIGENVEC_HEADER
+
+   END MODULE MODAL_OUTPUT_WRITERS

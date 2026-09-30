@@ -54,6 +54,7 @@
       USE DEBUG_PARAMETERS, ONLY      :  DEBUG
       USE OUTPUT4_MATRICES, ONLY      :  OTM_MPCF, OTM_SPCF, TXT_MPCF, TXT_SPCF
       USE CC_OUTPUT_DESCRIBERS, ONLY  :  MPCF_F06, SPCF_F06
+      USE GRID_OUTPUT_WRITERS, ONLY   :  WRITE_GRD_OP2_OUTPUTS
 
       USE OFP2_USE_IFs
 
@@ -293,7 +294,7 @@
                   ENDIF
 
                   EXIT
-                  
+
                ENDIF
 
                IF ((SOL_NAME(1:12) == 'GEN CB MODEL') .AND. (JVEC == 1) .AND. (IROW_FILE >= 1)) THEN

@@ -45,6 +45,7 @@
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  TYPE
       USE CONSTANTS_1, ONLY           :  ZERO
+      USE ROD_BAR_OUTPUT, ONLY        :  ROD_MARGIN
 
       USE OUTA_HERE_Interface
 
@@ -113,6 +114,7 @@
       USE FEMAP_ARRAYS, ONLY          :  FEMAP_EL_VECS
       USE PARAMS, ONLY                :  PRTNEU
 
+      USE ROD_BAR_OUTPUT, ONLY        :  ROD_MARGIN
       USE OUTA_HERE_Interface
 
       IMPLICIT NONE
