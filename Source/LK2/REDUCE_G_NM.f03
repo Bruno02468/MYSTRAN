@@ -73,7 +73,7 @@
       USE GET_MATRIX_DIAG_STATS_Interface
       USE ALLOCATE_RBGLOBAL_Interface
       USE TDOF_COL_NUM_Interface
-      USE STIFF_MAT_EQUIL_CHK_Interface
+      USE REDUCTION_CHECKS, ONLY      :  STIFF_MAT_EQUIL_CHK
       USE GET_GRID_NUM_COMPS_Interface
       USE AUTOSPC_SUMMARY_MSGS_Interface
       USE OPNERR_Interface

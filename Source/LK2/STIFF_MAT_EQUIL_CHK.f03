@@ -24,6 +24,16 @@
 
 ! End MIT license text.
 
+   MODULE REDUCTION_CHECKS
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: STIFF_MAT_EQUIL_CHK
+
+   CONTAINS
+
       SUBROUTINE STIFF_MAT_EQUIL_CHK ( OUTPUT, X_SET, SYM_KIN, NROWS, NTERM_KIN, I_KIN, J_KIN, KIN, KIN_DIAG, KIN_MAX_DIAG, RBMAT )
 
 ! Performs a stiffness matrix equilibrium check on input matrix KIN by calculating KIN*RBMAT = PRB where RBMAT is a rigid body
@@ -43,7 +53,15 @@
       USE PARAMS, ONLY                :  EPSIL, EQCHK_NORM, SUPWARN, SUPINFO
       USE DEBUG_PARAMETERS, ONLY      :  DEBUG
 
-      USE STIFF_MAT_EQUIL_CHK_USE_IFs
+      USE OUTA_HERE_Interface
+      USE MATMULT_SFF_Interface
+      USE BANDSIZ_Interface
+      USE ALLOCATE_LAPACK_MAT_Interface
+      USE BANDGEN_LAPACK_DPB_Interface
+      USE WRITE_MATRIX_BY_ROWS_Interface
+      USE DEALLOCATE_LAPACK_MAT_Interface
+      USE TDOF_COL_NUM_Interface
+      USE MATMULT_FFF_T_Interface
 
       IMPLICIT NONE
 
@@ -435,3 +453,5 @@
       END SUBROUTINE WRITE_RB_MATS
 
       END SUBROUTINE STIFF_MAT_EQUIL_CHK
+
+   END MODULE REDUCTION_CHECKS
