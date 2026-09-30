@@ -43,7 +43,7 @@
       USE LINK0_Interface
       USE LINK1_Interface
       USE LINK2_Interface
-      USE LINK3_Interface
+      USE LINK3_MOD, ONLY             :  LINK3
       USE LINK4_Interface
       USE LINK6_Interface
       USE DEALLOCATE_RBGLOBAL_Interface

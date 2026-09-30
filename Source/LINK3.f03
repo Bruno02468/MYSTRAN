@@ -24,6 +24,16 @@
 
 ! End MIT license text.
 
+   MODULE LINK3_MOD
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: LINK3
+
+   CONTAINS
+
       SUBROUTINE LINK3
 
 ! LINK 3 solves the equation KLL*UL = PL where KLL, UL, PL are the L-set stiffness matrix, displs and loads. It solves the equation
@@ -51,7 +61,6 @@
 ! Interface module not needed for subr's DPBTRF and DPBTRS. These are "CONTAIN'ed" in module LAPACK_LIN_EQN_DPB,
 ! which is "USE'd" above
 
-!     USE LINK3_USE_IFs
       USE LINK_MESSAGE_Interface
 
       IMPLICIT NONE
@@ -459,4 +468,139 @@ FreeS:IF (SOLLIB == 'SPARSE  ') THEN                       ! Last, free the stor
 
 
 
+      SUBROUTINE EPSCALC ( ISUB )
 
+   ! Calculates, and prints, EPSILON, an indicator of numerical accuracy in the soln for UA:
+
+   !   EPSILON = UL(t)*[ PL - KLL*UL ]/[ UL(t)*PL ],  UL: displ's, PL: loads, KLL: stiff matrix for the L-set
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM, NDOFL, NTERM_KLl, WARN_ERR
+      USE TIMDAT, ONLY                :  TSEC
+      USE CONSTANTS_1, ONLY           :  ONE
+      USE PARAMS, ONLY                :  EPSIL, SUPINFO, SUPWARN
+      USE MACHINE_PARAMS, ONLY        :  MACH_SFMIN
+      USE LAPACK_DPB_MATRICES, ONLY   :  RES
+      USE SPARSE_MATRICES, ONLY       :  I_KLL, J_KLL, KLL
+      USE SPARSE_MATRICES, ONLY       :  SYM_KLL
+      USE COL_VECS, ONLY              :  UL_COL, PL_COL
+
+      USE MATMULT_SFF_Interface
+      USE MATADD_FFF_Interface
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'EPSCALC'
+
+      INTEGER(LONG), INTENT(IN)       :: ISUB              ! Internal subcase no. (1 to NSUB)
+
+
+      REAL(DOUBLE) , PARAMETER        :: ALPHA     =  ONE  ! Scalar multiplier for KLL in calc'ing residual vector, RES
+      REAL(DOUBLE) , PARAMETER        :: BETA      = -ONE  ! Scalar multiplier for PL in calc'ing residual vector, RES
+      REAL(DOUBLE)                    :: DEN               ! Denominator in EPSILON calculation
+      REAL(DOUBLE)                    :: EPSILON           ! The indicator of numerical accuracy of the displ soln, UL
+      REAL(DOUBLE)                    :: KU(NDOFL)         ! Result of multiplying KLL and UL_COL
+      REAL(DOUBLE)                    :: NUM               ! Numerator in EPSILON calculation
+
+      REAL(DOUBLE), EXTERNAL          :: DDOT              ! BLAS dot-product function
+
+      INTRINSIC                       :: DABS
+
+
+
+   ! **********************************************************************************************************************************
+   ! Calculate residual vector. First, multiply KLL x UL_COL and then add -PL_COL:
+
+      CALL MATMULT_SFF ( 'KLL', NDOFL, NDOFL, NTERM_KLL, SYM_KLL, I_KLL, J_KLL, KLL, 'UL_COL', NDOFL, 1, UL_COL, 'Y',             &
+                'KLL*UL_COL',  ONE, KU )
+      CALL MATADD_FFF  ( KU, PL_COL, NDOFL, 1, ALPHA, BETA, 0, RES )
+
+
+   ! Calculate dot product of UL displ vector and RES residual vector
+
+      NUM = DDOT (NDOFL, UL_COL, 1, RES, 1)
+
+   ! Calculate dot product of UL displ vector and PL load vector
+
+      DEN = DDOT (NDOFL, UL_COL, 1, PL_COL, 1)
+
+   ! Calculate EPSILON and print
+
+      IF (DABS(DEN) > MACH_SFMIN) THEN
+         EPSILON = NUM/DEN
+         WRITE(F06,3701) ISUB,EPSILON
+      ELSE
+         WARN_ERR = WARN_ERR + 1
+         WRITE(F06,3702) ISUB, DEN, MACH_SFMIN
+      ENDIF
+
+
+
+      RETURN
+
+   ! **********************************************************************************************************************************
+    3701 FORMAT(' *INFORMATION: FOR INTERNAL SUBCASE NUMBER ',I8,' EPSILON ERROR ESTIMATE            = ',1ES13.6,                     &
+                  ' Based on U''*(K*U - P)/(U''*P)',/)
+
+    3702 FORMAT(' *WARNING    : CANNOT CALCULATE EPSILON ERROR ESTIMATE FOR INTERNAL SUBCASE NUMBER ',I8                              &
+              ,/,14X,' THE DOT PRODUCT OF DISPL AND LOAD VECTORS                     = ',1ES15.6,' CANNOT BE INVERTED.'      &
+              ,/,14X,' IT IS TOO SMALL COMPARED TO MACHINE SAFE MINIMUM (MACH_SFMIN) = ',1ES15.6,/)
+
+   ! **********************************************************************************************************************************
+
+      END SUBROUTINE EPSCALC
+
+
+
+
+
+      SUBROUTINE VECINORM ( X, N, X_INORM )
+
+   ! Calculates the infinity norm, X_INORM, of an input vector, X, of dimension N. The infinity norm of a vector is the absolute value
+   ! of the numerically largest term in the vector.
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM
+      USE TIMDAT, ONLY                :  TSEC
+      USE CONSTANTS_1, ONLY           :  ZERO
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'VECINORM'
+
+      INTEGER(LONG), INTENT(IN)       :: N                 ! Dimension of the input vector X
+      INTEGER(LONG)                   :: I                 ! DO loop index
+
+
+      REAL(DOUBLE),  INTENT(IN)       :: X(N)              ! The input vector for which the infinity norm is calc'd
+      REAL(DOUBLE),  INTENT(OUT)      :: X_INORM           ! The calc'd infinity norm of X
+
+      INTRINSIC                       :: DABS
+
+
+
+   ! **********************************************************************************************************************************
+   ! Calculate infinity norm of a vector
+
+      X_INORM = ZERO
+      DO I=1,N
+         IF (DABS(X(I)) > X_INORM) THEN
+         X_INORM = DABS(X(I))
+         ENDIF
+      ENDDO
+
+
+
+      RETURN
+
+   ! **********************************************************************************************************************************
+
+      END SUBROUTINE VECINORM
+
+
+
+
+
+      END MODULE LINK3_MOD
