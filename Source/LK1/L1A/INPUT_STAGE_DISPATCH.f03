@@ -1344,9 +1344,9 @@ j_do2:            DO J=2,LMPCADDC
               EXIT
           ENDIF
       ENDDO
-  
+
       LINE = TO_UPPER(LINE)
-  
+
 
   101 FORMAT(A)
       END SUBROUTINE READ_BDF_LINE
@@ -2197,7 +2197,7 @@ j_do2:            DO J=2,LMPCADDC
       USE CASE_CONTROL_SELECTORS, ONLY:  CC_LOAD, CC_METH, CC_MPC, CC_NLPARM, CC_SPC, CC_STATSUB, CC_TEMP
       USE CASE_CONTROL_SETS, ONLY     :  CC_SET, CC_SUBC
       USE TEXT_FIELD_UTILS, ONLY      :  TO_UPPER
-      
+
       IMPLICIT NONE
 
       CHARACTER( 1*BYTE)              :: DOLLAR_WARN       ! Indicator of whether there was a $ sign in col 1
@@ -2387,7 +2387,7 @@ inner:         DO
 
                                                            ! Assign the same CENTER/CORNER location to all of FORCE,
                                                            ! STRESS, and STRAIN outputs according to the priority rules.
-                                                           ! Because NONE is stored as 0 in SC_STRE, etc., this treats 
+                                                           ! Because NONE is stored as 0 in SC_STRE, etc., this treats
                                                            ! STRESS(CORNER) = NONE as if STRESS wasn't defined at
                                                            ! all and defaults to CENTER.
       IF       (SC_STRE(1) /= 0) THEN
