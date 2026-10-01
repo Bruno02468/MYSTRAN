@@ -44,7 +44,7 @@
       USE TIMDAT, ONLY                :  TSEC
       USE PARAMS, ONLY                :  SUPWARN
 
-      USE CSHIFT_Interface
+      USE INPUT_FILE_MECHANICS, ONLY  :  CSHIFT
 
       IMPLICIT NONE
 
@@ -113,7 +113,7 @@
       USE PARAMS, ONLY                :  SUPWARN
       USE MODEL_STUF, ONLY            :  LABEL
 
-      USE CSHIFT_Interface
+      USE INPUT_FILE_MECHANICS, ONLY  :  CSHIFT
 
       IMPLICIT NONE
 
@@ -170,7 +170,7 @@
       USE PARAMS, ONLY                :  SUPWARN
       USE MODEL_STUF, ONLY            :  STITLE
 
-      USE CSHIFT_Interface
+      USE INPUT_FILE_MECHANICS, ONLY  :  CSHIFT
 
       IMPLICIT NONE
 
@@ -227,7 +227,7 @@
       USE PARAMS, ONLY                :  SUPWARN
       USE MODEL_STUF, ONLY            :  TITLE
 
-      USE CSHIFT_Interface
+      USE INPUT_FILE_MECHANICS, ONLY  :  CSHIFT
 
       IMPLICIT NONE
 

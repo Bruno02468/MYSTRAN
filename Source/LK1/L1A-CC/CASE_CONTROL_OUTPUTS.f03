@@ -461,7 +461,7 @@
       USE TIMDAT, ONLY                :  TSEC
       USE PARAMS, ONLY                :  SUPWARN
 
-      USE CSHIFT_Interface
+      USE INPUT_FILE_MECHANICS, ONLY  :  CSHIFT
       USE TEXT_FIELD_UTILS, ONLY      :  GET_CHAR_STRING_END
 
       IMPLICIT NONE

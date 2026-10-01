@@ -593,7 +593,6 @@ i_loop2:    DO I = TOKEN_END+1,STRNG_END                   ! just in case we are
       USE SCONTR, ONLY                :  CC_ENTRY_LEN, FATAL_ERR, BLNK_SUB_NAM
       USE TIMDAT, ONLY                :  TSEC
 
-      USE CSHIFT_Interface
 
       IMPLICIT NONE
 
@@ -695,7 +694,6 @@ i_loop2:    DO I = TOKEN_END+1,STRNG_END                   ! just in case we are
       USE SCONTR, ONLY                :  CC_ENTRY_LEN, FATAL_ERR, BLNK_SUB_NAM
       USE TIMDAT, ONLY                :  TSEC
 
-      USE CSHIFT_Interface
 
       IMPLICIT NONE
 

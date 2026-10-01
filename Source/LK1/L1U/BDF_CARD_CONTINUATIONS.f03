@@ -43,7 +43,6 @@
       USE TIMDAT, ONLY                :  TSEC
 
       USE FILE_LIFECYCLE, ONLY        :  READERR
-      USE FFIELD_Interface
 
       USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
       IMPLICIT NONE
@@ -188,7 +187,6 @@
       USE TIMDAT, ONLY                :  TSEC
 
       USE FILE_LIFECYCLE, ONLY        :  READERR
-      USE FFIELD_Interface
 
       IMPLICIT NONE
 
@@ -308,7 +306,6 @@
       USE TIMDAT, ONLY                :  TSEC
 
       USE FILE_LIFECYCLE, ONLY        :  READERR
-      USE FFIELD2_Interface
 
       USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
       IMPLICIT NONE
@@ -432,7 +429,6 @@
       USE TIMDAT, ONLY                :  TSEC
 
       USE FILE_LIFECYCLE, ONLY        :  READERR
-      USE FFIELD2_Interface
 
       IMPLICIT NONE
 
