@@ -23,6 +23,18 @@
 ! _______________________________________________________________________________________________________
 
 ! End MIT license text.
+
+   MODULE MITC4_MOD
+
+   USE MITC_KERNELS, ONLY :  MITC4_CARTESIAN_LOCAL_BASIS, MITC_CONTRAVARIANT_BASIS, MITC_COVARIANT_BASIS, MITC_COVARIANT_STRAIN_DIRECT_INTERPOLATION, MITC_DETJ, MITC_ELASTICITY, MITC_INITIALIZE, MITC_SHAPE_FUNCTIONS, MITC_TRANSFORM_B, MITC_TRANSFORM_CONTRAVARIANT_TO_LOCAL
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: MITC4
+
+   CONTAINS
       SUBROUTINE MITC4 ( OPT, INT_ELEM_ID )
 
 ! Calculates, or calls subr's to calculate, quadrilateral element matrices:
@@ -47,12 +59,9 @@
       USE RESULT_COORDINATES, ONLY     :  ELMDIS, ELMDIS_PLY
       USE ELEMENT_RECOVERY_SUPPORT, ONLY:  ELEM_STRE_STRN_ARRAYS
 
-      USE MITC_KERNELS, ONLY          :  MITC4_CARTESIAN_LOCAL_BASIS, MITC_CONTRAVARIANT_BASIS, MITC_COVARIANT_BASIS, MITC_COVARIANT_STRAIN_DIRECT_INTERPOLATION, MITC_DETJ, MITC_ELASTICITY, MITC_INITIALIZE, MITC_SHAPE_FUNCTIONS, MITC_TRANSFORM_B, MITC_TRANSFORM_CONTRAVARIANT_TO_LOCAL
       USE QUADRATURE, ONLY            :  ORDER_GAUSS
       USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
       USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
-      USE MITC4_B_Interface
-      USE MITC4_BMBS_Interface
       USE VECTOR_GEOMETRY, ONLY       :  CROSS, PLANE_COORD_TRANS_21
       USE MATERIAL_TRANSFORMATIONS, ONLY:  MATL_TRANSFORM_MATRIX
       USE MASS_DOF_EXPANSION, ONLY    :  EXPAND_MASS_DOFS
@@ -804,3 +813,639 @@
 ! **********************************************************************************************************************************
 
       END SUBROUTINE MITC4
+
+      SUBROUTINE MITC4_B ( R, S, T, MEMBRANE, BENDING, SHEAR, B )
+
+! Calculates the strain-displacement matrix in the cartesian local coordinate system
+! for MITC4 shell at one point in isoparametric coordinates.
+!
+! Reference [1]:
+!  "A new MITC4+ shell element" by Ko, Lee, Bathe, 2016
+!
+! Reference [2]:
+!  MITC4 paper "A continuum mechanics based four-node shell element for general nonlinear analysis"
+!     by Dvorkin and Bathe
+
+
+      USE PENTIUM_II_KIND, ONLY       :  LONG, DOUBLE
+      USE MODEL_STUF, ONLY            :  ELGP, XEL
+      USE CONSTANTS_1, ONLY           :  ZERO, HALF, ONE, QUARTER, TWO, FOUR
+      USE PARAMS, ONLY                :  QUAD4TYP
+      USE MITC_STUF, ONLY             :  GP_RS
+
+      USE VECTOR_GEOMETRY, ONLY       :  CROSS
+
+      IMPLICIT NONE
+
+      INTEGER(LONG)                   :: COL               ! A column (element DOF) of B. 1-24.
+      INTEGER(LONG)                   :: GP                ! Grid point number. 1-4.
+
+      REAL(DOUBLE) , INTENT(IN)       :: R, S, T           ! Isoparametric coordinates
+      REAL(DOUBLE) , INTENT(OUT)      :: B(6, 6*ELGP)      ! Strain-displacement matrix
+      REAL(DOUBLE)                    :: X_R(3)            ! Characteristic geometry vector x_r
+      REAL(DOUBLE)                    :: X_S(3)            ! Characteristic geometry vector x_s
+      REAL(DOUBLE)                    :: X_D(3)            ! Characteristic geometry vector x_d (distortion vector)
+      REAL(DOUBLE)                    :: BM(6, 6*ELGP)     ! Strain-displacement matrix for membrane
+      REAL(DOUBLE)                    :: BB(6, 6*ELGP)     ! Strain-displacement matrix for bending
+      REAL(DOUBLE)                    :: BS(6, 6*ELGP)     ! Strain-displacement matrix for shear
+      REAL(DOUBLE)                    :: BM_A(6, 6*ELGP)
+      REAL(DOUBLE)                    :: BM_B(6, 6*ELGP)
+      REAL(DOUBLE)                    :: BM_C(6, 6*ELGP)
+      REAL(DOUBLE)                    :: BM_D(6, 6*ELGP)
+      REAL(DOUBLE)                    :: BM_E(6, 6*ELGP)
+      REAL(DOUBLE)                    :: E(6, 6*ELGP)      ! Strain-displacement matrix directly interpolated
+      REAL(DOUBLE)                    :: BS_A(6, 6*ELGP)
+      REAL(DOUBLE)                    :: BS_B(6, 6*ELGP)
+      REAL(DOUBLE)                    :: BS_C(6, 6*ELGP)
+      REAL(DOUBLE)                    :: BS_D(6, 6*ELGP)
+      REAL(DOUBLE)                    :: XRxXS(3)
+      REAL(DOUBLE)                    :: MR(3)
+      REAL(DOUBLE)                    :: MS(3)
+      REAL(DOUBLE)                    :: DUM1(3)
+      REAL(DOUBLE)                    :: c_r, c_s, d       ! Distortion variables used in ref [1]
+                                                           ! Intermediate variables used in ref [1]
+      REAL(DOUBLE)                    :: a_A, a_B, a_C, a_D, a_E
+
+      LOGICAL      , INTENT(IN)       :: MEMBRANE          ! If true, generate membrane parts of B (rows 1,2,4)
+      LOGICAL      , INTENT(IN)       :: BENDING           ! If true, generate bending parts of B (rows 1,2,4)
+      LOGICAL      , INTENT(IN)       :: SHEAR             ! If true, generate shear parts of B (rows 5,6)
+
+
+! **********************************************************************************************************************************
+! Initialize empty matrix
+
+      B(:,:) = ZERO
+
+
+! **********************************************************************************************************************************
+! Add in-layer strain-displacement terms
+
+                                                           ! Characteristic geometry vectors
+      X_R(:) = ZERO
+      X_S(:) = ZERO
+      X_D(:) = ZERO
+      DO GP=1,ELGP
+         X_R(:) = X_R(:) + QUARTER * GP_RS(1, GP)                * XEL(GP, :)
+         X_S(:) = X_S(:) + QUARTER *                GP_RS(2, GP) * XEL(GP, :)
+         X_D(:) = X_D(:) + QUARTER * GP_RS(1, GP) * GP_RS(2, GP) * XEL(GP, :)
+      ENDDO
+
+
+      IF(QUAD4TYP == 'MITC4+') THEN
+                                                           ! MITC4+ according to ref [1]
+
+         IF(MEMBRANE) THEN
+                                                           ! BM at each membrane strain tying point.
+            !
+            !Membrane strain tying points A,B,C,D,E
+            ! 2     A     1
+            !  +----o----+
+            !  |    ^s   |
+            !  |    |    |
+            !D o    +->r o C
+            !  |   E     |
+            !  |         |
+            !  +----o----+
+            ! 3     B     4
+            !
+            CALL MITC4_COVARIANT_STRAIN_DIRECT_INTERPOLATION( ZERO,  ONE , T, X_R, X_S, X_D, .TRUE., .FALSE., 1, 1, BM_A )
+            CALL MITC4_COVARIANT_STRAIN_DIRECT_INTERPOLATION( ZERO, -ONE , T, X_R, X_S, X_D, .TRUE., .FALSE., 1, 1, BM_B )
+            CALL MITC4_COVARIANT_STRAIN_DIRECT_INTERPOLATION( ONE ,  ZERO, T, X_R, X_S, X_D, .TRUE., .FALSE., 2, 2, BM_C )
+            CALL MITC4_COVARIANT_STRAIN_DIRECT_INTERPOLATION(-ONE ,  ZERO, T, X_R, X_S, X_D, .TRUE., .FALSE., 2, 2, BM_D )
+            CALL MITC4_COVARIANT_STRAIN_DIRECT_INTERPOLATION( ZERO,  ZERO, T, X_R, X_S, X_D, .TRUE., .FALSE., 4, 4, BM_E )
+
+                                                           ! Dual basis vectors m^r and m^s to the characteristic
+                                                           ! geometry vectors x_r and x_s. From eqn (11) in ref [1].
+            CALL CROSS(X_R, X_S, XRxXS)
+            CALL CROSS(X_S, XRxXS, DUM1)
+            MR = DUM1 / DOT_PRODUCT(X_R, DUM1)
+            CALL CROSS(XRxXS, X_R, DUM1)
+            MS = DUM1 / DOT_PRODUCT(X_S, DUM1)
+
+                                                           ! c_r, c_s, d from eqn (24) in ref [1].
+            c_r = DOT_PRODUCT(X_D, MR)
+            c_s = DOT_PRODUCT(X_D, MS)
+            d = c_r * c_r + c_s * c_s - ONE
+
+            a_A = c_r * (c_r - 1) / (TWO * d)
+            a_B = c_r * (c_r + 1) / (TWO * d)
+            a_C = c_s * (c_s - 1) / (TWO * d)
+            a_D = c_s * (c_s + 1) / (TWO * d)
+            a_E = 2 * c_r * c_s / d
+
+                                                           ! Eqn (27a) in ref [1]
+            BM(1,:) = HALF * (ONE - TWO * a_A + S + 2 * a_A * S*S ) * BM_A(1,:)                                                    &
+                    + HALF * (ONE - TWO * a_B - S + 2 * a_B * S*S ) * BM_B(1,:)                                                    &
+                    + a_C * (-ONE + S*S) * BM_C(2,:)                                                                               &
+                    + a_D * (-ONE + S*S) * BM_D(2,:)                                                                               &
+                    + a_E * (-ONE + S*S) * BM_E(4,:)
+                                                           ! Eqn (27b) in ref [1]
+            BM(2,:) = a_A * (-ONE + R*R) * BM_A(1,:)                                                                               &
+                    + a_B * (-ONE + R*R) * BM_B(1,:)                                                                               &
+                    + HALF * (ONE - TWO * a_C + R + 2 * a_C * R*R ) * BM_C(2,:)                                                    &
+                    + HALF * (ONE - TWO * a_D - R + 2 * a_D * R*R ) * BM_D(2,:)                                                    &
+                    + a_E * (-ONE + R*R) * BM_E(4,:)
+
+            BM(3,:) = ZERO
+                                                           ! Eqn (27c) in ref [1]
+            BM(4,:) = QUARTER * ( R + FOUR * a_A * R * S) * BM_A(1,:)                                                              &
+                    + QUARTER * (-R + FOUR * a_B * R * S) * BM_B(1,:)                                                              &
+                    + QUARTER * ( S + FOUR * a_C * R * S) * BM_C(2,:)                                                              &
+                    + QUARTER * (-S + FOUR * a_D * R * S) * BM_D(2,:)                                                              &
+                    + (1 + a_E * R * S) * BM_E(4,:)
+
+            B(1:4,:) = B(1:4,:) + BM(1:4,:)
+
+         ENDIF
+
+         IF(BENDING) THEN
+                                                          ! Bending is the same as the MITC4+ form of MITC4
+            CALL MITC4_COVARIANT_STRAIN_DIRECT_INTERPOLATION( R, S, T, X_R, X_S, X_D, .FALSE., .TRUE., 1, 4, BB )
+            B(1:4,:) = B(1:4,:) + BB(1:4,:)
+         ENDIF
+
+      ELSEIF(QUAD4TYP == 'MITC4 ') THEN
+
+         IF(.TRUE.) THEN
+
+            IF(MEMBRANE) THEN
+                                                           ! MITC4+ form of MITC4 according to ref [1]
+               CALL MITC4_COVARIANT_STRAIN_DIRECT_INTERPOLATION( R, S, T, X_R, X_S, X_D, .TRUE., .FALSE., 1, 4, BM )
+               B(1:4,:) = B(1:4,:) + BM(1:4,:)
+            ENDIF
+
+            IF(BENDING) THEN
+               CALL MITC4_COVARIANT_STRAIN_DIRECT_INTERPOLATION( R, S, T, X_R, X_S, X_D, .FALSE., .TRUE., 1, 4, BB )
+               B(1:4,:) = B(1:4,:) + BB(1:4,:)
+            ENDIF
+
+         ELSE
+
+                                                           ! MITC4 according to ref [2]
+                                                           ! Equivalent to the MITC4+ form of MITC4
+                                                           ! but can't separate membrane and bending.
+                                                           ! Could be removed and this branch is never reached.
+            IF(MEMBRANE .AND. BENDING) THEN
+
+               CALL MITC_COVARIANT_STRAIN_DIRECT_INTERPOLATION( R, S, T, 1, 4, E )
+               B(1:4,:) = B(1:4,:) + E(1:4,:)
+
+            ENDIF
+
+         ENDIF
+
+      ENDIF
+
+
+
+! **********************************************************************************************************************************
+! Add transverse shear strain-displacement terms
+
+      IF(SHEAR) THEN
+
+         ! According to ref [2]. Tying point labels are different from ref [1] but it's otherwise equivalent.
+         ! The same in MITC4 and MITC4+.
+
+         !
+         !Tying points A,B,C,D are the same as in Bathe wrt R and S (Bathe's r_1 and r_2) and same node numbering:
+         ! 2     A     1
+         !  +----o----+
+         !  |    ^s   |
+         !  |    |    |
+         !B o    +->r o D
+         !  |         |
+         !  |         |
+         !  +----o----+
+         ! 3     C     4
+         !
+
+         CALL MITC_COVARIANT_STRAIN_DIRECT_INTERPOLATION( ZERO, ONE,  ZERO, 5, 6, BS_A )
+         CALL MITC_COVARIANT_STRAIN_DIRECT_INTERPOLATION(-ONE,  ZERO, ZERO, 5, 6, BS_B )
+         CALL MITC_COVARIANT_STRAIN_DIRECT_INTERPOLATION( ZERO,-ONE,  ZERO, 5, 6, BS_C )
+         CALL MITC_COVARIANT_STRAIN_DIRECT_INTERPOLATION( ONE,  ZERO, ZERO, 5, 6, BS_D )
+
+         DO COL=1,6*ELGP
+           !e_st
+           B(5, COL) = HALF * (ONE + R) * BS_D(5, COL) + HALF * (ONE - R) * BS_B(5, COL)
+           !e_rt
+           B(6, COL) = HALF * (ONE + S) * BS_A(6, COL) + HALF * (ONE - S) * BS_C(6, COL)
+         ENDDO
+
+      ENDIF
+
+! **********************************************************************************************************************************
+! Transform covariant strain components from the contravariant basis to the cartesian local basis.
+
+      CALL MITC_TRANSFORM_CONTRAVARIANT_TO_LOCAL( R, S, T, B )
+
+
+      ! Double shear terms because it's now treated as vectors instead of tensors.
+      B(4:6,:) = B(4:6,:) * 2
+
+      RETURN
+
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE MITC4_B
+
+SUBROUTINE MITC4_BMBS ( R, S, BM, BB, BS )
+
+  USE PENTIUM_II_KIND, ONLY   : DOUBLE
+  USE MODEL_STUF, ONLY    : ELGP, EPROP
+  USE CONSTANTS_1, ONLY       : ZERO, HALF, ONE
+
+
+  IMPLICIT NONE
+
+  REAL(DOUBLE), INTENT(IN)    :: R, S
+  REAL(DOUBLE), INTENT(OUT)   :: BM(3, 6*ELGP)
+  REAL(DOUBLE), INTENT(OUT)   :: BB(3, 6*ELGP)
+  REAL(DOUBLE), INTENT(OUT)   :: BS(2, 6*ELGP)
+
+  REAL(DOUBLE)        :: BMEM(6, 6*ELGP)
+  REAL(DOUBLE)        :: BBOT(6, 6*ELGP)
+  REAL(DOUBLE)        :: BTOP(6, 6*ELGP)
+  REAL(DOUBLE)        :: BSHR(6, 6*ELGP)
+  REAL(DOUBLE)        :: G(3,3)            ! Covariant basis at the mid-surface, in element coordinates
+  REAL(DOUBLE)        :: M1, M2            ! In-plane slope of the director relative to the element facet
+
+! **********************************************************************************************************************************
+! Subr MITC4_B returns the strain-displacement matrix in the CARTESIAN LOCAL basis, whose x axis lies along the covariant g_r
+! direction. Everything that uses the operators returned here - the elasticity matrices built from EM, EB and ET, the stress,
+! strain and engineering force output, and the extrapolation of Gauss point values to the corners - works in the ELEMENT
+! coordinate system. So the rows have to be rotated out of the cartesian local basis before they are handed back.
+!
+! For a rectangular element the two systems differ by 180 degrees about z, because the element x axis starts along side 1-2
+! while the cartesian local x axis lies along g_r, and side 1-2 runs in the negative r direction in Bathe's node ordering.
+!
+! MITC4_B doubles rows 4 to 6 on the way out to make them engineering shear strains. MITC_TRANSFORM_B rotates tensor
+! components, so those rows are halved before the rotation and doubled again afterwards. This matches what subr MITC4 on the
+! dev branch does at each of these points.
+
+! **********************************************************************************************************************************
+! Pure midsurface membrane operator.
+
+  CALL MITC4_B( R, S, ZERO, .TRUE., .FALSE., .FALSE., BMEM )
+  CALL TO_ELEMENT_BASIS( ZERO, BMEM )
+
+  BM(1,:) = BMEM(1,:)  ! xx
+  BM(2,:) = BMEM(2,:)  ! yy
+  BM(3,:) = BMEM(4,:)  ! xy
+
+! **********************************************************************************************************************************
+! Pure curvature operator.
+! Use bending-only calls so membrane terms cannot leak into curvature.
+! The difference removes even-in-T bending terms.
+
+  CALL MITC4_B( R, S, -ONE, .FALSE., .TRUE., .FALSE., BBOT )
+  CALL TO_ELEMENT_BASIS( -ONE, BBOT )
+
+  CALL MITC4_B( R, S, +ONE, .FALSE., .TRUE., .FALSE., BTOP )
+  CALL TO_ELEMENT_BASIS( +ONE, BTOP )
+
+  BB(1,:) = (BTOP(1,:) - BBOT(1,:)) / EPROP(1)  ! kxx-ish
+  BB(2,:) = (BTOP(2,:) - BBOT(2,:)) / EPROP(1)  ! kyy-ish
+  BB(3,:) = (BTOP(4,:) - BBOT(4,:)) / EPROP(1)  ! kxy-ish
+
+! **********************************************************************************************************************************
+! Pure transverse shear operator.
+! MITC shear is already evaluated at tying points and is effectively midsurface shear here.
+! Keep row order as zx, yz to match SHELL_T convention used by MITC4.f90.
+
+  CALL MITC4_B( R, S, ZERO, .FALSE., .FALSE., .TRUE., BSHR )
+  CALL TO_ELEMENT_BASIS( ZERO, BSHR )
+
+  BS(1,:) = BSHR(6,:)  ! zx
+  BS(2,:) = BSHR(5,:)  ! yz
+
+
+
+! Shear coupling correction removed because it worsens curved shell thermal loads.
+! Parallelogram elements wouldn't happen naturally with averaged normals except at
+! the transition between +ve and -ve curvature which is only a 1D line so the effect
+! should vanish with mesh refinement.
+
+! **********************************************************************************************************************************
+! Remove the spurious membrane to transverse shear coupling that a director which is not normal to the element facet produces.
+!
+! The reference geometry of the degenerated shell is X(r,s,t) = Xbar(r,s) + (t*h/2) * V, so when the director V is not normal to
+! the facet the through-thickness fibre is slanted and a point at height z sits in-plane offset by z*m, where m is the in-plane
+! slope of V in element coordinates. Straining the mid-surface then drags the top of the fibre relative to the bottom by
+! (du/dx) * m * z, which the covariant strain registers as transverse shear even though the fibre has not rotated relative to the
+! facet at all. In element coordinates that spurious shear is exactly the in-plane strain contracted with the slope,
+!
+!    gamma_xz = eps_xx * m1 + eps_xy * m2 ,   gamma_yz = eps_xy * m1 + eps_yy * m2
+!
+! written in the sign convention of BS as it is returned above, and it is removed below.
+!
+! For a shell whose geometry is modelled exactly the director is the surface normal, m is zero and the term does not exist. It is
+! produced purely by the mismatch between the flat facet and the nodal normals, so it is faceting error, not physics, and it grows
+! linearly with the tilt. Subtracting it leaves the element free of membrane-shear coupling. Only the symmetric (strain) part of
+! the in-plane displacement gradient is removed. The antisymmetric part is the in-plane rigid rotation, whose contribution is
+! cancelled by the corresponding fibre rotation, so removing it as well would destroy rigid body invariance.
+
+  ! CALL MITC_COVARIANT_BASIS( R, S, ZERO, G )
+
+  ! IF (DABS(G(3,3)) > 1.0D-12 * DSQRT(DOT_PRODUCT(G(:,3), G(:,3)))) THEN
+
+     ! M1 = G(1,3) / G(3,3)
+     ! M2 = G(2,3) / G(3,3)
+
+     ! BS(1,:) = BS(1,:) - ( BM(1,:) * M1 + HALF * BM(3,:) * M2 )
+     ! BS(2,:) = BS(2,:) - ( HALF * BM(3,:) * M1 + BM(2,:) * M2 )
+
+  ! ENDIF
+
+
+
+
+
+
+  RETURN
+
+! **********************************************************************************************************************************
+
+CONTAINS
+
+! **********************************************************************************************************************************
+
+  SUBROUTINE TO_ELEMENT_BASIS ( T, B )
+
+  ! Rotate one strain-displacement matrix from the cartesian local basis to the element coordinate system.
+
+  REAL(DOUBLE), INTENT(IN)    :: T                 ! Isoparametric thickness coordinate the matrix was evaluated at
+  REAL(DOUBLE), INTENT(INOUT) :: B(6, 6*ELGP)
+  REAL(DOUBLE)                :: TRANSFORM(3,3)    ! Cartesian local basis vectors, in element coordinates
+
+  TRANSFORM = MITC4_CARTESIAN_LOCAL_BASIS( R, S, T )
+
+  B(4:6,:) = B(4:6,:) / 2                          ! Remove the engineering shear factor of 2 to rotate as a tensor
+  CALL MITC_TRANSFORM_B( TRANSFORM, B )
+  B(4:6,:) = B(4:6,:) * 2                          ! Reinstate it
+
+  RETURN
+
+  END SUBROUTINE TO_ELEMENT_BASIS
+
+END SUBROUTINE MITC4_BMBS
+
+      SUBROUTINE MITC4_COVARIANT_STRAIN_DIRECT_INTERPOLATION ( R, S, T, X_R, X_S, X_D, MEMBRANE, BENDING, ROW_FROM, ROW_TO, B )
+
+! Reference [1]:
+! "A new MITC4+ shell element" by Ko, Lee, Bathe, 2016
+!
+! Reference [2]:
+!  MITC4 paper "A continuum mechanics based four-node shell element for general nonlinear analysis"
+!     by Dvorkin and Bathe
+
+
+! Covariant strain-displacement components at point (R,S,T) directly evaluated from the displacement and rotation interpolations.
+! Only for in-layer strains.
+!
+!        Grid point 1        Grid point 2      ...
+!      ux uy uz rx ry rz   ux uy uz rx ry rz
+! 11 [ #  #  #  #  #  #  | #  #  #  #  #  #  |     ]
+! 22 [ #  #  #  #  #  #  | #  #  #  #  #  #  |     ]
+! 33 [ 0  0  0  0  0  0  | 0  0  0  0  0  0  |     ]
+! 12 [ #  #  #  #  #  #  | #  #  #  #  #  #  | ... ]
+! 23 [ 0  0  0  0  0  0  | 0  0  0  0  0  0  |     ]
+! 13 [ 0  0  0  0  0  0  | 0  0  0  0  0  0  |     ]
+
+
+      USE PENTIUM_II_KIND, ONLY       :  LONG, DOUBLE
+      USE MODEL_STUF, ONLY            :  ELGP, TYPE
+      USE CONSTANTS_1, ONLY           :  ZERO, HALF, ONE, TWO, FOUR, QUARTER
+      USE SCONTR, ONLY                :  FATAL_ERR
+      USE MITC_STUF, Only             :  DIRECTOR, DIR_THICKNESS, GP_RS
+
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
+      USE VECTOR_GEOMETRY, ONLY       :  CROSS
+
+      IMPLICIT NONE
+
+      INTEGER(LONG), INTENT(IN)       :: ROW_FROM          ! First row of B to generate. Strain component index 1-4.
+      INTEGER(LONG), INTENT(IN)       :: ROW_TO            ! Last row of B to generate. Strain component index 1-4.
+      INTEGER(LONG)                   :: GP                ! Grid point number. 1-4.
+      INTEGER(LONG)                   :: I, J              ! Tensor indices.
+      INTEGER(LONG)                   :: ROW               ! Row number of B
+      INTEGER(LONG)                   :: K                 ! Column of B before the column for DOF 1 of the current node.
+
+      REAL(DOUBLE) , INTENT(IN)       :: R,S,T             ! Isparametric coordinates
+      REAL(DOUBLE) , INTENT(IN)       :: X_R(3)            ! Characteristic geometry vector x_r
+      REAL(DOUBLE) , INTENT(IN)       :: X_S(3)            ! Characteristic geometry vector x_s
+      REAL(DOUBLE) , INTENT(IN)       :: X_D(3)            ! Characteristic geometry vector x_d (distortion vector)
+      REAL(DOUBLE) , INTENT(OUT)      :: B(6, 6*ELGP)      ! Strain-displacement matrix.
+      REAL(DOUBLE)                    :: PSH(ELGP)         ! Shape functions
+      REAL(DOUBLE)                    :: DPSHG(2,ELGP)     ! Derivatives of shape functions with respect to R and S.
+      REAL(DOUBLE)                    :: DXMDRS(3,2)       ! Partial derivatives of x_m with respect to r and s
+      REAL(DOUBLE)                    :: DXBDRS(3,2)       ! Partial derivatives of x_b with respect to r and s
+      REAL(DOUBLE)                    :: V1(3,ELGP)        ! Basis vector orthogonal to the director vector.
+      REAL(DOUBLE)                    :: V2(3,ELGP)        ! Basis vector orthogonal to the director vector and V1.
+      REAL(DOUBLE)                    :: TRANSFORM(3,3)    ! Transformation matrix.
+
+      LOGICAL      , INTENT(IN)       :: MEMBRANE          ! If true, generate membrane parts of B
+      LOGICAL      , INTENT(IN)       :: BENDING           ! If true, generate bending parts of B
+
+! **********************************************************************************************************************************
+
+                                                           ! Shape function derivatives at R,S
+      CALL MITC_SHAPE_FUNCTIONS(R, S, PSH, DPSHG)
+
+                                                           ! Initialize B
+      B(ROW_FROM:ROW_TO,:) = ZERO
+
+                                                           ! Eqn (9) of ref [1].
+      DXMDRS(:,1) = X_R + S * X_D                          ! ∂x_m/∂r
+      DXMDRS(:,2) = X_S + R * X_D                          ! ∂x_m/∂s
+
+
+      IF(BENDING) THEN
+
+                                                           ! ∂x_b/∂r
+                                                           ! ∂x_b/∂s
+                                                           ! From eqns (8a) and (2) of ref [1].
+         DXBDRS(:,:) = ZERO
+         DO GP=1,ELGP
+            DXBDRS(:,1) = DXBDRS(:,1) + HALF * DIR_THICKNESS(GP) * DIRECTOR(:,GP) * DPSHG(1,GP)
+            DXBDRS(:,2) = DXBDRS(:,2) + HALF * DIR_THICKNESS(GP) * DIRECTOR(:,GP) * DPSHG(2,GP)
+         ENDDO
+
+                                                           ! Find a V1 and V2 for each node which form an
+                                                           ! orthogonal right-handed coordinate system V1, V2, Vn
+                                                           ! where Vn is the director vector.
+         DO GP=1,ELGP
+                                                           ! X_R is a convenient vector that's never parallel to Vn.
+                                                           ! Project X_R onto the plane normal to the director vector.
+            V1(:,GP) = X_R - DIRECTOR(:,GP) * DOT_PRODUCT(X_R, DIRECTOR(:,GP)) / DOT_PRODUCT(DIRECTOR(:,GP), DIRECTOR(:,GP))
+                                                           ! Normalize V1
+            V1(:,GP) = V1(:,GP) / DSQRT(DOT_PRODUCT(V1(:,GP), V1(:,GP)))
+                                                           ! Calculate V2
+            CALL CROSS(DIRECTOR(:,GP), V1(:,GP), V2(:,GP))
+         ENDDO
+
+      ENDIF
+
+      DO ROW=ROW_FROM,ROW_TO
+
+                                                           ! Tensor indices for the row
+         SELECT CASE (ROW)
+            CASE (1); I=1; J=1                             ! In-layer normal strain
+            CASE (2); I=2; J=2                             ! In-layer normal strain
+            CASE (3); I=0; J=0; CYCLE                      ! No zz strain
+            CASE (4); I=1; J=2                             ! In-layer shear strain
+            CASE DEFAULT
+               I=0; J=0
+               FATAL_ERR = FATAL_ERR + 1
+               CALL OUTA_HERE ( 'Y' )
+         END SELECT
+
+         IF(MEMBRANE) THEN
+                                                           ! Membrane e^m_xx, e^m_yy, e^m_xy terms of eqn (7a)
+                                                           ! described in eqn (7b) in ref [1]
+
+                                                           !              1  / ∂x_m     ∂u_m \
+                                                           ! B(ROW,:) +=  - (  ---- dot ----  )
+                                                           !              2  \ ∂r_i     ∂r_j /
+            CALL ADD_TERM_M(ROW, DXMDRS(:,I), J, ONE)
+                                                           !              1  / ∂x_m     ∂u_m \
+                                                           ! B(ROW,:) +=  - (  ---- dot ----  )
+                                                           !              2  \ ∂r_j     ∂r_i /
+            CALL ADD_TERM_M(ROW, DXMDRS(:,J), I, ONE)
+
+
+         ENDIF
+
+         IF(BENDING) THEN
+                                                           ! Bending e^b1_xx, e^b1_yy, e^b1_xy terms of eqn (7a)
+                                                           ! described in eqn (7c) in ref [1]
+
+                                                           !              t  / ∂x_m     ∂u_b \
+                                                           ! B(ROW,:) +=  - (  ---- dot ----  )
+                                                           !              2  \ ∂r_i     ∂r_j /
+            CALL ADD_TERM_B(ROW, DXMDRS(:,I), J, T)
+                                                           !              t  / ∂x_m     ∂u_b \
+                                                           ! B(ROW,:) +=  - (  ---- dot ----  )
+                                                           !              2  \ ∂r_j     ∂r_i /
+            CALL ADD_TERM_B(ROW, DXMDRS(:,J), I, T)
+
+
+                                                           !              t  / ∂x_b     ∂u_m \
+                                                           ! B(ROW,:) +=  - (  ---- dot ----  )
+                                                           !              2  \ ∂r_i     ∂r_j /
+            CALL ADD_TERM_M(ROW, DXBDRS(:,I), J, T)
+                                                           !              t  / ∂x_b     ∂u_m \
+                                                           ! B(ROW,:) +=  - (  ---- dot ----  )
+                                                           !              2  \ ∂r_j     ∂r_i /
+            CALL ADD_TERM_M(ROW, DXBDRS(:,J), I, T)
+
+                                                           ! Bending e^b2_xx, e^b2_yy, e^b2_xy terms of eqn (7a)
+                                                           ! described in eqn (7d) in ref [1]
+
+                                                           !              t^2  / ∂x_b     ∂u_b \
+                                                           ! B(ROW,:) +=  --- (  ---- dot ----  )
+                                                           !               2   \ ∂r_i     ∂r_j /
+            CALL ADD_TERM_B(ROW, DXBDRS(:,I), J, T*T)
+                                                           !              t^2  / ∂x_b     ∂u_b \
+                                                           ! B(ROW,:) +=  --- (  ---- dot ----  )
+                                                           !               2   \ ∂r_j     ∂r_i /
+            CALL ADD_TERM_B(ROW, DXBDRS(:,J), I, T*T)
+
+         ENDIF
+
+      ENDDO
+
+
+      IF(BENDING) THEN
+                                                           ! Transform the rotational dof terms of B from V1,V2,Vn
+                                                           ! coordinates to basic x,y,z.
+         DO GP=1,ELGP
+            K = (GP-1) * 6
+            TRANSFORM(:,1) = V1(:,GP)
+            TRANSFORM(:,2) = V2(:,GP)
+            TRANSFORM(:,3) = DIRECTOR(:,GP)
+            DO ROW=ROW_FROM,ROW_TO
+               IF(ROW /= 3) THEN
+                  B(ROW,K+4:K+6) = MATMUL(TRANSFORM, B(ROW,K+4:K+6))
+               ENDIF
+            ENDDO
+         ENDDO
+
+      ENDIF
+
+
+      RETURN
+
+! **********************************************************************************************************************************
+
+      CONTAINS
+
+! **********************************************************************************************************************************
+
+      SUBROUTINE ADD_TERM_M(ROW, LEFT, IU, COEFFICIENT)
+
+      !              COEFFICIENT  /           ∂u_m  \
+      ! B(ROW,:) +=  ----------- (  LEFT  dot -----  )
+      !                   2       \           ∂r_IU /
+
+      REAL(DOUBLE) , INTENT(IN)       :: LEFT(3)           ! The vector on the left of the dot product
+      REAL(DOUBLE) , INTENT(IN)       :: COEFFICIENT       ! Scalar to multiply each term by. Coefficient in eqn (7a) of ref [1]
+      REAL(DOUBLE)                    :: DUMDRS(3)         ! One grid point's term in the sum for the coefficients of the partial
+                                                           ! derivatives of u_m with respect to R or S.
+
+      INTEGER(LONG), INTENT(IN)       :: ROW               ! Row of B to add the result to. 1, 2, or 4.
+      INTEGER(LONG), INTENT(IN)       :: IU                ! Index of dr in the u derivative. 1 or 2.
+
+      DO GP=1,ELGP
+         K = (GP-1) * 6
+                                                           ! Eqn (9) of ref [1]. This node's term of:
+         IF (IU == 1) THEN                                 ! ∂u_m/∂r = u_r + s * u_d
+            DUMDRS = ( GP_RS(1,GP) + S * GP_RS(1,GP) * GP_RS(2,GP) ) / FOUR
+         ELSE                                              ! IU == 2
+            DUMDRS = ( GP_RS(2,GP) + R * GP_RS(1,GP) * GP_RS(2,GP) ) / FOUR
+         ENDIF
+
+         B(ROW, K+1) = B(ROW, K+1) + COEFFICIENT / TWO * LEFT(1) * DUMDRS(1)
+         B(ROW, K+2) = B(ROW, K+2) + COEFFICIENT / TWO * LEFT(2) * DUMDRS(2)
+         B(ROW, K+3) = B(ROW, K+3) + COEFFICIENT / TWO * LEFT(3) * DUMDRS(3)
+      ENDDO
+
+      END SUBROUTINE ADD_TERM_M
+
+! **********************************************************************************************************************************
+
+      SUBROUTINE ADD_TERM_B(ROW, LEFT, IU, COEFFICIENT)
+
+      !              COEFFICIENT  /           ∂u_b  \
+      ! B(ROW,:) +=  ----------- (  LEFT  dot -----  )
+      !                   2       \           ∂r_IU /
+
+      REAL(DOUBLE) , INTENT(IN)       :: LEFT(3)           ! The vector on the left of the dot product
+      REAL(DOUBLE) , INTENT(IN)       :: COEFFICIENT       ! Scalar to multiply each term by. Coefficient in eqn (7a) of ref [1]
+      REAL(DOUBLE)                    :: DUMa(3)           ! Coefficient of alpha in ∂u_b/∂r_IU for one node.
+      REAL(DOUBLE)                    :: DUMb(3)           ! Coefficient of beta  in ∂u_b/∂r_IU for one node.
+
+      INTEGER(LONG), INTENT(IN)       :: ROW               ! Row of B to add the result to. 1, 2, or 4.
+      INTEGER(LONG), INTENT(IN)       :: IU                ! Index of dr in the u derivative. 1 or 2.
+
+      DO GP=1,ELGP
+         K = (GP-1) * 6
+
+                                                           ! Put coefficients of alpha in DOF 4.
+         DUMa = DIR_THICKNESS(GP) / TWO * DPSHG(IU,GP) * (-V2(:,GP))
+         B(ROW, K+4) = B(ROW, K+4) + COEFFICIENT / TWO * DOT_PRODUCT(LEFT, DUMa)
+
+                                                           ! Put coefficients of beta in DOF 5.
+         DUMb = DIR_THICKNESS(GP) / TWO * DPSHG(IU,GP) * ( V1(:,GP))
+         B(ROW, K+5) = B(ROW, K+5) + COEFFICIENT / TWO * DOT_PRODUCT(LEFT, DUMb)
+
+      ENDDO
+
+      END SUBROUTINE ADD_TERM_B
+
+! **********************************************************************************************************************************
+
+
+      END SUBROUTINE MITC4_COVARIANT_STRAIN_DIRECT_INTERPOLATION
+
+   END MODULE MITC4_MOD
