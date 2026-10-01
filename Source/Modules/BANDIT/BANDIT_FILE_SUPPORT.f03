@@ -24,6 +24,16 @@
 
 ! End MIT license text.
 
+   MODULE BANDIT_FILE_SUPPORT
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: BANDIT_FILES
+
+   CONTAINS
+
       SUBROUTINE BANDIT_FILES ( IOU6, IOU7, IOU8, IOU9, IOU11, IOU12, IOU13, IOU14, IOU15, IOU16, IOU17 )
 
 ! Opens all output files and closes and deletes them so that no confusion about files if MYSTRAN aborts
@@ -31,7 +41,7 @@
       USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG
       USE IOUNT1, ONLY                :  FILE_NAM_MAXLEN, F06, SC1
 
-      USE BANDIT_FILES_USE_IFs
+      USE FILE_LIFECYCLE, ONLY        :  FILE_CLOSE, FILE_OPEN
 
       IMPLICIT NONE
 
@@ -186,3 +196,5 @@
 ! **********************************************************************************************************************************
 
       END SUBROUTINE BANDIT_FILES
+
+   END MODULE BANDIT_FILE_SUPPORT
