@@ -24,6 +24,16 @@
 
 ! End MIT license text.
 
+   MODULE ARPACK_DIAGNOSTICS
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: ARPACK_INFO_MSG
+
+   CONTAINS
+
       SUBROUTINE ARPACK_INFO_MSG ( SUBNAME, INFO, IPARAM, LWORKL, NEV, NCV )
 
       USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
@@ -31,8 +41,6 @@
       USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06
       USE PARAMS, ONLY                :  DARPACK, SUPWARN
       USE MODEL_STUF, ONLY            :  EIG_N2
-
-      USE ARPACK_INFO_MSG_USE_IFs
 
       IMPLICIT NONE
 
@@ -444,3 +452,5 @@
 ! **********************************************************************************************************************************
 
       END SUBROUTINE ARPACK_INFO_MSG
+
+   END MODULE ARPACK_DIAGNOSTICS
