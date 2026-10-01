@@ -44,7 +44,7 @@
       USE ELAS1_Interface
       USE LINE_ELEMENTS, ONLY         :  BREL1
       USE BUSH_Interface
-      USE TREL1_Interface
+      USE TRIANGULAR_SHELL_ELEMENTS, ONLY:  TREL1
       USE QDEL1_Interface
       USE SOLID_ELEMENTS, ONLY        :  HEXA, PENTA, TETRA
       USE KUSER1_Interface
