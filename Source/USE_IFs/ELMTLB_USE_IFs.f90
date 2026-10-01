@@ -28,8 +28,7 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE ELMTLB
 
       USE DATE_TIME_UTILS, ONLY       :  OURTIM
-      USE MATGET_Interface
+      USE MATERIAL_MATRIX_TRANSFER, ONLY:  MATGET, MATPUT
       USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
-      USE MATPUT_Interface
 
       END MODULE ELMTLB_USE_IFs
