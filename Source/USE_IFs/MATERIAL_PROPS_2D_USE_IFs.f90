@@ -28,6 +28,6 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE MATERIAL_PROPS_2D
 
       USE DATE_TIME_UTILS, ONLY       :  OURTIM
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       END MODULE MATERIAL_PROPS_2D_USE_IFs

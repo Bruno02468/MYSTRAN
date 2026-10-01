@@ -45,11 +45,12 @@
       USE IOUNT1, ONLY                :  ERR, F06
       USE CONSTANTS_1, ONLY           :  ZERO
       USE LINK9_STUFF, ONLY           :  EID_OUT_ARRAY, MSPRNT, OGEL
+      USE OP2_STRESS_OUTPUT, ONLY     :  WRITE_OES3_STATIC
       IMPLICIT NONE
 
       INTEGER(LONG), INTENT(IN)       :: ISUBCASE          ! the current subcase
       CHARACTER(LEN=*), INTENT(IN)    :: FILL_F06          ! Padding for output format
-      INTEGER(LONG), INTENT(IN)       :: ITABLE            ! the current op2 subtable, should be -3, -5, ...
+      INTEGER(LONG), INTENT(INOUT)    :: ITABLE            ! the current op2 subtable, should be -3, -5, ...
       CHARACTER(LEN=128), INTENT(IN)  :: TITLE             ! the model TITLE
       CHARACTER(LEN=128), INTENT(IN)  :: SUBTITLE          ! the subcase SUBTITLE
       CHARACTER(LEN=128), INTENT(IN)  :: LABEL             ! the subcase LABEL
@@ -296,6 +297,7 @@
       USE LINK9_STUFF, ONLY           :  EID_OUT_ARRAY, OGEL
       USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_Value, IEEE_QUIET_NAN
       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
+      USE OP2_STRESS_OUTPUT, ONLY     :  WRITE_OES3_STATIC
       INTEGER(LONG) :: ANALYSIS_CODE        ! static, time, frequency, modal, etc. flag
       INTEGER(LONG), INTENT(IN) :: ISUBCASE  ! subcase id
       INTEGER(LONG), INTENT(IN) :: NUM       ! the number of elements in OGEL to write
@@ -393,12 +395,14 @@
 
       USE RESULT_FORMATTING, ONLY     :  WRT_REAL_TO_CHAR_VAR
 
+      USE OP2_STRESS_OUTPUT, ONLY     :  WRITE_OES3_STATIC
+      USE OP2_STRESS_OUTPUT, ONLY     :  GET_STRESS_CODE, WRITE_OES3_STATIC
       IMPLICIT NONE
 
       CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'WRITE_BAR'
 
       CHARACTER(LEN=*), INTENT(IN)    :: FILL_F06          ! Padding for output format
-      INTEGER(LONG), INTENT(IN)       :: ITABLE            ! the current op2 subtable, should be -3, -5, ...
+      INTEGER(LONG), INTENT(INOUT)    :: ITABLE            ! the current op2 subtable, should be -3, -5, ...
       CHARACTER(LEN=128), INTENT(IN)  :: TITLE             ! the model TITLE
       CHARACTER(LEN=128), INTENT(IN)  :: SUBTITLE          ! the subcase SUBTITLE
       CHARACTER(LEN=128), INTENT(IN)  :: LABEL             ! the subcase LABEL

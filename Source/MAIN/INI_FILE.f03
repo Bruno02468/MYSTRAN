@@ -67,12 +67,9 @@
       USE SCONTR, ONLY                :  BLNK_SUB_NAM, ECHO, IERRFL, INI_ENTRY_LEN, JF, LINKNO_START, PRINTENV,                    &
                                          PROG_NAME
 
-      USE OPNERR_Interface
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OPNERR, OUTA_HERE
       USE BDF_CARD_CONTINUATIONS, ONLY:  MKJCARD_08
-      USE FILE_CLOSE_Interface
-      USE SET_FILE_CLOSE_STAT_Interface
-      USE WRITE_FILNAM_Interface
+      USE FILE_LIFECYCLE, ONLY        :  FILE_CLOSE, SET_FILE_CLOSE_STAT, WRITE_FILNAM
 
       IMPLICIT NONE
 

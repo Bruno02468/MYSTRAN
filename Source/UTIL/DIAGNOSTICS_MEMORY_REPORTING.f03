@@ -57,7 +57,7 @@
       USE PARAMS, ONLY                :  SUPINFO
       USE ALLOCATED_ARRAY_DATA, ONLY  :  ALLOCATED_ARRAY_NAMES, ALLOCATED_ARRAY_MEM, NUM_ALLOC_ARRAYS
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 
@@ -1144,7 +1144,7 @@ j_do:    DO J=1,LEN(ARRAY_NAME)
 
 ! Interface module not needed for subr DPBCON. This is "CONTAIN'ed" in module LAPACK_LIN_EQN_DPB, which is "USE'd" above
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 
@@ -1216,8 +1216,8 @@ j_do:    DO J=1,LEN(ARRAY_NAME)
       USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06
       USE SCONTR, ONLY                :  FATAL_ERR
 
-      USE WRITE_FILNAM_Interface
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY        :  WRITE_FILNAM
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 
@@ -1280,7 +1280,7 @@ j_do:    DO J=1,LEN(ARRAY_NAME)
       USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06, LINK1A
       USE SCONTR, ONLY                :  FATAL_ERR
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 
@@ -1879,7 +1879,7 @@ j_do:    DO J=1,LEN(ARRAY_NAME)
       USE PARAMS, ONLY                :  MPFOUT
       USE OUTPUT4_MATRICES
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 

@@ -37,7 +37,7 @@
       USE SCONTR, ONLY                :  FATAL_ERR
 
       USE SHP2DQ_Interface
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
       USE MITC_COVARIANT_BASIS_Interface
 
       IMPLICIT NONE

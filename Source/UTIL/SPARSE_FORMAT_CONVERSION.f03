@@ -286,7 +286,7 @@ i_do: DO I=1,NROW_A                                        ! Matrix multiply loo
       USE DEBUG_PARAMETERS, ONLY      :  DEBUG
 
       USE DOF_ARRAY_INDEXING, ONLY    :  ARRAY_SIZE_ERROR_1
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 

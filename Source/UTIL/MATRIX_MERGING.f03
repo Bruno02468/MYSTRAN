@@ -50,7 +50,7 @@
       USE CONSTANTS_1, ONLY           :  ZERO
       USE DOF_TABLES, ONLY            :  TDOFI
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 
@@ -147,7 +147,7 @@
       USE CONSTANTS_1, ONLY           :  ZERO
       USE DEBUG_PARAMETERS, ONLY      :  DEBUG
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
       USE DOF_ARRAY_INDEXING, ONLY    :  ARRAY_SIZE_ERROR_1
       USE SORTING, ONLY               :  SORT_INT1_REAL1
 

@@ -63,7 +63,7 @@
       USE CONSTANTS_1, ONLY           :  ZERO
       USE DEBUG_PARAMETERS, ONLY      :  DEBUG
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 
@@ -190,7 +190,7 @@
       USE CONSTANTS_1, ONLY           :  ZERO
       USE DEBUG_PARAMETERS, ONLY      :  DEBUG
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
       USE SPARSE_CRS_ACCESS, ONLY     :  ROW_AT_COLJ_BEGEND
       USE PROGRESS_COUNTERS, ONLY     :  COUNTER_INIT, COUNTER_PROGRESS
 
@@ -665,7 +665,7 @@ i_do: DO I=1,NROW_A                                        ! Matrix partition lo
       USE SPARSE_ALG_ARRAYS, ONLY     :  ALG, J_AROW
       USE DEBUG_PARAMETERS, ONLY      :  DEBUG
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
       USE SPARSE_CRS_ACCESS, ONLY     :  ROW_AT_COLJ_BEGEND
       USE SPARSE_ALGORITHM_LIFECYCLE, ONLY:  ALLOCATE_SPARSE_ALG, DEALLOCATE_SPARSE_ALG
       USE PROGRESS_COUNTERS, ONLY     :  COUNTER_INIT, COUNTER_PROGRESS
@@ -1116,7 +1116,7 @@ i_do: DO I=1,NROW_A                                        ! Matrix partition lo
       USE DOF_TABLES, ONLY            :  TDOFI
 
       USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 

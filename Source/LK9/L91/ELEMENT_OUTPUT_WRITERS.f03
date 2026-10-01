@@ -53,6 +53,7 @@
       USE DIAGNOSTICS_MEMORY_REPORTING, ONLY:  GET_GRID_AND_COMP
       USE MODAL_OUTPUT_WRITERS, ONLY  :  WRITE_SUBCASE_EIGENVEC_HEADER
 
+      USE OP2_FORCE_OUTPUT, ONLY      :  WRITE_OEF3_STATIC
       IMPLICIT NONE
 
       CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'WRITE_ELEM_ENGR_FORCE'
@@ -863,9 +864,10 @@ headr:IF (IHDR == 'Y') THEN
       USE DIAGNOSTICS_MEMORY_REPORTING, ONLY:  GET_GRID_AND_COMP
       USE MODAL_OUTPUT_WRITERS, ONLY  :  WRITE_SUBCASE_EIGENVEC_HEADER
       USE ROD_BAR_OUTPUT, ONLY        :  WRITE_ROD
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
       USE TEXT_FIELD_UTILS, ONLY      :  FMT_ES14_6, FMT_I8_RJ
 
+      USE OP2_STRESS_OUTPUT, ONLY     :  GET_STRESS_CODE, WRITE_OES3_STATIC
       IMPLICIT NONE
 
       CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'WRITE_ELEM_STRAINS'
@@ -1343,7 +1345,7 @@ headr:IF (IHDR == 'Y') THEN
                !  fd1, sx1, sy1, txy1, angle1, major1, minor1, vm1,
                !  fd2, sx2, sy2, txy2, angle2, major2, minor2, vm2,)*4 = n = 17*4
                CALL WRITE_OES3_STATIC(ITABLE, ISUBCASE, DEVICE_CODE, ELEMENT_TYPE, NUM_WIDE, STRESS_CODE, &
-                                      TITLEI, STITLE, LABELI, FIELD5_INT_MODE, FIELD6_EIGENVALUE)
+                                      TITLEI, STITLEI, LABELI, FIELD5_INT_MODE, FIELD6_EIGENVALUE)
                WRITE(OP2) NVALUES
                ! see the CQUAD4-33 stress/strain (the IF part of this IF-ELSE block)
                ! writing before trying to understand this...
@@ -1659,6 +1661,7 @@ headr:IF (IHDR == 'Y') THEN
       USE LINK9_STUFF, ONLY           :  EID_OUT_ARRAY, OGEL
       USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_Value, IEEE_QUIET_NAN
       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
+      USE OP2_STRESS_OUTPUT, ONLY     :  GET_STRESS_CODE, WRITE_OES3_STATIC
       IMPLICIT NONE
 
       INTEGER(LONG), INTENT(IN)       :: NUM               ! the number of elements
@@ -1761,6 +1764,7 @@ headr:IF (IHDR == 'Y') THEN
       USE IOUNT1, ONLY                :  ERR, F06, OP2
       USE LINK9_STUFF, ONLY           :  EID_OUT_ARRAY, OGEL
       USE DEBUG_PARAMETERS, ONLY      :  DEBUG
+      USE OP2_STRESS_OUTPUT, ONLY     :  GET_STRESS_CODE, WRITE_OES3_STATIC
       IMPLICIT NONE
       !
       INTEGER(LONG), INTENT(IN)       :: NUM               ! the number of elements
@@ -1870,9 +1874,10 @@ headr:IF (IHDR == 'Y') THEN
       USE MODAL_OUTPUT_WRITERS, ONLY  :  WRITE_SUBCASE_EIGENVEC_HEADER
       USE ROD_BAR_OUTPUT, ONLY        :  WRITE_BAR
       USE ROD_BAR_OUTPUT, ONLY       :  WRITE_ROD
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
       USE TEXT_FIELD_UTILS, ONLY      :  FMT_ES14_6, FMT_I8_RJ
 
+      USE OP2_STRESS_OUTPUT, ONLY     :  GET_STRESS_CODE, WRITE_OES3_STATIC
       IMPLICIT NONE
 
       CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'WRITE_ELEM_STRESSES'
@@ -2357,7 +2362,7 @@ headr:IF (IHDR == 'Y') THEN
               !  fd1, sx1, sy1, txy1, angle1, major1, minor1, vm1,
               !  fd2, sx2, sy2, txy2, angle2, major2, minor2, vm2,)*4 = n = 17*4
               CALL WRITE_OES3_STATIC(ITABLE, ISUBCASE, DEVICE_CODE, ELEMENT_TYPE, NUM_WIDE, STRESS_CODE, &
-                                     TITLEI, STITLE, LABELI, FIELD5_INT_MODE, FIELD6_EIGENVALUE)
+                                     TITLEI, STITLEI, LABELI, FIELD5_INT_MODE, FIELD6_EIGENVALUE)
               WRITE(OP2) NVALUES
               ! see the CQUAD4-33 stress/strain (the IF part of this IF-ELSE block)
               ! writing before trying to understand this...
@@ -2678,6 +2683,7 @@ headr:IF (IHDR == 'Y') THEN
       USE LINK9_STUFF, ONLY           :  EID_OUT_ARRAY, OGEL
       USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_Value, IEEE_QUIET_NAN
       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
+      USE OP2_STRESS_OUTPUT, ONLY     :  GET_STRESS_CODE, WRITE_OES3_STATIC
       IMPLICIT NONE
       !
       INTEGER(LONG), INTENT(IN)       :: NUM               ! the number of elements
@@ -2777,6 +2783,7 @@ headr:IF (IHDR == 'Y') THEN
       USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
       USE IOUNT1, ONLY                :  ERR, F06, OP2
       USE LINK9_STUFF, ONLY           :  EID_OUT_ARRAY, OGEL
+      USE OP2_STRESS_OUTPUT, ONLY     :  GET_STRESS_CODE, WRITE_OES3_STATIC
       IMPLICIT NONE
       !
       INTEGER(LONG), INTENT(IN)       :: NUM               ! the number of elements

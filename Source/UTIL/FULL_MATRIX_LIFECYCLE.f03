@@ -52,7 +52,7 @@
                                          DUM1, DUM2, DUM3
 
       USE DATE_TIME_UTILS, ONLY       :  OURTIM
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
       USE DIAGNOSTICS_MEMORY_REPORTING, ONLY:  ALLOCATED_MEMORY
 
       IMPLICIT NONE
@@ -1044,7 +1044,7 @@
                                          DUM1, DUM2, DUM3
 
       USE DATE_TIME_UTILS, ONLY       :  OURTIM
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
       USE DIAGNOSTICS_MEMORY_REPORTING, ONLY:  ALLOCATED_MEMORY
 
       IMPLICIT NONE

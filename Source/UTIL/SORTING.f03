@@ -130,7 +130,7 @@
       USE PARAMS, ONLY                :  SORT_MAX
       USE TIMDAT, ONLY                :  TSEC
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 
@@ -236,7 +236,7 @@ outer:DO                                                      ! Run sort until a
       USE PARAMS, ONLY                :  SORT_MAX
       USE TIMDAT, ONLY                :  TSEC
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 
@@ -346,7 +346,7 @@ chk_sort:DO I=1,NSIZE-1
       USE PARAMS, ONLY                :  SORT_MAX
       USE TIMDAT, ONLY                :  TSEC
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 
@@ -458,7 +458,7 @@ chk_sort:DO I=1,NSIZE-1
       USE PARAMS, ONLY                :  SORT_MAX
       USE TIMDAT, ONLY                :  TSEC
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 
@@ -566,7 +566,7 @@ chk_sort:DO I=1,NSIZE-1
       USE PARAMS, ONLY                :  SORT_MAX
       USE TIMDAT, ONLY                :  TSEC
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 
@@ -680,7 +680,7 @@ chk_sort:DO I=1,NSIZE-1
       USE PARAMS, ONLY                :  SORT_MAX
       USE TIMDAT, ONLY                :  TSEC
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 
@@ -792,7 +792,7 @@ chk_sort:DO I=1,NSIZE-1
       USE PARAMS, ONLY                :  SORT_MAX
       USE TIMDAT, ONLY                :  TSEC
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 
@@ -913,7 +913,7 @@ chk_sort:DO I=1,NSIZE-1
       USE PARAMS, ONLY                :  SORT_MAX
       USE TIMDAT, ONLY                :  TSEC
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 
@@ -1023,7 +1023,7 @@ chk_sort:DO I=1,NSIZE-1
       USE PARAMS, ONLY                :  SORT_MAX
       USE TIMDAT, ONLY                :  TSEC
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 
@@ -1138,7 +1138,7 @@ chk_sort:DO I=1,NSIZE-1
       USE PARAMS, ONLY                :  SORT_MAX
       USE TIMDAT, ONLY                :  TSEC
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 

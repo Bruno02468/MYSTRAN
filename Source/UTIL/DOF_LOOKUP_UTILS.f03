@@ -43,7 +43,7 @@
       USE SCONTR, ONLY                :  BLNK_SUB_NAM, MTDOF, FATAL_ERR
       USE TIMDAT, ONLY                :  TSEC
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 

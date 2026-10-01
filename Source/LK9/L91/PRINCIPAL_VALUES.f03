@@ -147,7 +147,7 @@
       USE CONSTANTS_1, ONLY           :  ZERO, HALF, TWO, THREE
       USE PARAMS, ONLY                :  SUPWARN
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 

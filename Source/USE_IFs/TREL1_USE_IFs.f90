@@ -31,7 +31,7 @@
       USE TMEM1_Interface
       USE TPLT1_Interface
       USE TPLT2_Interface
-      USE outa_here_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
       USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
 
       END MODULE TREL1_USE_IFs

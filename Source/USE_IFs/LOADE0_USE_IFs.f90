@@ -28,7 +28,7 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE LOADE0
 
       USE DATE_TIME_UTILS, ONLY       :  OURTIM
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
       USE REPLACE_TABS_W_BLANKS_Interface
       USE CSHIFT_Interface
 

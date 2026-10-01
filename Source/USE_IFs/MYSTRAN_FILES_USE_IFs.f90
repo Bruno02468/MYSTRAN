@@ -27,8 +27,7 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE MYSTRAN_FILES
 
-      USE FILE_OPEN_Interface
-      USE FILE_CLOSE_Interface
+      USE FILE_LIFECYCLE, ONLY        :  FILE_CLOSE, FILE_OPEN
       USE DATE_TIME_UTILS, ONLY       :  OURTIM
 
       END MODULE MYSTRAN_FILES_USE_IFs

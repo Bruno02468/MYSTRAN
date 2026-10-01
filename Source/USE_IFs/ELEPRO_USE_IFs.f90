@@ -28,7 +28,7 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE ELEPRO
 
       USE DATE_TIME_UTILS, ONLY       :  OURTIM
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
       USE BDF_FIELD_VALIDATION, ONLY  :  I4FLD
 
       END MODULE ELEPRO_USE_IFs

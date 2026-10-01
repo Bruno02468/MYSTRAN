@@ -27,8 +27,8 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE READ_INPUT_FILE_NAME
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
       USE READ_CL_Interface
-      USE WRITE_FILNAM_Interface
+      USE FILE_LIFECYCLE, ONLY        :  WRITE_FILNAM
 
       END MODULE READ_INPUT_FILE_NAME_USE_IFs

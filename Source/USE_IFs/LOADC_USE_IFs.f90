@@ -28,7 +28,7 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE LOADC
 
       USE DATE_TIME_UTILS, ONLY       :  OURTIM
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
       USE REPLACE_TABS_W_BLANKS_Interface
       USE CSHIFT_Interface
       USE CASE_CONTROL_OUTPUTS, ONLY  :  CC_ACCE, CC_DISP, CC_ELDA, CC_ELFO, CC_ENFO, CC_GPFO, CC_MPCF, CC_OLOA, CC_SPCF, CC_STRE, CC_STRN

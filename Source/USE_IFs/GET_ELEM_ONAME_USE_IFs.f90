@@ -28,6 +28,6 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE GET_ELEM_ONAME
 
       USE DATE_TIME_UTILS, ONLY       :  OURTIM
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       END MODULE GET_ELEM_ONAME_USE_IFs

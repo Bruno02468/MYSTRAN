@@ -28,7 +28,7 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE LOADB
 
       USE DATE_TIME_UTILS, ONLY       :  OURTIM
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
       USE FFIELD_Interface
       USE FFIELD2_Interface
       USE DOF_SETS, ONLY              :  BD_ASET, BD_ASET1, BD_USET, BD_USET1, BD_SUPORT

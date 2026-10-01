@@ -507,7 +507,7 @@ i_loop:  DO I = 1,JCARD_LEN
       USE SCONTR, ONLY                :  FATAL_ERR, BLNK_SUB_NAM, JCARD_LEN
       USE TIMDAT, ONLY                :  TSEC
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 

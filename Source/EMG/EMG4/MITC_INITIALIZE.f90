@@ -37,6 +37,7 @@
       USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF
 
       USE VECTOR_GEOMETRY, ONLY       :  CROSS
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
       IMPLICIT NONE
 
       INTEGER(LONG)                   :: GP                ! Element grid point number

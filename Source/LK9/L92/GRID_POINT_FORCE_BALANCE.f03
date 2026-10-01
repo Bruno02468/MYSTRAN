@@ -66,6 +66,7 @@
       USE ELEMENT_RECOVERY_SUPPORT, ONLY:  CALC_ELEM_NODE_FORCES
       USE PROGRESS_COUNTERS, ONLY     :  COUNTER_INIT, COUNTER_PROGRESS
 
+      USE OP2_GEOMETRY_OUTPUT, ONLY   :  END_OP2_TABLE, WRITE_TABLE_HEADER
       IMPLICIT NONE
 
       CHARACTER, PARAMETER            :: CR13 = CHAR(13)   ! This causes a carriage return simulating the "+" action in a FORMAT
@@ -926,6 +927,8 @@ i_do1:   DO I=1,NGRID                                      ! (2) Set initial val
 !        ???
       USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
       USE IOUNT1, ONLY                :  ERR,OP2
+      USE OP2_GEOMETRY_OUTPUT, ONLY   :  WRITE_TABLE_HEADER
+      USE OP2_GEOMETRY_OUTPUT, ONLY   :  WRITE_ITABLE
       IMPLICIT NONE
       INTEGER(LONG), INTENT(INOUT) :: ITABLE               ! an OP2 subtable counter
       INTEGER(LONG), INTENT(IN) :: ANALYSIS_CODE           ! static, modal, time, freq, etc. flag

@@ -28,10 +28,9 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE YS_ARRAY
 
       USE DATE_TIME_UTILS, ONLY       :  OURTIM
-      USE READERR_Interface
+      USE FILE_LIFECYCLE, ONLY        :  FILERR, READERR
       USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
       USE DOF_ARRAY_INDEXING, ONLY    :  GET_ARRAY_ROW_NUM
-      USE FILERR_Interface
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       END MODULE YS_ARRAY_USE_IFs

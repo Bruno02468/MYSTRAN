@@ -42,9 +42,10 @@
       USE SCONTR, ONLY                :  BD_ENTRY_LEN, BLNK_SUB_NAM, ECHO, FATAL_ERR, JCARD_LEN
       USE TIMDAT, ONLY                :  TSEC
 
-      USE READERR_Interface
+      USE FILE_LIFECYCLE, ONLY        :  READERR
       USE FFIELD_Interface
 
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
       IMPLICIT NONE
       CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'NEXTC'
       CHARACTER(LEN=*), INTENT(INOUT) :: CARD              ! A MYSTRAN data card
@@ -186,7 +187,7 @@
       USE SCONTR, ONLY                :  BD_ENTRY_LEN, BLNK_SUB_NAM, FATAL_ERR, JCARD_LEN
       USE TIMDAT, ONLY                :  TSEC
 
-      USE READERR_Interface
+      USE FILE_LIFECYCLE, ONLY        :  READERR
       USE FFIELD_Interface
 
       IMPLICIT NONE
@@ -306,9 +307,10 @@
       USE SCONTR, ONLY                :  BD_ENTRY_LEN, BLNK_SUB_NAM, ECHO, FATAL_ERR, JCARD_LEN
       USE TIMDAT, ONLY                :  TSEC
 
-      USE READERR_Interface
+      USE FILE_LIFECYCLE, ONLY        :  READERR
       USE FFIELD2_Interface
 
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
       IMPLICIT NONE
 
       CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'NEXTC2'
@@ -429,7 +431,7 @@
       USE SCONTR, ONLY                :  BD_ENTRY_LEN, BLNK_SUB_NAM, ECHO, FATAL_ERR, JCARD_LEN
       USE TIMDAT, ONLY                :  TSEC
 
-      USE READERR_Interface
+      USE FILE_LIFECYCLE, ONLY        :  READERR
       USE FFIELD2_Interface
 
       IMPLICIT NONE

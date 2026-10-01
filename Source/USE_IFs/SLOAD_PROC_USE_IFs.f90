@@ -28,11 +28,9 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE SLOAD_PROC
 
       USE DATE_TIME_UTILS, ONLY       :  OURTIM
-      USE READERR_Interface
-      USE FILE_CLOSE_Interface
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY        :  FILERR, FILE_CLOSE, READERR
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
       USE DOF_ARRAY_INDEXING, ONLY    :  GET_ARRAY_ROW_NUM
       USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
-      USE FILERR_Interface
 
       END MODULE SLOAD_PROC_USE_IFs

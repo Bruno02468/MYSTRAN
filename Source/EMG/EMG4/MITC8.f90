@@ -46,7 +46,7 @@
 
       USE MITC_INITIALIZE_Interface
       USE QUADRATURE, ONLY            :  ORDER_GAUSS
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
       USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
       USE MITC_DETJ_Interface
       USE MITC8_B_Interface

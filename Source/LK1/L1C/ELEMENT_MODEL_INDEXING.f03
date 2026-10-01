@@ -75,7 +75,7 @@
       USE DEBUG_PARAMETERS, ONLY      :  DEBUG
 
       USE SORTING, ONLY               :  SORT_INT1, SORT_INT3_CHAR2
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 
@@ -194,7 +194,7 @@
       USE MODEL_STUF, ONLY            :  CMASS, ETYPE, EPNT, EDAT, PELAS, PROD, PBAR, PBEAM, PBUSH, PCOMP, PMASS, PSHEAR,          &
                                          PSHEL, PSOLID, PUSER1, PUSERIN, MATL
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 

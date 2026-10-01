@@ -35,7 +35,7 @@
       USE MODEL_STUF, ONLY            :  ELGP
 
       USE SHP2DQ_Interface
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 

@@ -30,7 +30,7 @@
       USE IS_ELEM_PCOMP_PROPS_Interface
       USE DATE_TIME_UTILS, ONLY       :  OURTIM
       USE ELMDAT1_Interface
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
       USE ELMGM1_Interface
       USE ELMGM2_Interface
       USE ELMGM3_Interface

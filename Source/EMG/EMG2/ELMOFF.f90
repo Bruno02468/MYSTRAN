@@ -37,7 +37,7 @@
       USE CONSTANTS_1, ONLY           :  ZERO, ONE
       USE MODEL_STUF, ONLY            :  CAN_ELEM_TYPE_OFFSET, ELGP, EID, KE, ME, NUM_EMG_FATAL_ERRS,                &
                                          OFFDIS, OFFSET, PPE, PTE, SE1, SE2, SE3, TYPE
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 

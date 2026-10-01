@@ -93,7 +93,7 @@
                                          I_PHIZL2, J_PHIZL2, PHIZL2, I_PL    , J_PL    , PL    , I_PR     , J_PR     , PR
 
       USE DATE_TIME_UTILS, ONLY       :  OURTIM
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
       USE DIAGNOSTICS_MEMORY_REPORTING, ONLY:  ALLOCATED_MEMORY
 
       IMPLICIT NONE

@@ -32,7 +32,7 @@
       USE JACOBIAN, ONLY               :  JAC2D
       USE QSHEAR_Interface
       USE QMEM1_Interface
-      USE outa_here_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
       USE QPLT1_Interface
       USE QPLT2_Interface
       USE QPLT3_Interface

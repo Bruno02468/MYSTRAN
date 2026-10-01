@@ -102,7 +102,7 @@
       USE CONSTANTS_1, ONLY           :  ZERO, ONE, TWO, FOUR, EIGHT
       USE MODEL_STUF, ONLY            :  EID, TYPE
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 
@@ -483,7 +483,7 @@
       USE CONSTANTS_1, ONLY           :  ZERO, ONE, TWO, HALF
       USE MODEL_STUF, ONLY            :  EID, TYPE
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 
@@ -754,7 +754,7 @@
       USE CONSTANTS_1, ONLY           :  ZERO, ONE, TWO, FOUR
       USE MODEL_STUF, ONLY            :  EID, TYPE
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 

@@ -27,7 +27,6 @@
 
 ! USE Interface statements for all subroutines called by SUBROUTINE BANDIT_FILES
 
-      USE FILE_OPEN_Interface
-      USE FILE_CLOSE_Interface
+      USE FILE_LIFECYCLE, ONLY        :  FILE_CLOSE, FILE_OPEN
 
       END MODULE BANDIT_FILES_USE_IFs

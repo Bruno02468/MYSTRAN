@@ -173,7 +173,7 @@
       USE MODEL_STUF, ONLY            :  ALL_SETS_ARRAY, SETS_IDS
 
       USE BDF_SET_SYNTAX, ONLY        :  STOKEN, TOKCHK
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 
@@ -749,7 +749,7 @@ i_do5:DO I=SETLEN,1,-1
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  SCNUM
 
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
       USE CSHIFT_Interface
 
       IMPLICIT NONE

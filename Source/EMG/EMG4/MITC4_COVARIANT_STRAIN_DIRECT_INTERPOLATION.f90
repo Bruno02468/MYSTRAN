@@ -53,7 +53,7 @@
       USE MITC_STUF, Only             :  DIRECTOR, DIR_THICKNESS, GP_RS
 
       USE MITC_SHAPE_FUNCTIONS_Interface
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
       USE VECTOR_GEOMETRY, ONLY       :  CROSS
 
       IMPLICIT NONE

@@ -50,7 +50,7 @@
       USE MODEL_STUF, ONLY            :  CORD, RCORD, GRID, GRID_ID, INV_GRID_SEQ
 
       USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 
@@ -490,6 +490,7 @@ j_do_2:  DO J=1,NCORD
       USE TIMDAT, ONLY                :  TSEC
       USE CONSTANTS_1, ONLY           :  ZERO
       USE MODEL_STUF, ONLY            :  TYPE, XEL
+      USE FILE_LIFECYCLE, ONLY        :  OUTA_HERE
 
       IMPLICIT NONE
 

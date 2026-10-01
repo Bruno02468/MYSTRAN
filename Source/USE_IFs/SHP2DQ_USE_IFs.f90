@@ -28,6 +28,6 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE SHP2DQ
 
       USE DATE_TIME_UTILS, ONLY       :  OURTIM
-      USE OUTA_HERE_Interface
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       END MODULE SHP2DQ_USE_IFs
