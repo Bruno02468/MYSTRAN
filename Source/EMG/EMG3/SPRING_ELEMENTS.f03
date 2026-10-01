@@ -24,6 +24,16 @@
 
 ! End MIT license text.
 
+   MODULE SPRING_ELEMENTS
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: BUSH, ELAS1
+
+   CONTAINS
+
       SUBROUTINE BUSH ( INT_ELEM_ID, OPT, WRITE_WARN )
 
 ! Calculates, for BUSH element
@@ -38,7 +48,9 @@
       USE CONSTANTS_1, ONLY           :  ZERO
       USE MODEL_STUF, ONLY            :  BE1, BE2, BUSH_DXA, BUSH_DXB, BUSH_DY, BUSH_DZ, EPROP, KE, OFFDIS_GA_GB, SE1, SE2
 
-      USE BUSH_USE_IFs
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF
+      USE RESULT_FORMATTING, ONLY     :  WRT_REAL_TO_CHAR_VAR
 
       IMPLICIT NONE
 
@@ -183,3 +195,73 @@
 ! **********************************************************************************************************************************
 
       END SUBROUTINE BUSH
+
+
+      SUBROUTINE ELAS1 ( OPT, WRITE_WARN )
+
+! Calculates 1-D scalar spring matrices in global coordinate system
+
+!  1) SEi  = Element stress recovery matrices if OPT(3) = 'Y'
+!  2) KE   = Element stiffness matrix in element coord's if OPT(4) = 'Y'
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM
+      USE MODEL_STUF, ONLY            :  BGRID, ELAS_COMP, EPROP, FCONV, KE, SE1, TYPE
+
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
+      USE DOF_ARRAY_INDEXING, ONLY    :  GET_GRID_NUM_COMPS
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'ELAS1'
+      CHARACTER(1*BYTE), INTENT(IN)   :: OPT(6)            ! 'Y'/'N' flags for whether to calc certain elem matrices
+      CHARACTER(LEN=*), INTENT(IN)    :: WRITE_WARN        ! If 'Y" write warning messages, otherwise do not
+
+      INTEGER(LONG)                   :: I1                ! The component no (1-6) at end A that this elem is connected to
+      INTEGER(LONG)                   :: I2                ! The component no (1-6) at end B that this elem is connected to
+      INTEGER(LONG)                   :: NUM_COMPS_GRID_1  ! No. displ components (1 for SPOINT, 6 for actual grid) for 1st grid
+
+
+      REAL(DOUBLE)                    :: K                 ! Spring stiffness
+
+
+! **********************************************************************************************************************************
+! Set element property and material constants
+
+      K        = EPROP(1)
+      IF ((TYPE(1:5) == 'ELAS1') .OR. (TYPE(1:5) == 'ELAS2') .OR. (TYPE(1:5) == 'ELAS3')) THEN
+         FCONV(1) = EPROP(3)
+      ELSE
+         FCONV(1) = 0.0
+      ENDIF
+      I1       = ELAS_COMP(1)
+      CALL GET_GRID_NUM_COMPS ( BGRID(1), NUM_COMPS_GRID_1, SUBR_NAME )
+      I2       = NUM_COMPS_GRID_1 + ELAS_COMP(2)
+
+! **********************************************************************************************************************************
+! Calculate the element stiffness matrix in global coordinates.
+
+      IF (OPT(4) == 'Y') THEN
+         KE(I1,I1) =  K
+         KE(I1,I2) = -KE(I1,I1)
+         KE(I2,I1) = -KE(I1,I1)
+         KE(I2,I2) =  KE(I1,I1)
+      ENDIF
+
+! **********************************************************************************************************************************
+! Calculate SE1 matrix for force recovery.
+
+      IF (OPT(3) == 'Y') THEN
+         SE1(1,I1,1) =  K
+         SE1(1,I2,1) = -K
+      ENDIF
+
+
+
+      RETURN
+
+! *********************************************************************************************************************************
+
+      END SUBROUTINE ELAS1
+
+   END MODULE SPRING_ELEMENTS

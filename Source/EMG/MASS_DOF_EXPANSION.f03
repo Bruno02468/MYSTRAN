@@ -23,6 +23,16 @@
 ! _______________________________________________________________________________________________________
 
 ! End MIT license text.
+
+   MODULE MASS_DOF_EXPANSION
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: EXPAND_MASS_DOFS
+
+   CONTAINS
       SUBROUTINE EXPAND_MASS_DOFS ( M_1DOF )
 
 ! Copies per-node mass values to all 3 of each node's translational DOFs in the element mass matrix ME.
@@ -78,3 +88,5 @@
 ! **********************************************************************************************************************************
 
       END SUBROUTINE EXPAND_MASS_DOFS
+
+   END MODULE MASS_DOF_EXPANSION

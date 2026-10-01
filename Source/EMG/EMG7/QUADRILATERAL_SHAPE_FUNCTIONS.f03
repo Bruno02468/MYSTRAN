@@ -24,6 +24,16 @@
 
 ! End MIT license text.
 
+   MODULE QUADRILATERAL_SHAPE_FUNCTIONS
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: SHP2DQ
+
+   CONTAINS
+
       SUBROUTINE SHP2DQ ( IGAUS, JGAUS, NUM_NODES, CALLING_SUBR, IORD_MSG, IORZZZ, SSI, SSJ, WRT_BUG_THIS_TIME, PSH, DPSHG )
 
 ! Generates shape functions for 2D elements.
@@ -51,7 +61,8 @@
       USE CONSTANTS_1, ONLY           :  ZERO, ONE, TWO, FOUR
       USE MODEL_STUF, ONLY            :  EID, EMG_IFE, ERR_SUB_NAM, NUM_EMG_FATAL_ERRS, TYPE
 
-      USE SHP2DQ_USE_IFs
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
 
@@ -256,3 +267,5 @@
 ! **********************************************************************************************************************************
 
       END SUBROUTINE SHP2DQ
+
+   END MODULE QUADRILATERAL_SHAPE_FUNCTIONS

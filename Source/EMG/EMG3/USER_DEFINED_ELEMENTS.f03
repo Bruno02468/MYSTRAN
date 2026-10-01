@@ -24,6 +24,60 @@
 
 ! End MIT license text.
 
+   MODULE USER_DEFINED_ELEMENTS
+
+   USE DOF_LOOKUP_UTILS, ONLY :  TDOF_COL_NUM
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: KUSER1, USERIN
+
+   CONTAINS
+
+      SUBROUTINE KUSER1 ( OPT, WRITE_WARN )
+
+! Calc's matrices for user supplied subroutine elements
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM, FATAL_ERR
+      USE TIMDAT, ONLY                :  TSEC
+      USE MODEL_STUF, ONLY            :  TYPE
+
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'KUSER1'
+      CHARACTER(1*BYTE), INTENT(IN)   :: OPT(6)            ! 'Y'/'N' flags for whether to calc certain elem matrices
+      CHARACTER(LEN=*), INTENT(IN)    :: WRITE_WARN        ! If 'Y" write warning messages, otherwise do not
+
+
+
+
+
+! **********************************************************************************************************************************
+      WRITE(ERR,1934) SUBR_NAME,TYPE
+      WRITE(F06,1934) SUBR_NAME,TYPE
+      FATAL_ERR = FATAL_ERR + 1
+      CALL OUTA_HERE ( 'Y' )
+
+
+
+      RETURN
+
+! **********************************************************************************************************************************
+ 1934 FORMAT(' *ERROR  1934: PROGRAMMING ERROR IN SUBROUTINE ',A                                                                   &
+                    ,/,14X,' CODE NOT WRITTEN FOR ELEMENT TYPE = ',A)
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE KUSER1
+
+
       SUBROUTINE USERIN ( INT_ELEM_ID, OPT, EMG_CALLING_SUBR, WRITE_WARN )
 
 ! Reads in matrices for a USERIN element from file IN4FIL specified in Exec Control (with statement IN4 i = in4file file name
@@ -61,7 +115,16 @@
                                          USERIN_MASS_MAT_NAME, USERIN_LOAD_MAT_NAME, USERIN_RBM0_MAT_NAME, USERIN_STIF_MAT_NAME
 
 
-      USE USERIN_USE_IFs
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
+      USE GRID_POINT_WEIGHT, ONLY     :  RB_DISP_MATRIX_PROC
+      USE DOF_SET_CONSTRUCTION, ONLY  :  RDOF
+      USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM
+      USE DOF_ARRAY_INDEXING, ONLY    :  GET_ARRAY_ROW_NUM
+      USE IN4_FILE_LIFECYCLE, ONLY    :  ALLOCATE_IN4_FILES, DEALLOCATE_IN4_FILES
+      USE FILE_LIFECYCLE, ONLY        :  FILE_CLOSE, FILE_OPEN
+      USE OUTPUT4_FILE_IO, ONLY       :  READ_IN4_FULL_MAT
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
 
       IMPLICIT NONE
 
@@ -723,3 +786,5 @@ j_do12:     DO J=1,NCORD
       END SUBROUTINE DEB_USERIN
 
       END SUBROUTINE USERIN
+
+   END MODULE USER_DEFINED_ELEMENTS

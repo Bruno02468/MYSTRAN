@@ -67,7 +67,7 @@
       USE TIMDAT, ONLY                :  TSEC
       USE CONSTANTS_1, ONLY           :  ZERO
 
-      USE GET_ELGP_Interface
+      USE ELEMENT_LOOKUPS, ONLY       :  GET_ELGP
       USE EMG_Interface
       USE ELEMENT_TRANSFORMATIONS, ONLY:  ELEM_TRANSFORM_LBG
       USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE

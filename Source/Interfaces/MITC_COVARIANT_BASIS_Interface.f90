@@ -36,7 +36,7 @@
       USE IOUNT1, ONLY                :  ERR, F06
       USE SCONTR, ONLY                :  FATAL_ERR
 
-      USE SHP2DQ_Interface
+      USE QUADRILATERAL_SHAPE_FUNCTIONS, ONLY:  SHP2DQ
       USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
