@@ -65,8 +65,7 @@
       USE SHP2DQ_Interface
       USE JACOBIAN, ONLY               :  JAC2D
       USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
-      USE BBMIN4_Interface
-      USE BSMIN4_Interface
+      USE MIN4_B_MATRICES, ONLY       :  BBMIN4, BSMIN4
       USE CALC_PHI_SQ_Interface
 
       IMPLICIT NONE
