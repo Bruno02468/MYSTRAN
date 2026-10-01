@@ -24,6 +24,16 @@
 
 ! End MIT license text.
 
+   MODULE MIN4T
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: QPLT3
+
+   CONTAINS
+
       SUBROUTINE QPLT3 ( OPT, AREA_QUAD, XSD, YSD, BIG_BB )
 
 ! MIN4T quadrilateral thick (Mindlin) plate bending plate element. This is made of 4 non-overlapping MIN3 trianglau elements with
@@ -77,7 +87,10 @@
                                          FCONV, KE, PHI_SQ, PPE, PTE, SE2, SE3, TE, XEB, XEL
       USE DEBUG_PARAMETERS, ONLY      :  DEBUG
 
-      USE QPLT3_USE_IFs
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  CHECK_MAT_INVERSE, MATADD_FFF, MATMULT_FFF, MATMULT_FFF_T
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
+      USE TRIANGULAR_SHELL_ELEMENTS, ONLY:  TPLT2
 
       IMPLICIT NONE
 
@@ -2695,3 +2708,5 @@ trias:DO K=1,NUM_TRIAS
       END SUBROUTINE DEB_QPLT3_2
 
       END SUBROUTINE QPLT3
+
+   END MODULE MIN4T

@@ -24,6 +24,16 @@
 
 ! End MIT license text.
 
+   MODULE DKQ
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: QPLT1
+
+   CONTAINS
+
       SUBROUTINE QPLT1 ( OPT, AREA, XSD, YSD )
 
 ! DKQ quadrilateral thin (Kirchoff) plate bending element. This element is based on the following work:
@@ -46,7 +56,12 @@
       USE PARAMS, ONLY                :  IORQ2B
       USE MODEL_STUF, ONLY            :  ALPVEC, BE2, DT, EB, EID, KE, PRESS, PPE, PTE, SE2, STE2, SHELL_D, SHELL_DALP
 
-      USE QPLT1_USE_IFs
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
+      USE QUADRATURE, ONLY            :  ORDER_GAUSS
+      USE SHP2DQ_Interface
+      USE JACOBIAN, ONLY               :  JAC2D
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
+      USE BBDKQ_Interface
 
       IMPLICIT NONE
 
@@ -287,3 +302,5 @@
 ! **********************************************************************************************************************************
 
       END SUBROUTINE QPLT1
+
+   END MODULE DKQ

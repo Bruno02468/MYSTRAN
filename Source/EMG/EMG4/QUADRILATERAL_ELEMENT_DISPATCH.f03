@@ -24,6 +24,21 @@
 
 ! End MIT license text.
 
+   MODULE QUADRILATERAL_ELEMENT_DISPATCH
+
+   USE QUAD_MEMBRANE_SHEAR, ONLY :  QMEM1, QSHEAR
+   USE DKQ, ONLY :  QPLT1
+   USE MIN4, ONLY :  QPLT2
+   USE MIN4T, ONLY :  QPLT3
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: QDEL1
+
+   CONTAINS
+
       SUBROUTINE QDEL1 ( OPT, INT_ELEM_ID, WRITE_WARN )
 
 ! Calculates, or calls subr's to calculate, quadrilateral element matrices:
@@ -46,7 +61,11 @@
                                          MASS_PER_UNIT_AREA, NUM_EMG_FATAL_ERRS, ME, PCOMP_LAM, PCOMP_PROPS, SHELL_B, TYPE, XEL
       USE MODEL_STUF, ONLY            :  BENSUM, SHRSUM, PHI_SQ, PSI_HAT
 
-      USE QDEL1_USE_IFs
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
+      USE QUADRATURE, ONLY            :  ORDER_GAUSS
+      USE JACOBIAN, ONLY               :  JAC2D
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
+      USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF, MATMULT_FFF_T
 
       IMPLICIT NONE
 
@@ -379,3 +398,5 @@
 ! **********************************************************************************************************************************
 
       END SUBROUTINE QDEL1
+
+   END MODULE QUADRILATERAL_ELEMENT_DISPATCH
