@@ -629,7 +629,7 @@
                                          I_GMN , J_GMN , GMN , I_GMNt, J_GMNt, GMNt, I_KMND, J_KMND, KMND,                         &
                                          I_GOA , J_GOA , GOA , I_GOAt, J_GOAt, GOAt
 
-      USE BUILD_KGGD_FROM_UG_Interface
+      USE LINK1_WORKFLOW_SUPPORT, ONLY:  BUILD_KGGD_FROM_UG
       USE SPARSE_MATRIX_DEALLOCATION, ONLY:  DEALLOCATE_SPARSE_MAT
 
       IMPLICIT NONE

@@ -24,6 +24,131 @@
 
 ! End MIT license text.
 
+   MODULE LINK1_WORKFLOW_SUPPORT
+
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: BUILD_KGGD_FROM_UG, LINK1_RESTART_DATA, PRINT_CONSTANTS_1, PRINT_ORDER, WRITE_ENF_TO_L1O
+
+   CONTAINS
+
+      SUBROUTINE BUILD_KGGD_FROM_UG
+
+! Re-entrant assembly of the G-set differential stiffness matrix KGGD from the displacement field currently held in UG_COL.
+!
+! This is the SOL 105 step-2 KGGD assembly path that previously lived inline in LINK1. It has been factored out so that the
+! multi-buckling-subcase driver added in Phase 4 can rebuild KGGD once per buckling subcase (each with its own preload UG_COL)
+! without re-entering all of LINK1.
+!
+! Caller responsibilities:
+!   * UG_COL must already be loaded with the preload static displacement field for the buckling subcase being assembled
+!     (typically by READ_L5A_UG_FOR_SUBCASE). Element ELMDIS calls (gated on OPT(6)=='Y' .AND. LOAD_ISTEP>1) read from UG_COL
+!     to form per-element KED contributions.
+!   * MPC_IND_GRIDS must remain allocated across repeated calls (SPARSE_KGGD consumes it). The original LINK1 step-2 block
+!     deallocated MPC_IND_GRIDS immediately after SPARSE_KGGD; for a single-shot invocation (the legacy path) that dealloc
+!     happens in LINK1 just after this routine returns, preserving prior behavior.
+!
+! Re-entry safety: any pre-existing sparse KGGD (I_KGGD, J_KGGD, KGGD) and STF linked-list arrays (STFKEY, STF3) are deallocated
+! before fresh allocation so this routine is safe to call multiple times in a row.
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG
+      USE IOUNT1, ONLY                :  ERR, F06, SC1
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM, LTERM_KGGD
+      USE PARAMS, ONLY                :  ESP0_PAUSE
+      USE SPARSE_MATRICES, ONLY       :  I_KGGD, J_KGGD, KGGD
+      USE STF_ARRAYS, ONLY            :  STFKEY, STF3
+      USE MODEL_STUF, ONLY            :  AGRID, BGRID
+
+      USE STIFFNESS_MATRIX_ASSEMBLY, ONLY:  ESP0, ESP, SPARSE_KGGD
+      USE LINK1_WORKSPACE_LIFECYCLE, ONLY:  ALLOCATE_STF_ARRAYS, DEALLOCATE_STF_ARRAYS
+      USE SPARSE_MATRIX_DEALLOCATION, ONLY:  DEALLOCATE_SPARSE_MAT
+      USE MODEL_STORAGE_ALLOCATION, ONLY:  ALLOCATE_MODEL_STUF
+      USE MODEL_STORAGE_DEALLOCATION, ONLY:  DEALLOCATE_MODEL_STUF
+      USE DIAGNOSTICS_MEMORY_REPORTING, ONLY:  LINK_MESSAGE
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'BUILD_KGGD_FROM_UG'
+
+      CHARACTER, PARAMETER            :: CR13 = CHAR(13)
+      CHARACTER( 1*BYTE)              :: RESPONSE          ! Used only if ESP0_PAUSE == 'Y'
+
+      INTEGER(LONG)                   :: LTERM             ! Local copy of LTERM_KGGD for optional interactive override
+      LOGICAL                         :: WE_ALLOCD_SINGLE_ELEM_ARRS
+
+
+
+! **********************************************************************************************************************************
+
+! 1) Drop any stale sparse KGGD left over from a prior buckling-subcase iteration.
+
+      IF (ALLOCATED(KGGD)   .OR. ALLOCATED(I_KGGD) .OR. ALLOCATED(J_KGGD)) THEN
+         CALL DEALLOCATE_SPARSE_MAT ( 'KGGD' )
+      ENDIF
+
+! 2) Drop any stale STF linked-list arrays. ALLOCATE_STF_ARRAYS FATALs if its target is already allocated, so deallocate first.
+
+      IF (ALLOCATED(STFKEY)) CALL DEALLOCATE_STF_ARRAYS ( 'STFKEY' )
+      IF (ALLOCATED(STF3))   CALL DEALLOCATE_STF_ARRAYS ( 'STF3' )
+
+! 3) Estimate LTERM_KGGD (subr ESP0 sizes the linked-list storage for the element merge pass).
+
+      CALL ESP0
+      CALL LINK_MESSAGE('CALCULATE ESTIMATE OF KGGD MATRIX SIZE        ')
+      LTERM = LTERM_KGGD
+
+      IF (ESP0_PAUSE == 'Y') THEN
+         WRITE(SC1,'(A,A,I12)') ' From ESP0: ', 'LTERM_KGGD', ' = ', LTERM
+         WRITE(SC1,'(A,A)') ' Do you want to change ', 'LTERM_KGGD estimate? (Y/N)'
+         READ(*,*) RESPONSE
+         IF ((RESPONSE == 'Y') .OR. (RESPONSE == 'y')) THEN
+            WRITE(SC1,'(A)') 'Enter new LTERM_KGGD'
+            WRITE(SC1,*)
+            READ(*,*) LTERM
+            LTERM_KGGD = LTERM
+            WRITE(SC1,'(A,I12)') 'New LTERM_KGGD will be = ', LTERM
+         ENDIF
+      ENDIF
+
+! 4) Allocate STF linked-list workspace, run ESP (element-by-element KED merge), then condense to sparse KGGD.
+!    SINGLE ELEMENT ARRAYS (AGRID, BGRID, DT, etc.) may have already been deallocated by LINK1 if we are being
+!    invoked re-entrantly from LINK4 for a multi-buckling-subcase rebuild. Re-allocate them just for this assembly
+!    pass and deallocate again on exit, so the legacy single-shot path's allocation state is preserved.
+
+      WE_ALLOCD_SINGLE_ELEM_ARRS = .FALSE.
+      IF (.NOT. ALLOCATED(AGRID)) THEN
+         CALL ALLOCATE_MODEL_STUF ( 'SINGLE ELEMENT ARRAYS', SUBR_NAME )
+         WE_ALLOCD_SINGLE_ELEM_ARRS = .TRUE.
+      ENDIF
+
+      CALL LINK_MESSAGE('ALLOCATE MEM FOR STFKEY, STFCOL, STFPNT, STF')
+      CALL ALLOCATE_STF_ARRAYS ( 'STFKEY', SUBR_NAME )
+      CALL ALLOCATE_STF_ARRAYS ( 'STF3',   SUBR_NAME )
+
+      CALL LINK_MESSAGE('G-SET STIFFNESS MATRIX PROCESSOR            ')
+      CALL ESP
+
+      CALL LINK_MESSAGE('SPARSE KGGD PROCESSOR                       ')
+      CALL SPARSE_KGGD
+
+      CALL DEALLOCATE_STF_ARRAYS ( 'STFKEY' )
+      CALL DEALLOCATE_STF_ARRAYS ( 'STF3' )
+
+      IF (WE_ALLOCD_SINGLE_ELEM_ARRS) THEN
+         CALL DEALLOCATE_MODEL_STUF ( 'SINGLE ELEMENT ARRAYS' )
+      ENDIF
+
+      WRITE(SC1,*) CR13
+
+
+
+      RETURN
+
+      END SUBROUTINE BUILD_KGGD_FROM_UG
+
+
       SUBROUTINE LINK1_RESTART_DATA
 
 ! Reads data from files LINK1B, LINK1G, LINK1K, LINK1Q, LINK1Y (created in LINK1) needed in LINK1 restart
@@ -55,7 +180,10 @@
       USE MODEL_STUF, ONLY            :  GTEMP, TDATA, TPNT
       USE MODEL_STUF, ONLY            :  PLATETHICK, PBUSH, RPBUSH, PSHEAR, RPSHEAR, PCOMP, RPCOMP, PUSERIN, USERIN_MAT_NAMES
 
-      USE LINK1_RESTART_DATA_USE_IFs
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
+      USE FILE_LIFECYCLE, ONLY        :  FILE_CLOSE, FILE_OPEN
+      USE TEMP_FILE_READERS, ONLY     :  READ_CHK
+      USE DIAGNOSTICS_MEMORY_REPORTING, ONLY:  DATA_SET_NAME_ERROR, DATA_SET_SIZE_ERROR
 
       IMPLICIT NONE
 
@@ -956,3 +1084,310 @@
 ! **********************************************************************************************************************************
 
       END SUBROUTINE LINK1_RESTART_DATA
+
+
+      SUBROUTINE PRINT_CONSTANTS_1
+
+! Writes real constants defined in module CONSTANTS_1
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE CONSTANTS_1
+      USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06
+      USE SCONTR, ONLY                :  PROG_NAME
+
+      IMPLICIT NONE
+
+!***********************************************************************************************************************************
+! Print real constants used in various subroutines
+
+      WRITE(F06,1101)
+      WRITE(F06,1102)
+      WRITE(F06,*)
+
+      WRITE(F06,*) '                                               ZERO         = ', ZERO
+      WRITE(F06,*) '                                               ONEPM16      = ', ONEPM16
+      WRITE(F06,*) '                                               ONEPM15      = ', ONEPM15
+      WRITE(F06,*) '                                               ONEPM14      = ', ONEPM14
+      WRITE(F06,*) '                                               ONEPM6       = ', ONEPM6
+      WRITE(F06,*) '                                               ONEPM5       = ', ONEPM5
+      WRITE(F06,*) '                                               ONEPM4       = ', ONEPM4
+
+      WRITE(F06,*) '                                               TENTH        = ', TENTH
+      WRITE(F06,*) '                                               SIXTH        = ', SIXTH
+      WRITE(F06,*) '                                               QUARTER      = ', QUARTER
+      WRITE(F06,*) '                                               THIRD        = ', THIRD
+      WRITE(F06,*) '                                               HALF         = ', HALF
+
+      WRITE(F06,*) '                                               ONE          = ', ONE
+      WRITE(F06,*) '                                               TWO          = ', TWO
+      WRITE(F06,*) '                                               THREE        = ', THREE
+      WRITE(F06,*) '                                               THREEP6      = ', THREEP6
+      WRITE(F06,*) '                                               FOUR         = ', FOUR
+      WRITE(F06,*) '                                               FIVE         = ', FIVE
+      WRITE(F06,*) '                                               SIX          = ', SIX
+      WRITE(F06,*) '                                               SEVEN        = ', SEVEN
+      WRITE(F06,*) '                                               EIGHT        = ', EIGHT
+      WRITE(F06,*) '                                               NINE         = ', NINE
+      WRITE(F06,*) '                                               TEN          = ', TEN
+      WRITE(F06,*) '                                               ELEVEN       = ', ELEVEN
+      WRITE(F06,*) '                                               TWELVE       = ', TWELVE
+      WRITE(F06,*) '                                               FORTY5       = ', FORTY5
+      WRITE(F06,*) '                                               ONE_HUNDRED  = ', ONE_HUNDRED
+      WRITE(F06,*) '                                               ONE80        = ', ONE80
+      WRITE(F06,*) '                                               ONE_THOUSAND = ', ONE_THOUSAND
+      WRITE(F06,*) '                                               ONEPP6       = ', ONEPP6
+      WRITE(F06,*) '                                               ONEPP7       = ', ONEPP7
+      WRITE(F06,*) '                                               ONEPP10      = ', ONEPP10
+
+      WRITE(F06,*) '                                               PI           = ', PI
+      WRITE(F06,*) '                                               CONV_DEG_RAD = ', CONV_DEG_RAD
+      WRITE(F06,*) '                                               CONV_RAD_DEG = ', CONV_RAD_DEG
+
+      WRITE(F06,1106)
+
+! **********************************************************************************************************************************
+ 1101 FORMAT(' __________________________________________________________________________________________________________________',&
+             '_________________'                                                                                               ,//,&
+             ' ::::::::::::::::::::::::::::::::::::::::::START DEBUG( 2) OUTPUT FROM SUBROUTINE LINK1::::::::::::::::::::::::::::',&
+              ':::::::::::::::::',/)
+
+ 1102 FORMAT(45X,'Real constants used in MYSTRAN are:')
+
+ 1106 FORMAT(' :::::::::::::::::::::::::::::::::::::::::::END DEBUG( 2) OUTPUT FROM SUBROUTINE LINK1:::::::::::::::::::::::::::::',&
+              ':::::::::::::::::'                                                                                               ,/,&
+             ' __________________________________________________________________________________________________________________',&
+             '_________________',/)
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE PRINT_CONSTANTS_1
+
+
+      SUBROUTINE PRINT_ORDER
+
+! Writes abcissa's and weights from subroutines ORDER_GAUSS and ORDER_TRIA used in isoparametric element matrix generation subr's
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM, MAX_ORDER_GAUSS, MAX_ORDER_TRIA, NUM_TRIA_ORDERS, TRIA_ORDER_NUMS
+
+      USE QUADRATURE, ONLY            :  ORDER_GAUSS, ORDER_TRIA
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'PRINT_ORDER'
+      CHARACTER(18*BYTE)              :: SSC, HHC              ! Char var used in writing to internal file for formatting output
+      CHARACTER(18*BYTE)              :: SSC_I, SSC_J          ! Char var used in writing to internal file for formatting output
+
+      INTEGER(LONG)                   :: J, KORDER             ! DO loop indices
+      INTEGER(LONG)                   :: TORDER                ! Trianular integration order number
+
+      REAL(DOUBLE)                    :: SSS(MAX_ORDER_GAUSS)  ! Gauss abscissa's
+      REAL(DOUBLE)                    :: SS_I(MAX_ORDER_TRIA)  ! Tria X abscissa's
+      REAL(DOUBLE)                    :: SS_J(MAX_ORDER_TRIA)  ! Tria Y abscissa's
+      REAL(DOUBLE)                    :: HHH(MAX_ORDER_GAUSS)  ! Weights
+
+! **********************************************************************************************************************************
+! Write header
+
+      WRITE(F06,1101)
+
+! Write Gaussian orders
+
+      WRITE(F06,1102)
+      WRITE(F06,*)
+
+      DO KORDER=1,MAX_ORDER_GAUSS
+         CALL ORDER_GAUSS ( KORDER, SSS, HHH )
+         WRITE(F06,1103) KORDER
+         DO J=1,KORDER
+            WRITE(SSC,1104) SSS(J)
+            WRITE(HHC,1104) HHH(J)
+            WRITE(F06,1105) J, SSC(1:8), SSC(9:13), SSC(14:18), HHC(1:8), HHC(9:13), HHC(14:18)
+         ENDDO
+         WRITE(F06,*)
+         WRITE(F06,*)
+      ENDDO
+
+! Write Triangular orders
+
+      WRITE(F06,1112)
+      WRITE(F06,*)
+
+      DO KORDER=1,NUM_TRIA_ORDERS
+         TORDER = TRIA_ORDER_NUMS(KORDER)
+         IF (TORDER <= MAX_ORDER_TRIA) THEN
+            CALL ORDER_TRIA ( TORDER, SS_I, SS_J, HHH )
+            WRITE(F06,1113) TORDER
+            DO J=1,TORDER
+               WRITE(SSC_I,1114) SS_I(J)
+               WRITE(SSC_J,1114) SS_J(J)
+               WRITE(HHC,1114) HHH(J)
+               WRITE(F06,1115) J, SSC_I(1:8), SSC_I(9:13), SSC_I(14:18), SSC_J(1:8), SSC_J(9:13), SSC_J(14:18),                    &
+                               HHC(1:8), HHC(9:13), HHC(14:18)
+            ENDDO
+            WRITE(F06,*)
+            WRITE(F06,*)
+         ELSE
+            WRITE(F06,2001) TORDER, MAX_ORDER_TRIA
+            EXIT
+         ENDIF
+      ENDDO
+
+! Write trailer
+
+      WRITE(F06,1106)
+
+! **********************************************************************************************************************************
+ 1101 FORMAT(' __________________________________________________________________________________________________________________',&
+             '_________________'                                                                                               ,//,&
+             ' ::::::::::::::::::::::::::::::::::::::::::START DEBUG( 5) OUTPUT FROM SUBROUTINE ORDER::::::::::::::::::::::::::::',&
+              ':::::::::::::::::',/)
+
+ 1102 FORMAT(32X,'Abcissa and Weight Coefficients of the Gaussian Quadrature Formula')
+
+ 1103 FORMAT(65X,'n =',I3,/,65x,'------',//,41X,'J            SSS(J)                   HHH(J)')
+
+ 1104 FORMAT(F18.15)
+
+ 1105 FORMAT(39X, I3, 3X, A8,' ',A5,' ',A5,5X,A8,' ',A5,' ',A5)
+
+ 1112 FORMAT(32X,'Abcissa and Weight Coefficients of the Triangulur Quadrature Formula')
+
+ 1113 FORMAT(65X,'n =',I3,/,65X,'------',//,29X,'J          SS_I(J)                  SS_J(J)                   HHH(J)')
+
+ 1114 FORMAT(F18.15)
+
+ 1115 FORMAT(27X, I3, 3X, A8,' ',A5,' ',A5,5X,A8,' ',A5,' ',A5,5X,A8,' ',A5,' ',A5)
+
+ 1106 FORMAT(' :::::::::::::::::::::::::::::::::::::::::::END DEBUG( 5) OUTPUT FROM SUBROUTINE ORDER:::::::::::::::::::::::::::::',&
+              ':::::::::::::::::'                                                                                               ,/,&
+             ' __________________________________________________________________________________________________________________',&
+             '_________________',/)
+
+ 2001 FORMAT(' *INFORMATION: PROGRAMMING ERROR IN SUBROUTINE ',A                                                                   &
+                    ,/,14X,' TRIANGULAR INTEGRATION ORDER ',I3,' IS GREATER THAM MAX_ORDER_TRIA = ',I3                             &
+                    ,/,14X,' CANNOT COMPLETE PRINTOUT OF TRIANGULAR INTEGRATION ORDERS. THIS IS NOT A FATAL ERROR')
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE PRINT_ORDER
+
+
+      SUBROUTINE WRITE_ENF_TO_L1O
+
+! Reads enforced displacement data from text file ENFFIL and writes it to unformatted file LINK1O.
+! Used when ENFORCED = filename in Case Control signifies that all DOF's will be in SE set and their values are in ENFFIL
+
+
+      USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
+      USE IOUNT1, ONLY                :  ENF, ENFFIL, ENFSTAT, ENF_MSG, ERR, F06, L1O, LINK1O, L1OSTAT, L1O_MSG
+      USE SCONTR, ONLY                :  BLNK_SUB_NAM, NDOFSG, NGRID, NSPC, NUM_SPC_RECORDS, NUM_SPC1_RECORDS, WARN_ERR
+      USE TIMDAT, ONLY                :  TSEC
+      USE PARAMS, ONLY                :  SUPWARN
+      USE DOF_TABLES, ONLY            :  TSET_CHR_LEN, TSET
+      USE MODEL_STUF, ONLY            :  SPCSET
+
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
+      USE FILE_LIFECYCLE, ONLY        :  FILE_CLOSE, FILE_OPEN
+      USE TEMP_FILE_READERS, ONLY     :  READ_CHK
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'WRITE_ENF_TO_L1O'
+      CHARACTER(LEN=LEN(TSET_CHR_LEN)):: DOFSET    = 'SE'  ! The name of a DOF set (e.g. 'SB', 'A ', etc)
+
+      INTEGER(LONG)                   :: GRID_ID           ! ID of grid for which the enforced data belongs
+      INTEGER(LONG)                   :: IOCHK             ! IOSTAT error number when opening or reading a file
+      INTEGER(LONG)                   :: J                 ! DO loop index
+      INTEGER(LONG)                   :: OUNT(2)           ! File units to write messages to. Input to subr FILE_OPEN
+      INTEGER(LONG)                   :: REC_NO            ! Number of the record read from ENF file
+
+
+      REAL(DOUBLE)                    :: RSPC(6)           ! Enforced displ components read from file ENF
+
+
+
+! **********************************************************************************************************************************
+      OUNT(1) = ERR
+      OUNT(2) = F06
+
+      IF (NUM_SPC_RECORDS /= 0) THEN
+         WARN_ERR = WARN_ERR + 1
+         WRITE(ERR,101) NUM_SPC_RECORDS
+         IF (SUPWARN == 'N') THEN
+            WRITE(F06,101) NUM_SPC_RECORDS
+         ENDIF
+      ENDIF
+
+      IF (NUM_SPC1_RECORDS /= 0) THEN
+         WARN_ERR = WARN_ERR + 1
+         WRITE(ERR,102) NUM_SPC1_RECORDS
+         IF (SUPWARN == 'N') THEN
+            WRITE(F06,102) NUM_SPC1_RECORDS
+         ENDIF
+      ENDIF
+
+      IF (NDOFSG /= 0) THEN
+         WARN_ERR = WARN_ERR + 1
+         WRITE(ERR,103) NDOFSG
+         IF (SUPWARN == 'N') THEN
+            WRITE(F06,103) NDOFSG
+         ENDIF
+      ENDIF
+
+      CALL FILE_OPEN ( ENF, ENFFIL, OUNT, 'OLD'    , ENF_MSG, 'NEITHER'    , 'FORMATTED'  , 'READ' , 'REWIND', 'N', 'N' )
+
+      REC_NO          = 0
+      NUM_SPC_RECORDS = 0
+      READ(ENF,*,IOSTAT=IOCHK)                             ! Title line not used. Let it have REC_NO = 0 (i.e. don't increment here)
+      IF (IOCHK /= 0) THEN
+         CALL READ_CHK ( IOCHK, ENFFIL, 'ENFORCED DISPL DATA', REC_NO, OUNT )
+      ENDIF
+      DO
+
+         READ(ENF,*,IOSTAT=IOCHK) GRID_ID, (RSPC(J),J=1,6)
+         REC_NO = REC_NO + 1
+         IF (IOCHK /= 0) THEN
+            CALL READ_CHK ( IOCHK, ENFFIL, 'ENFORCED DISPL DATA', REC_NO, OUNT )
+         ENDIF
+
+         DO J=1,6
+            NUM_SPC_RECORDS = NUM_SPC_RECORDS + 1
+            NSPC = NSPC + 1
+            WRITE(L1O)  SPCSET, J, GRID_ID, GRID_ID, RSPC(J), DOFSET
+         ENDDO
+
+         IF (REC_NO == NGRID) THEN
+            EXIT
+         ELSE
+            CYCLE
+         ENDIF
+
+      ENDDO
+
+      CALL FILE_CLOSE ( ENF, ENFFIL, 'KEEP' )
+      CALL FILE_CLOSE ( L1O, LINK1O, 'KEEP' )
+
+
+
+      RETURN
+
+! **********************************************************************************************************************************
+  101 FORMAT(' *WARNING    : WHEN CASE CONTROL ENFORCED COMMAND IS PRESENT ALL SPCs MUST BE DEFINED IN THE FILE REFERENCED IN',    &
+                           ' THE ENFORCED COMMAND LINE.'                                                                           &
+                    ,/,14X,' HOWEVER, THERE ARE ',I8,' SPCs DEFINED ON BULK DATA SPC ENTRIES. THESE WILL BE IGNORED')
+
+  102 FORMAT(' *WARNING    : WHEN CASE CONTROL ENFORCED COMMAND IS PRESENT ALL SPCs MUST BE DEFINED IN THE FILE REFERENCED IN',    &
+                           ' THE ENFORCED COMMAND LINE.'                                                                           &
+                    ,/,14X,' HOWEVER, THERE ARE ',I8,' SPCs DEFINED ON BULK DATA SPC1 ENTRIES. THESE WILL BE IGNORED')
+
+  103 FORMAT(' *WARNING    : WHEN CASE CONTROL ENFORCED COMMAND IS PRESENT ALL SPCs MUST BE DEFINED IN THE FILE REFERENCED IN',    &
+                           ' THE ENFORCED COMMAND LINE.'                                                                           &
+                    ,/,14X,' HOWEVER, THERE ARE ',I8,' SPCs DEFINED ON BULK DATA GRID ENTRIES. THESE WILL BE IGNORED')
+
+! **********************************************************************************************************************************
+
+      END SUBROUTINE WRITE_ENF_TO_L1O
+
+   END MODULE LINK1_WORKFLOW_SUPPORT
