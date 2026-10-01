@@ -389,7 +389,7 @@
 ! single-homogeneous-material formulation.
 !
 ! SHELL_A, SHELL_B, SHELL_D, SHELL_T are already populated for this element by
-! SHELL_ABD_MATRICES (called once from EMG.f90 before this routine is reached), summed over
+! SHELL_ABD_MATRICES (called once from EMG.f03 before this routine is reached), summed over
 ! PCOMP plies via classical lamination theory where applicable. Using them here (rather than
 ! re-deriving a homogeneous elasticity tensor and volume-integrating through T) is what removes
 ! the PCOMP restriction on MITC4/MITC4+: see the MITC4/MITC4+ ABD conversion plan.
@@ -1111,7 +1111,7 @@ SUBROUTINE MITC4_BMBS ( R, S, BM, BB, BS )
 ! **********************************************************************************************************************************
 ! Pure transverse shear operator.
 ! MITC shear is already evaluated at tying points and is effectively midsurface shear here.
-! Keep row order as zx, yz to match SHELL_T convention used by MITC4.f90.
+! Keep row order as zx, yz to match SHELL_T convention used by MITC4.f03.
 
   CALL MITC4_B( R, S, ZERO, .FALSE., .FALSE., .TRUE., BSHR )
   CALL TO_ELEMENT_BASIS( ZERO, BSHR )

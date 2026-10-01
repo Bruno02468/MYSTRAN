@@ -1081,7 +1081,7 @@ ply_do:  DO K=1,NUM_PLIES_TO_PROC
 
       EPNTK = EPNT(INT_ELEM_ID)
 
-      !----- Copy and pasted from EMG.f90 -----
+      !----- Copy and pasted from EMG.f03 -----
       THETAM = ZERO
 
       IF      (TYPE(1:5) == 'QUAD4') THEN
@@ -1123,7 +1123,7 @@ ply_do:  DO K=1,NUM_PLIES_TO_PROC
          ENDIF
 
       ENDIF
-      !----- Copy and pasted from EMG.f90 -----
+      !----- Copy and pasted from EMG.f03 -----
 
       IF      (TYPE(1:5) == 'QUAD4') THEN
 
