@@ -1,4 +1,4 @@
-! ###############################################################################################################################
+! ##################################################################################################################################
 ! Begin MIT license text.
 ! _______________________________________________________________________________________________________
 
@@ -24,12 +24,19 @@
 
 ! End MIT license text.
 
-   MODULE SUSER1_Interface
+   MODULE SUSER1_RECOVERY
 
-   INTERFACE
+   IMPLICIT NONE
+
+   PRIVATE
+
+   PUBLIC :: SUSER1
+
+   CONTAINS
 
       SUBROUTINE SUSER1
 
+!  Calc's stresses for user supplied subroutine elements
 
       USE PENTIUM_II_KIND, ONLY       :  BYTE, LONG, DOUBLE
       USE IOUNT1, ONLY                :  WRT_ERR, ERR, F06
@@ -37,15 +44,33 @@
       USE TIMDAT, ONLY                :  TSEC
       USE MODEL_STUF, ONLY            :  TYPE
 
+      USE DATE_TIME_UTILS, ONLY       :  OURTIM
+      USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
+
       IMPLICIT NONE
 
       CHARACTER(LEN=LEN(BLNK_SUB_NAM)):: SUBR_NAME = 'SUSER1'
 
 
 
+
+
+! **********************************************************************************************************************************
+      WRITE(ERR,9204) SUBR_NAME,TYPE
+      WRITE(F06,9204) SUBR_NAME,TYPE
+      FATAL_ERR = FATAL_ERR + 1
+      CALL OUTA_HERE ( 'Y' )
+
+
+
+      RETURN
+
+! **********************************************************************************************************************************
+ 9204 FORMAT(' *ERROR  9204: PROGRAMMING ERROR IN SUBROUTINE ',A                                                                   &
+                    ,/,14X,' CODE NOT WRITTEN FOR ELEMENT TYPE = ',A)
+
+! **********************************************************************************************************************************
+
       END SUBROUTINE SUSER1
 
-   END INTERFACE
-
-   END MODULE SUSER1_Interface
-
+   END MODULE SUSER1_RECOVERY
