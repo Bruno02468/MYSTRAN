@@ -28,7 +28,7 @@
 ! USE Interface statements for all subroutines called by SUBROUTINE EPTL
 
       USE DATE_TIME_UTILS, ONLY       :  OURTIM
-      USE EMG_Interface
+      USE EMG_MOD, ONLY               :  EMG
       USE TEMP_FILE_WRITERS, ONLY     :  WRITE_FIJFIL
       USE DOF_ARRAY_INDEXING, ONLY    :  GET_ARRAY_ROW_NUM, GET_GRID_NUM_COMPS
       USE DOF_NUMBERING, ONLY         :  TDOF_COL_NUM

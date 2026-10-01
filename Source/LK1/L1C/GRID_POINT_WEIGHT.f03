@@ -51,7 +51,7 @@
                                          OFFDIS, OFFSET, PLY_NUM, RCONM2, RGRID, TYPE, USERIN_RBM0
 
       USE DOF_ARRAY_INDEXING, ONLY    :  GET_ARRAY_ROW_NUM, GET_GRID_NUM_COMPS
-      USE EMG_Interface
+      USE EMG_MOD, ONLY               :  EMG
       USE VECTOR_GEOMETRY, ONLY       :  GEN_T0L
       USE FULL_MATRIX_ALGEBRA, ONLY   :  MATMULT_FFF
       USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
@@ -837,7 +837,7 @@ userin:        IF ((WHICH(1:8) == 'OA MODEL') .OR. (WHICH(1:6) == 'USERIN')) THE
 
 
       USE DOF_ARRAY_INDEXING, ONLY    :  GET_ARRAY_ROW_NUM
-      USE EMG_Interface
+      USE EMG_MOD, ONLY               :  EMG
       USE FILE_LIFECYCLE, ONLY   :  OUTA_HERE
 
       IMPLICIT NONE
@@ -1469,3 +1469,20 @@ userin:        IF ((WHICH(1:8) == 'OA MODEL') .OR. (WHICH(1:6) == 'USERIN')) THE
 
 
    END MODULE GRID_POINT_WEIGHT
+
+
+   ! Compatibility entry point for USER_DEFINED_ELEMENTS. The module procedure remains
+   ! available to existing GRID_POINT_WEIGHT callers while this external symbol avoids
+   ! a module dependency cycle through EMG_MOD.
+      SUBROUTINE RB_DISP_MATRIX_PROC ( REF_PT_TXT, REF_PT )
+
+      USE GRID_POINT_WEIGHT, ONLY : RB_DISP_MATRIX_PROC_MOD => RB_DISP_MATRIX_PROC
+
+      IMPLICIT NONE
+
+      CHARACTER(LEN=*), INTENT(IN) :: REF_PT_TXT
+      INTEGER, INTENT(IN) :: REF_PT
+
+      CALL RB_DISP_MATRIX_PROC_MOD ( REF_PT_TXT, REF_PT )
+
+      END SUBROUTINE RB_DISP_MATRIX_PROC
