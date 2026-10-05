@@ -13,6 +13,48 @@ if(WIN32)
   enable_language(RC)
 endif()
 
+set(MYSTRAN_MARCH "x86-64" CACHE STRING "CPU instruction set (-march); empty for compiler default")
+set(MYSTRAN_MTUNE "generic" CACHE STRING "CPU tuning (-mtune); empty for compiler default")
+
+include(CheckCCompilerFlag)
+include(CheckCXXCompilerFlag)
+include(CheckFortranCompilerFlag)
+set(_MYSTRAN_CPU_FLAGS "")
+
+foreach(_cpu_option MARCH MTUNE)
+  if(NOT "${MYSTRAN_${_cpu_option}}" STREQUAL "")
+    if(NOT "${MYSTRAN_${_cpu_option}}" MATCHES "^[A-Za-z0-9_.+-]+$")
+      message(FATAL_ERROR "MYSTRAN_${_cpu_option} must be a single CPU name or empty.")
+    endif()
+
+    string(TOLOWER "${_cpu_option}" _cpu_option_lower)
+    set(_cpu_flag "-${_cpu_option_lower}=${MYSTRAN_${_cpu_option}}")
+    string(MD5 _cpu_flag_hash "${_cpu_flag}")
+
+    foreach(_cpu_language C CXX Fortran)
+      set(_cpu_check "_MYSTRAN_${_cpu_language}_CPU_${_cpu_flag_hash}")
+      if(_cpu_language STREQUAL "C")
+        check_c_compiler_flag("${_cpu_flag}" ${_cpu_check})
+      elseif(_cpu_language STREQUAL "CXX")
+        check_cxx_compiler_flag("${_cpu_flag}" ${_cpu_check})
+      else()
+        check_fortran_compiler_flag("${_cpu_flag}" ${_cpu_check})
+      endif()
+
+      if(NOT ${_cpu_check})
+        message(FATAL_ERROR
+          "${CMAKE_${_cpu_language}_COMPILER_ID} ${_cpu_language} compiler does not support ${_cpu_flag}. "
+          "Choose a supported MYSTRAN_${_cpu_option}, or set it to an empty string for the compiler default.")
+      endif()
+    endforeach()
+
+    list(APPEND _MYSTRAN_CPU_FLAGS "${_cpu_flag}")
+    add_compile_options("$<$<COMPILE_LANGUAGE:C,CXX,Fortran>:${_cpu_flag}>")
+  endif()
+endforeach()
+
+message(STATUS "MYSTRAN CPU flags: ${_MYSTRAN_CPU_FLAGS}")
+
 # basic compiler and output options
 set(CMAKE_SOURCE_DIR "${PROJECT_SOURCE_DIR}/Source")
 set(PROJECT_BINARY_DIR "${PROJECT_SOURCE_DIR}/Binaries")
@@ -310,8 +352,15 @@ if(_MYSTRAN_BLAS_LAPACK_MODE STREQUAL "EMBEDDED")
   set(USE_OPTIMIZED_BLAS OFF CACHE BOOL "" FORCE)
   set(USE_OPTIMIZED_LAPACK OFF CACHE BOOL "" FORCE)
 
+  # Do not let prior provider discovery bypass the embedded build on reconfigure.
+  set(BLAS_LIBRARIES "")
+  set(LAPACK_LIBRARIES "")
+  set(BLAS_FOUND FALSE)
+  set(LATESTLAPACK_FOUND FALSE)
   add_subdirectory("${MYSTRAN_LAPACK_DIR}" "${PROJECT_BINARY_DIR}/lapack" EXCLUDE_FROM_ALL)
 
+  set(BLAS_LIBRARIES "blas")
+  set(LAPACK_LIBRARIES "lapack")
   set(BLAS_LIBRARIES "blas" CACHE STRING "" FORCE)
   set(LAPACK_LIBRARIES "lapack" CACHE STRING "" FORCE)
 endif()
@@ -880,6 +929,9 @@ if(_BT_UPPER AND DEFINED CMAKE_Fortran_FLAGS_${_BT_UPPER})
   string(APPEND _FC_FLAGS " ${CMAKE_Fortran_FLAGS_${_BT_UPPER}}")
 endif()
 
+string(JOIN " " _MYSTRAN_CPU_FLAGS_DISPLAY ${_MYSTRAN_CPU_FLAGS})
+string(APPEND _FC_FLAGS " ${_MYSTRAN_CPU_FLAGS_DISPLAY}")
+
 string(REPLACE "\n" " " _FC_FLAGS "${_FC_FLAGS}")
 string(REGEX REPLACE " +" " " _FC_FLAGS "${_FC_FLAGS}")
 string(STRIP "${_FC_FLAGS}" _FC_FLAGS)
@@ -891,6 +943,8 @@ set(_CC_FLAGS "${CMAKE_C_FLAGS}")
 if(_BT_UPPER AND DEFINED CMAKE_C_FLAGS_${_BT_UPPER})
   string(APPEND _CC_FLAGS " ${CMAKE_C_FLAGS_${_BT_UPPER}}")
 endif()
+
+string(APPEND _CC_FLAGS " ${_MYSTRAN_CPU_FLAGS_DISPLAY}")
 
 string(REPLACE "\n" " " _CC_FLAGS "${_CC_FLAGS}")
 string(REGEX REPLACE " +" " " _CC_FLAGS "${_CC_FLAGS}")
