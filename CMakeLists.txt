@@ -13,8 +13,16 @@ if(WIN32)
   enable_language(RC)
 endif()
 
-set(MYSTRAN_MARCH "x86-64" CACHE STRING "CPU instruction set (-march); empty for compiler default")
-set(MYSTRAN_MTUNE "generic" CACHE STRING "CPU tuning (-mtune); empty for compiler default")
+string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" _MYSTRAN_CPU_ARCH)
+set(_MYSTRAN_DEFAULT_MARCH "")
+set(_MYSTRAN_DEFAULT_MTUNE "")
+if(_MYSTRAN_CPU_ARCH MATCHES "^(x86_64|amd64|x64)$")
+  set(_MYSTRAN_DEFAULT_MARCH "x86-64")
+  set(_MYSTRAN_DEFAULT_MTUNE "generic")
+endif()
+
+set(MYSTRAN_MARCH "${_MYSTRAN_DEFAULT_MARCH}" CACHE STRING "CPU instruction set (-march); empty for compiler default")
+set(MYSTRAN_MTUNE "${_MYSTRAN_DEFAULT_MTUNE}" CACHE STRING "CPU tuning (-mtune); empty for compiler default")
 
 include(CheckCCompilerFlag)
 include(CheckCXXCompilerFlag)

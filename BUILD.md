@@ -112,9 +112,9 @@ straightforward.
 
 ### CPU architecture and tuning
 
-All C, C++, and Fortran code compiled by this project defaults to
-`-march=x86-64 -mtune=generic`, including the bundled GKlib, METIS, SuperLU,
-and embedded BLAS/LAPACK.
+All C, C++, and Fortran code compiled by this project defaults (on x86_64
+targets) to `-march=x86-64 -mtune=generic`, including the bundled GKlib, METIS,
+SuperLU, and embedded BLAS/LAPACK when applicable.
 
 Use the CMake cache settings `MYSTRAN_MARCH` and `MYSTRAN_MTUNE` to change
 the instruction set and tuning independently, e.g.:
@@ -126,7 +126,8 @@ cmake --build . -j8
 ```
 
 For a host-specific experiment, use `-DMYSTRAN_MARCH=native
--DMYSTRAN_MTUNE=native`. Such binaries may not run on other CPUs!
+-DMYSTRAN_MTUNE=native`. Such binaries can be somewhat faster, but may not run
+on other (older) CPUs!
 
 Restore the portable defaults with:
 
