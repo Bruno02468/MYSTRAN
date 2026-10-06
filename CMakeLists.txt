@@ -16,6 +16,7 @@ endif()
 string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" _MYSTRAN_CPU_ARCH)
 set(_MYSTRAN_DEFAULT_MARCH "")
 set(_MYSTRAN_DEFAULT_MTUNE "")
+
 if(_MYSTRAN_CPU_ARCH MATCHES "^(x86_64|amd64|x64)$")
   set(_MYSTRAN_DEFAULT_MARCH "x86-64")
   set(_MYSTRAN_DEFAULT_MTUNE "generic")
@@ -41,6 +42,7 @@ foreach(_cpu_option MARCH MTUNE)
 
     foreach(_cpu_language C CXX Fortran)
       set(_cpu_check "_MYSTRAN_${_cpu_language}_CPU_${_cpu_flag_hash}")
+
       if(_cpu_language STREQUAL "C")
         check_c_compiler_flag("${_cpu_flag}" ${_cpu_check})
       elseif(_cpu_language STREQUAL "CXX")
@@ -882,7 +884,7 @@ if(CMAKE_COMPILER_IS_GNUCC)
     -Wno-unused-variable -Wno-unused-label -Wno-unused-parameter -Wno-tabs \
     -Wno-compare-reals -Wno-character-truncation -Wno-unused-dummy-argument \
     -Wmaybe-uninitialized -Wrealloc-lhs -fbounds-check -fcheck=all \
-    -ffree-line-length-none")
+    -ffree-line-length-none -fno-diagnostics-show-caret")
   set(CMAKE_Fortran_FLAGS_DEBUG
     "-g -O0 -fcheck=all -fbacktrace -fbounds-check \
     -fno-inline -fno-ipa-sra -fno-ipa-cp -fno-optimize-sibling-calls")
